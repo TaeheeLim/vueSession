@@ -951,6 +951,11 @@
   dependencies:
     "@hapi/hoek" "^8.3.0"
 
+"@heroicons/vue@^1.0.5":
+  "integrity" "sha512-idWtp20Fjr7mqnD7EdGDUDi83oWHnx3SwyuQY6GZyF33OApzpBOLxz7xa4t6rPOddGz9tI5RGnndLk+ake7ijQ=="
+  "resolved" "https://registry.npmjs.org/@heroicons/vue/-/vue-1.0.5.tgz"
+  "version" "1.0.5"
+
 "@intervolga/optimize-cssnano-plugin@^1.0.5":
   "integrity" "sha512-zN69TnSr0viRSU6cEDIcuPcP67QcpQ6uHACg58FiN9PDrU6SLyGW3MR4tiISbYxy1kDWAVPwD+XwQTWE5cigAA=="
   "resolved" "https://registry.npmjs.org/@intervolga/optimize-cssnano-plugin/-/optimize-cssnano-plugin-1.0.6.tgz"
@@ -2691,7 +2696,12 @@
     "no-case" "^2.2.0"
     "upper-case" "^1.1.1"
 
-"camelcase@^5.0.0", "camelcase@^5.3.1":
+"camelcase@^5.0.0":
+  "integrity" "sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg=="
+  "resolved" "https://registry.npmjs.org/camelcase/-/camelcase-5.3.1.tgz"
+  "version" "5.3.1"
+
+"camelcase@^5.3.1":
   "integrity" "sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg=="
   "resolved" "https://registry.npmjs.org/camelcase/-/camelcase-5.3.1.tgz"
   "version" "5.3.1"
@@ -9231,6 +9241,11 @@
 "smart-buffer@^4.1.0":
   "version" "4.2.0"
 
+"smooth-dnd@^0.12.1":
+  "integrity" "sha512-Dndj/MOG7VP83mvzfGCLGzV2HuK1lWachMtWl/Iuk6zV7noDycIBnflwaPuDzoaapEl3Pc4+ybJArkkx9sxPZg=="
+  "resolved" "https://registry.npmjs.org/smooth-dnd/-/smooth-dnd-0.12.1.tgz"
+  "version" "0.12.1"
+
 "snapdragon-node@^2.0.1":
   "integrity" "sha512-O27l4xaMYt/RSQ5TR3vpWCAB5Kb/czIcqUFOM/C4fYcLnbZUc1PkjTAMjof2pBWaSTwOUd6qUHcFGVGj7aIwnw=="
   "resolved" "https://registry.npmjs.org/snapdragon-node/-/snapdragon-node-2.1.1.tgz"
@@ -10293,7 +10308,7 @@
   "resolved" "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@^2 || ^3.0.0-0", "vue@^3.0.0", "vue@^3.0.0-0", "vue@^3.0.11", "vue@^3.0.2", "vue@^3.0.5", "vue@^3.1.2", "vue@3.2.22":
+"vue@^2 || ^3.0.0-0", "vue@^3.0.0", "vue@^3.0.0-0", "vue@^3.0.11", "vue@^3.0.2", "vue@^3.0.5", "vue@^3.1.2", "vue@>= 3", "vue@3.2.22":
   "integrity" "sha512-KD5nZpXVZquOC6926Xnp3zOvswrUyO9Rya7ZUoxWFQEjFDW4iACtwzubRB4Um2Om9kj6CaJOqAVRDSFlqLpdgw=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-3.2.22.tgz"
   "version" "3.2.22"
@@ -10323,6 +10338,13 @@
     "prismjs" "^1.23.0"
     "vue" "^3.0.0-0"
     "vue-router" "^4.0.2"
+
+"vue3-smooth-dnd@0.0.2":
+  "integrity" "sha512-5OlpoZ1fmpA1CcjvRwJ9P3MEPZ0nnnYuIf/9zMGKF8i7jTE6fQX3oeY0jDHNtOjuCmvTSbc0AYq18M9QIF32Ew=="
+  "resolved" "https://registry.npmjs.org/vue3-smooth-dnd/-/vue3-smooth-dnd-0.0.2.tgz"
+  "version" "0.0.2"
+  dependencies:
+    "smooth-dnd" "^0.12.1"
 
 "vue3-timepicker@^1.0.0-beta.2":
   "integrity" "sha512-j4IVU7PPLrO5HADspv1E+tXTkMc9gWfCu/ruwJqJdX7qugAaVk3yNF7Mj4icRGlU4uKeSohlXWA8/Uj1ePiTxQ=="
