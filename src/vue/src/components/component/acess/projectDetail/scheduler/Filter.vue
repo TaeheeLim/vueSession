@@ -1,35 +1,35 @@
 <template>
-   <h1>Filter</h1>
-    <ul>
-      <li> 
-        <input checked type="checkbox" class="filter-wrap" id="all" @click="selectedCheckbox">
-        <label for="all">전체</label>
-      </li>
-      <li> 
-        <input type="checkbox" class="filter-wrap" id="common" @click="selectedCheckbox">
-        <label for="common">공통</label>
-      </li>
-      <li> 
-        <input type="checkbox" class="filter-wrap" id="individual" @click="selectedCheckbox">
-        <label for="individual">개인</label>
-      </li>
-      <li> 
-        <input type="checkbox" class="filter-wrap" id="notice" @click="selectedCheckbox">
-        <label for="notice">공지</label>
-      </li>
-      <li> 
-        <input type="checkbox" class="filter-wrap" id="Emergency" @click="selectedCheckbox">
-        <label for="Emergency">긴급</label>
-      </li>
-      <li> 
-        <input type="checkbox" class="filter-wrap" id="vacation" @click="selectedCheckbox">
-        <label for="vacation">휴가</label>
-      </li>
-      <li> 
-        <input type="checkbox" class="filter-wrap" id="note" @click="selectedCheckbox">
-        <label for="note">기타</label>
-      </li>
-    </ul>
+  <h1>Filter</h1>
+  <ul>
+    <li>
+      <input checked type="checkbox" class="filter-wrap" id="all" @click="selectedCheckbox">
+      <label for="all">전체</label>
+    </li>
+    <li>
+      <input type="checkbox" class="filter-wrap" id="common" @click="selectedCheckbox">
+      <label for="common">공통</label>
+    </li>
+    <li>
+      <input type="checkbox" class="filter-wrap" id="individual" @click="selectedCheckbox">
+      <label for="individual">개인</label>
+    </li>
+    <li>
+      <input type="checkbox" class="filter-wrap" id="notice" @click="selectedCheckbox">
+      <label for="notice">공지</label>
+    </li>
+    <li>
+      <input type="checkbox" class="filter-wrap" id="Emergency" @click="selectedCheckbox">
+      <label for="Emergency">긴급</label>
+    </li>
+    <li>
+      <input type="checkbox" class="filter-wrap" id="vacation" @click="selectedCheckbox">
+      <label for="vacation">휴가</label>
+    </li>
+    <li>
+      <input type="checkbox" class="filter-wrap" id="note" @click="selectedCheckbox">
+      <label for="note">기타</label>
+    </li>
+  </ul>
 </template>
 
 <script>

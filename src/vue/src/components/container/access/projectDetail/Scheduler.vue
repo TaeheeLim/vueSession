@@ -1,32 +1,32 @@
 <template >
   <!-- default는 종일 탭이 없는거고 토글은 종일텝이 나오는 것 (일반 스케쥴 보여줌 ) -->
   <div class="black-bg" v-if="this.$store.state.scheduler.isModal" @click="closeModal">
-  <div class="white-bg">
+    <div class="white-bg">
       <div class="white-bg-left" >
-        <vue-cal 
-          xsmall
-          locale="ko"
-          :time="false"
-          hide-view-selector
-          active-view="month"
-          @cell-click="this.getStartDate"
-          :disable-views="['years','year','week', 'day']"
-          class="vuecal--blue-theme vuecal--rounded-theme startDatePicker"
-          style="width: 300px ;height: 280px"
-          :style="{zIndex: startZIndex}">
-        </vue-cal>
-        
         <vue-cal
-          xsmall
-          locale="ko"
-          :time="false"
-          hide-view-selector
-          active-view="month"
-          @cell-click="this.getEndDate"
-          :disable-views="['years','year','week', 'day']"
-          class="vuecal--blue-theme vuecal--rounded-theme endDatePicker"
-          style="width: 300px ;height: 280px"
-          :style="{zIndex: endZIndex}">
+            xsmall
+            locale="ko"
+            :time="false"
+            hide-view-selector
+            active-view="month"
+            @cell-click="this.getStartDate"
+            :disable-views="['years','year','week', 'day']"
+            class="vuecal--blue-theme vuecal--rounded-theme startDatePicker"
+            style="width: 300px ;height: 280px"
+            :style="{zIndex: startZIndex}">
+        </vue-cal>
+
+        <vue-cal
+            xsmall
+            locale="ko"
+            :time="false"
+            hide-view-selector
+            active-view="month"
+            @cell-click="this.getEndDate"
+            :disable-views="['years','year','week', 'day']"
+            class="vuecal--blue-theme vuecal--rounded-theme endDatePicker"
+            style="width: 300px ;height: 280px"
+            :style="{zIndex: endZIndex}">
         </vue-cal>
       </div>
 
@@ -34,7 +34,7 @@
 
         <input class="titleInput" type="text"  placeholder="Enter the Title..." v-model="this.$store.state.scheduler.eventTitle">
         <textarea class="contentInput" rows="100" cols="100"  placeholder="Enter the Detail..." v-model="this.$store.state.scheduler.eventContent"></textarea>
-        
+
         <div class="timePicker">
           <span>
             <input class="startDate" type="text" placeholder="Start Date..." @click="setStartIndex" v-model="this.$store.state.scheduler.startDate" readonly>
@@ -42,7 +42,7 @@
           <span>
             <input class="endDate" type="text" placeholder="End Date..." @click="setEndIndex" v-model="this.$store.state.scheduler.endDate" readonly>
           </span>
-        
+
           <vue-timepicker :minute-range="[0, 6, [10, 30], 42, 50]"  drop-direction="auto"  auto-scroll v-model="this.$store.state.scheduler.autoScrollData1"></vue-timepicker>
           <vue-timepicker :minute-range="[0, 6, [10, 30], 42, 50]"  drop-direction="auto"  auto-scroll v-model="this.$store.state.scheduler.autoScrollData2"></vue-timepicker>
         </div>
@@ -58,14 +58,14 @@
 
         <div class="classification-btn" style="display : flex; ">
           <div  v-for="(a, i) in this.$store.state.scheduler.buttonText" :key="i" >
-          <button v-if="a === this.$store.state.scheduler.clickedValue" style="color : #FF8906; width : 100%; " 
-                 @click="filterClick" class="filterBtn">
-          {{a}}</button>
+            <button v-if="a === this.$store.state.scheduler.clickedValue" style="color : #FF8906; width : 100%; "
+                    @click="filterClick" class="filterBtn">
+              {{a}}</button>
 
-          <button v-else style="width : 100%; " 
-                 @click="filterClick" class="filterBtn">
-          {{a}}</button>
-          
+            <button v-else style="width : 100%; "
+                    @click="filterClick" class="filterBtn">
+              {{a}}</button>
+
           </div>
         </div>
 
@@ -73,35 +73,35 @@
           <button id="cancelBtn" class="closeModalBtn" @click="this.resetValue()">CANCEL</button>
           <button id="createBtn" class="closeModalBtn" @click="this.createEventUseModal()" >CREATE</button>
         </div>
-      
+
 
       </div>
 
+    </div>
   </div>
-</div>
 
-<div class="schedulerContainer">
-<div class="leftDiv">
-  <div class="scheduler">
-    <MonthCalendar/>
-    <br>
-    <br>
-  <i  style="color: #eee; font-size:50px " @click="this.setModalTrue" 
-  class="fab fa-apple"></i>
-  <button @click="setValue" style="color : #eee;">모달창</button>
-    <br>
-  <input type="button" id="changeTheme" value="테마바꾸기">
-  <input type="button" id="changeLang" value="언어바꾸기">
-  </div>
-  <div class="filter">
-     <Filter/>
-  </div>
-</div>
+  <div class="schedulerContainer">
+    <div class="leftDiv">
+      <div class="scheduler">
+        <MonthCalendar/>
+        <br>
+        <br>
+        <i  style="color: #eee; font-size:50px " @click="this.setModalTrue"
+            class="fab fa-apple"></i>
+        <button @click="setValue" style="color : #eee;">모달창</button>
+        <br>
+        <input type="button" id="changeTheme" value="테마바꾸기">
+        <input type="button" id="changeLang" value="언어바꾸기">
+      </div>
+      <div class="filter">
+        <Filter/>
+      </div>
+    </div>
 
-<div class="rightDiv">
-  <WeekCalendar/>
-</div>
-</div> 
+    <div class="rightDiv">
+      <WeekCalendar/>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -119,9 +119,8 @@ import VueCal from 'vue-cal'
 
 import '../../../../../node_modules/vue-cal/dist/vuecal.css'
 import '../../../../../node_modules/vue-cal/dist/drag-and-drop.js'
-import '../../../../../node_modules/vue-cal/dist/i18n/ko.js'
+import '../../../../assets/js/ko.js'
 import '../../../../assets/css/blackTheme.css'
-
 export default {
   name: 'Scheduler',
   components: {
@@ -214,35 +213,35 @@ export default {
 .rightDiv{
   width: 70vw;
   overflow: scroll;
-  -ms-overflow-style: none; 
-  scrollbar-width: none; 
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 .rightDiv::-webkit-scrollbar {
-  display: none; 
+  display: none;
 }
 
 .black-bg,
 .white-bg{
-    box-sizing: border-box;
+  box-sizing: border-box;
 
 }
 .black-bg{
-    background-color: rgba(0, 0, 0, 0.5);
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    z-index: 4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  width: 100vw;
+  height: calc(100vh - 70px);
+  z-index: 4;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .white-bg{
-    width: 50%;
-    height: 40%;
-    background: #414556;
-    border-radius: 13px;
-    padding: 20px;
-    display: flex;
+  width: 50%;
+  height: 40%;
+  background: #414556;
+  border-radius: 13px;
+  padding: 20px;
+  display: flex;
 }
 
 .startDatePicker{
@@ -320,7 +319,7 @@ export default {
 
 
 #cancelBtn{
-  background-color: #FF5C5C;  
+  background-color: #FF5C5C;
   color : #eee;
   border : none;
   margin :3px;
