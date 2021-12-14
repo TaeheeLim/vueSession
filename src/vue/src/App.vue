@@ -5,7 +5,8 @@
       <Notice />
       <NoticeList v-if="$store.state.menu.isOpenNotification"/>
       <UserSetting v-if="$store.state.menu.isOpenUserSetting"/>
-    </nav>
+      <h2>hello!!!!</h2>
+     </nav>
     <router-view></router-view>
     <Chat v-if="$store.state.global.chatOn"/>
   </div>
