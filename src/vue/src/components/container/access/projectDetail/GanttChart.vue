@@ -1,13 +1,36 @@
 <template>
-<div></div>  
+  <div class="ganttChart-container">
+    <Chart />
+    <div class="gantt-footer">
+      <Detail class="detail" />
+      <Write class="write" />
+    </div>
+  </div>
 </template>
 
 <script>
-export default {
+import Chart from "../../../component/acess/projectDetail/ganttChart/Chart.vue";
+import Detail from "../../../component/acess/projectDetail/ganttChart/Detail.vue";
+import Write from "../../../component/acess/projectDetail/ganttChart/Write.vue";
 
-}
+export default {
+  components: {
+    Chart,
+    Detail,
+    Write,
+  },
+};
 </script>
 
-<style>
+<style scoped>
+.ganttChart-container {
+  padding: 20px;
+  height: calc(100vh - 70px);
+}
+
+.gantt-footer {
+  display: flex;
+  color: white;
+}
 
 </style>
