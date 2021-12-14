@@ -93,7 +93,7 @@ export default {
 .list-container {
     color : white;
     display: flex;
-    height: calc(100vh-70px);
+    height: calc(100vh - 70px);
 }
 
 .list-top-container {

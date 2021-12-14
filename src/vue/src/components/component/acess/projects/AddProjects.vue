@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <ul class="item-list">
-            <li @click="makeElement" id="firstLi" class="list-item btn">
+            <li @click="this.changeIsModalOpen" id="firstLi" class="list-item btn">
                     <div id="divdiv">
                         <i class="fas fa-plus-circle"></i>
                     </div>
@@ -23,27 +23,35 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
+
+
 export default {
     name : 'AddProjects',
     data() {
         return {
             projectsList : [],
-            
         }
     },
     methods: {
+        ...mapMutations({
+            changeIsModalOpen : 'projectList/changeIsModalOpen',
+        }),
+
         getProjects(){
             this.axios.get('/projectDetail.json').then(e => {
                 this.projectsList = e.data
+
             })
         },
-        makeElement(){
-            // var li = document.createElement('li')
-        },
+        
     },
     mounted() {
         this.getProjects()
     },
+    components : {
+        
+    }
 
 }
 </script>
@@ -52,7 +60,6 @@ export default {
 
 
 .container {
-    /* border: 1px solid #fff; */
     height: 100%;
     padding: 60px;
     width: 100%;

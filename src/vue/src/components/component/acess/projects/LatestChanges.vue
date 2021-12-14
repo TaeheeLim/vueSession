@@ -2,25 +2,48 @@
 <div id="change-head">
     Latest Changes
 </div>
+<div id="contain">
 <div id="change-list" @mousewheel="wheel">
-    <div class="list-detail" v-for="(a,i) in 50" :key="i">
+    <div class="list-detail" v-for="(item,index) in changesList" :key="index">
         <div class="list-wrapper">
             <router-link id="prjct-name" to="/pdtail/dashboard">
-                Test Project
+                {{ item.name }}
             </router-link>
             <div class="content-children">
-                <router-link to="/pdtail/dashboard">Issue</router-link>
-                <router-link to="/pdtail/dashboard">치명적인 버그 발견!</router-link>
-                <router-link to="/pdtail/dashboard">치명적인 버그 발견!</router-link>
+                <router-link to="/pdtail/dashboard">
+                    Issue
+                </router-link>
+                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="(a) in item.issue" :key="a">
+                    <div class="title-wrap" v-if="a.content.length >= 10">{{ `${a.content.substring(0, 10)}...` }}</div>
+                    <div class="title-wrap" v-else>{{ a.content }}</div>
+                    <div class="balloon">
+                        <div>
+                            <span>{{ a.date }}</span>
+                            <span>{{ a.state }}</span>
+                        </div>
+                        <div>
+                            {{ a.content }}
+                        </div>
+                    </div>
+                </router-link>
             </div>
             <div class="content-children">
-                <router-link to="/pdtail/dashboard">Schedule</router-link>
-                <router-link to="/pdtail/dashboard">21-01-01 신년회</router-link>
-                <router-link to="/pdtail/dashboard">21-01-01 신년회</router-link>
-                <router-link to="/pdtail/dashboard">21-01-01 신년회</router-link>
+                <router-link to="/pdtail/dashboard">
+                    Schedule
+                </router-link>
+                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="a in item.schedule" :key="a">
+                    <div class="title-wrap" v-if="a.content.length >= 10">{{ `${a.content.substring(0, 10)}...` }}</div>
+                    <div class="title-wrap" v-else>{{ a.content }}</div>
+                    <div class="balloon">
+                        <div>
+                            {{ a.content }}
+                        </div>
+                    </div>
+                </router-link>
             </div>
         </div>
     </div>
+</div>
 </div>
 </template>
 
@@ -35,6 +58,7 @@ export default {
             boxInnerWidth: 0,
             countLeft: -1,
             countRight: -1,
+            changesList : [],
         }
         
     },
@@ -42,13 +66,9 @@ export default {
         //가로 스크롤 ^^
         wheel(e){
             let target = document.querySelector('#change-list')
-            
-            var a = target.scrollWidth - (target.scrollLeft + target.offsetWidth)
 
             let wheelDelta = e.wheelDelta;
-            target.scroll
-            if(wheelDelta > 0 && a + target.offsetWidth < target.scrollWidth){
-                console.log("여기 왼쪽 맞지")
+            if(wheelDelta > 0 && target.scrollLeft !== 0){
                 target.scrollLeft = (wheelDelta * this.countLeft);
                 this.countLeft--;
                 this.countRight++;
@@ -57,10 +77,16 @@ export default {
                 this.countRight--;
                 this.countLeft++;
             }
+        },
+        getChanges(){
+            this.axios.get('/projectDetail.json').then(e => {
+                this.changesList = e.data
+            })
         }
     },
     
     mounted() {
+        this.getChanges()
     }
 }
 </script>
@@ -122,23 +148,14 @@ export default {
     padding-bottom: 10px;
 }
 
-.content-children > a:first-child{
+
+.content-children > a {
+    font-size : 15px;
+    padding-left: 10px;
+}
+
+.content-children > a:first-child {
     font-size: 18px;
-}
-
-.content-children > a:nth-child(2){
-    font-size : 15px;
-    padding-left: 10px;
-}
-
-.content-children > a:nth-child(3){
-    font-size : 15px;
-    padding-left: 10px;
-}
-
-.content-children > a:last-child{
-    font-size : 15px;
-    padding-left: 10px;
 }
 
 a{
@@ -157,6 +174,59 @@ a{
     border-bottom: 1px solid darkorchid;
 }
 
+#contain {
+    padding-right: 60px;
+}    
 
+.balloon-wrap {
+    position: relative;
+}
+
+.balloon {
+    position: absolute;
+    max-width: fit-content;
+    min-width: 200px;
+    top: -150%;
+    right: -120%;
+    display: none;
+    z-index: 10;
+    background: #3F80A9;
+    padding: 10px;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.balloon * {
+    line-height: 1.2;
+}
+
+.balloon::after {
+    content: " ";
+    position: absolute;
+    border-style: solid;
+    border-width: 0 16px 20px 17.5px;
+    border-color: #3F80A9 transparent;
+    display: block;
+    width: 0;
+    z-index: 10;
+    transform: rotate(-90deg) scale(.5) translate(-50%, -50%);
+    left: -8%;
+    top: 10%;
+}
+
+a:hover .balloon{
+    display: flex;
+    flex-direction: column;
+    
+}
+
+.title-wrap {
+    color: #717790;
+    transition: color .2s ease-in;
+}
+
+.title-wrap:hover {
+    color: #fff;
+}
 
 </style>

@@ -10,6 +10,8 @@ const community = {
     articlesOnView : 0,
     content : '',
     updateCheck : false,
+    selected : 'All',
+    key : '',
   },
   
   mutations: {
@@ -46,6 +48,7 @@ const community = {
       payload.열렸니 = !payload.열렸니
       state
     },
+
     changeIsUpdate(state, payload){
       payload.수정했니 = !payload.수정했니
       state
@@ -57,23 +60,28 @@ const community = {
       state
       payload.board.댓글.push(...payload.commentList)
     },
+
     //----------------댓글 관련!!!-------------------
     changeCommentsIsOpen(state, payload){
       payload.isOpen = !payload.isOpen
       state
     },
+
     changeCommentsIsUpdate(state, payload){
       payload.isUpdate = !payload.isUpdate
       state
     },
+
     changeIsFinish(state, payload){
       payload.isFinish = !payload.isFinish
       state
     },
+
     changeIsModify(state, payload){
       payload.isModify = !payload.isModify
       state
     },
+
     //-------------------------------------------
     changeBoardIsModify(state, payload){
       payload.isModify = !payload.isModify
@@ -82,11 +90,25 @@ const community = {
     changeUpdateCheck(state){
       state.updateCheck = !state.updateCheck
     },
+
+    getSelectedAndKey(state, payload){
+      state.key = payload.key
+      state.selected = payload.selected
+    },
+
+    emptyBoardList(state){
+      state.boardList = []
+    }
   },
   
   actions: {
     //articleOnView state에 ?
     getBoardList(context){
+      // var object = {
+      //   "selected" : selected,
+      //   "key" : key
+      // }
+
       axios.get('/BoardList.json')
                 .then(e => {
                   for(let item of e.data){
@@ -95,6 +117,7 @@ const community = {
                   context.commit('setArticlesOnView')
                 })
     },
+
     getBoardNum(context){
       axios.get('/articleNum.json')
                 .then(e => {
@@ -105,6 +128,10 @@ const community = {
     //Controller에서 보여지는 개시글의 개수를 받아서 jpa문법으로 페이징처리를 위함
     //params : {articleNum : this.articleOnView}
     getMoreList(context){
+      // var object = {
+      //   "selected" : selected,
+      //   "key" : key
+      // }
       axios.get('/BoardList.json')
                 .then(e => {
                   for(let item of e.data){

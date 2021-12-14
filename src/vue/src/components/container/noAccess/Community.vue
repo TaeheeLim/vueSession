@@ -8,8 +8,13 @@
         <button  @click="[click(), step=1, this.changeUpdateCheck()]" class="board-direction" :disabled="blockWrite == true">글 작성</button>
       </div>
       <div class="input-container">
+        <select v-model="selected" id="select">
+          <option value="All">All</option>
+          <option value="MEM_NICK">Writer</option>
+          <option value="BOARD_CN">Content</option>
+        </select>
         <input type="text" class="search-input" @keyup.enter="search" v-model="key">
-        <img src="@/assets/돋보기2.png" @click="search">
+        <img src="@/assets/돋보기2.png" @click="sendingSelected">
       </div>
     </div>  
     <div class="body-router">
@@ -32,6 +37,7 @@ export default {
   data(){
     return {
       key: "",
+      selected : 'All',
       step : 0,
       category : "free",
       isOpen : false,
@@ -45,21 +51,30 @@ export default {
     ...mapState({
       updateCheck : state => state.community.updateCheck,
       blockWrite : state => state.community.blockWrite,
+      boardList : state => state.community.boardList,
+      isSearch : state => state.community.isSearch,
+      selected : state => state.community.selected,
     })
   },
 
   methods: {
     ...mapMutations({
-      changeUpdateCheck : 'community/changeUpdateCheck'
+      changeUpdateCheck : 'community/changeUpdateCheck',
+      getSelectedAndKey : 'community/getSelectedAndKey',
     }),
-
-    search() {
-      console.log(this.key)
-    },
 
     click(){
       this.isOpen = !this.isOpen;
       console.log(this.isOpen)
+    },
+
+    sendingSelected(){
+      var object= {
+        "key" : this.key,
+        "selected" : this.selected
+      }
+
+      this.getSelectedAndKey(object)
     },
 
   }
@@ -109,6 +124,10 @@ input {
   position: relative;
   height: 20px;
   width : 160px;
+  border: none;
+  outline: none;
+  padding-left: 10px;
+  font-size: 12px;
 }
 
 .input-container {
@@ -132,4 +151,17 @@ img {
   position : relative;
 }
 
+#select {
+  background-color: #414556;
+  border: none;
+  outline: none;
+  margin-right: 10px;
+  border-radius: 10px;
+  height: 20px;
+  font-size: 12px;
+  padding-left: 5px;
+}
+option {
+  font-size: 12px;
+}
 </style>

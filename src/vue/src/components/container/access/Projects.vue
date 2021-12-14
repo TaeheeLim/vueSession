@@ -1,5 +1,8 @@
 <template>
 <div class="list-container">
+    <div id="modal" v-if="this.IsModalOpen === true" >
+        <Modal/>
+    </div>
     <div class="project-state">
         <div id="project-top">
             <div id="img-div">
@@ -12,16 +15,16 @@
         <div id="profile-list">
             <div>
                 <div>
-                    Proceddings()
+                    Proceddings( {{ progressList.length }} )
                 </div>
                 <div class="projects-div-ul">
                     <ul class="projects-ul">
-                        <li v-for="i in 10" :key="i">
+                        <li v-for="item in progressList" :key="item">
                             <span>
                                 <i class="far fa-circle"></i>
                             </span>
                             <span class="test-span">
-                                <router-link to="/pdtail/dashboard">test1</router-link>
+                                <router-link to="/pdtail/dashboard">{{ item.name }}</router-link>
                             </span>
                         </li>
                     </ul>
@@ -29,17 +32,17 @@
             </div>
             <div>
                 <div class="project-completed">
-                    Completed()
+                    Completed( {{ completeList.length }} )
                 </div>
                 <div class="projects-div-ul">
                     <div>
                         <ul class="projects-ul">
-                            <li v-for="i in 10" :key="i">
+                            <li v-for="item in completeList" :key="item">
                                 <span>
                                     <i class="far fa-circle"></i>
                                 </span>
                                 <span class="test-span">
-                                    <router-link to="/pdtail/dashboard">test1</router-link>
+                                    <router-link to="/pdtail/dashboard">{{ item.name }} </router-link>
                                 </span>
                             </li>
                         </ul>
@@ -48,6 +51,7 @@
             </div>
         </div>
     </div>
+
     <div class="list-right-container">
         <div id="addproject-div">
             <AddProjects/>
@@ -62,18 +66,34 @@
 <script>
 import AddProjects from '@/components/component/acess/projects/AddProjects.vue'
 import Changes from '@/components/component/acess/projects/LatestChanges.vue'
-
+import Modal from '@/components/popup/CreateProject.vue'
+import { mapState } from 'vuex'
 export default {
     name : 'ProjectList',
     data() {
         return {
             projectList : [],
+            progressList : [],
+            completeList : [],
         }
     },
+    computed : {
+        ...mapState({
+            IsModalOpen : state => state.projectList.IsModalOpen
+        })
+    },
+
     methods: {
         getProjectsList(){
             this.axios.get('/projectDetail.json').then(e => {
                 this.projectList = e.data
+                for(let i = 0; i < this.projectList.length; i++){
+                    if(this.projectList[i].isComplete === 'N'){
+                        this.progressList.push(this.projectList[i])
+                    } else {
+                        this.completeList.push(this.projectList[i])
+                    }
+                }
             })
 
         }
@@ -81,9 +101,10 @@ export default {
     components : {
         AddProjects,
         Changes,
+        Modal,
     },
     mounted() {
-
+        this.getProjectsList()
     },
 }
 </script>
@@ -92,11 +113,10 @@ export default {
 .list-container {
     color : white;
     display: flex;
-    height: calc(100vh-70px);
+    height: calc(100vh - 70px);
 }
 
 .list-top-container {
-    /* justify-content: space-around; */
     margin-top: 20px;
 }
 
@@ -128,6 +148,7 @@ export default {
 
 #project-top {
     display: flex;
+    padding-top : 40px;
 }
 
 .projects-div-ul {
@@ -135,8 +156,8 @@ export default {
     margin-top : 8px;
     height: 140px;
     overflow: scroll;
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none; 
 }
 
 .projects-div-ul::-webkit-scrollbar {
@@ -150,6 +171,7 @@ export default {
 .projects-ul a {
     color: #fff;
 }
+
 .test-span {
     margin-left: 10px;
 }
@@ -166,21 +188,16 @@ export default {
     display: flex;
     flex-direction: column;
     margin-left: 20px;
-    width: 80vw;
-    height: 100%;
+    width: 90%;
+    height: calc(100vh - 70px);
 }
 
 #addproject-div {
-    /* height: 100%; */
-    /* padding-top: 30px;
-    padding-bottom: 30px; */
-    height: 400px;
+    height: 60%;
 }
 
 #changes-div {
-    /* border: 1px solid red; */
-    margin-top: 100px;
-    height: 100%;
+    height: 40%;
     font-size: 30px;
     width: 100%;
     padding-left: 60px;

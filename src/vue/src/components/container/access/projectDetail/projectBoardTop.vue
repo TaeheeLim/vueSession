@@ -1,4 +1,5 @@
 <template>
+<div>
 <div @scroll="getArticle" class="router-wrapper">
     <div class="router-wrapper2">
         <div class="board" v-for="(item, index) in this.boardList" :key="index">
@@ -56,16 +57,17 @@
                 <input class="comment-input" typ1e="text" placeholder="댓글을 입력하세요">
                 <button id="button-id" class="comment-btn" @click="insertComment(item)">등록</button>
             </div>
-            <BoardComment :board="item"/>
+            <ProjectBoardComment :board="item"/>
         </div>
     </div>
+</div>
 </div>
 </template>
 
 <script>
-import BoardComment from '@/components/component/noAccess/Community/BoardComment.vue'
 import {  mapActions, mapMutations, mapState } from 'vuex'
-import editor from '../../global/editor.vue'
+import editor from '../../../component/global/editor.vue'
+import ProjectBoardComment from './ProjectBoardComment.vue'
 
 export default {
     name : 'Free',
@@ -86,22 +88,22 @@ export default {
     },
     computed : {
         ...mapState({
-            boardList : state=>state.community.boardList,
-            updateCheck : state => state.community.updateCheck,
+            boardList : state=>state.projectBoard.boardList,
+            updateCheck : state => state.projectBoard.updateCheck,
         })
     },
 
     methods: {
         ...mapActions({
-            getBoardList : 'community/getBoardList',
-            getBoardNum : 'community/getBoardNum',
-            getMoreList : 'community/getMoreList',
-            getComments : 'community/getComments',
+            getBoardList : 'projectBoard/getBoardList',
+            getBoardNum : 'projectBoard/getBoardNum',
+            getMoreList : 'projectBoard/getMoreList',
+            getComments : 'projectBoard/getComments',
         }),
         ...mapMutations({
-            changeIsUpdate : 'community/changeIsUpdate',
-            changeBoardIsModify : 'community/changeBoardIsModify',
-            changeUpdateCheck : 'community/changeUpdateCheck',
+            changeIsUpdate : 'projectBoard/changeIsUpdate',
+            changeBoardIsModify : 'projectBoard/changeBoardIsModify',
+            changeUpdateCheck : 'projectBoard/changeUpdateCheck',
         }),
 
         setLikeFlag(){
@@ -227,7 +229,7 @@ export default {
     },
 
     components : {
-        BoardComment,
+        ProjectBoardComment,
         editor,
     },
 }
