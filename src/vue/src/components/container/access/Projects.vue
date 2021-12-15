@@ -87,6 +87,7 @@ export default {
         getProjectsList(){
             this.axios.get('/projectDetail.json').then(e => {
                 this.projectList = e.data
+
                 for(let i = 0; i < this.projectList.length; i++){
                     if(this.projectList[i].isComplete === 'N'){
                         this.progressList.push(this.projectList[i])
