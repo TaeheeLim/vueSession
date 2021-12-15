@@ -38,8 +38,6 @@ export default {
   mounted() {},
   data() {
     return {
-      isActive: ``,
-      step: 0,
       cards: [
         {
           id: "7",
@@ -110,8 +108,6 @@ How many people can interpret this in English? There doesn't seem to be!`,
   },
   methods: {
     swap(i) {
-      console.log(this.step);
-
       for (let j = 0; j < 8; j++) {
         let target = document.getElementById(`card${j}`);
         target.style.animation = "";
@@ -119,15 +115,18 @@ How many people can interpret this in English? There doesn't seem to be!`,
 
       let card = this.cards.pop();
       let thisCard = document.getElementById(`card${i}`);
-      thisCard.style.animation = "swap 1200ms forwards";
+      thisCard.classList+=(' how-swap')
+      console.log(thisCard)
+      setTimeout( ()=>{
+        thisCard.className = 'how-cards';
+      },2000)
       this.cards.unshift(card);
-      this.step++;
     },
   },
 };
 </script>
 
-<style>
+<style scoped>
 .how-to-use-container {
   display: flex;
   justify-content: center;
@@ -146,57 +145,17 @@ How many people can interpret this in English? There doesn't seem to be!`,
   box-sizing: border-box;
 }
 
-.how-title-box {
-  margin-top: 20px;
-  font-size: 44px;
-}
-.how-card {
-  padding: 10px;
-  margin: 15px;
-  position: relative;
-}
-
-.how-btn-next {
-  position: absolute;
-  left: 95%;
-  bottom: 45%;
-  font-size: 44px;
-  color: white;
-}
-
-.how-card-img {
-  width: 320px;
-  height: 440px;
-  float: left;
-  margin-right: 50px;
-  border-radius: 25px;
-}
-
-.how-card-title {
-  margin-bottom: 30px;
-  text-align: left;
-  font-size: 32px;
-}
-
-.how-card-text {
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-  padding: 50px;
-  font-size: 22px;
-}
-
 .how-stack {
   margin-top: 50px;
   width: 1200px;
   height: 900px;
   position: relative;
+  
 }
 
-.how-card-content {
-  text-align: center;
-  display: inline;
-  margin: 15px 0px 0px 30px;
+.how-title-box {
+  margin-top: 20px;
+  font-size: 44px;
 }
 
 .how-cards {
@@ -223,6 +182,7 @@ How many people can interpret this in English? There doesn't seem to be!`,
     0 15px 25px 0 rgba(12, 124, 209, 0.1);
   transition: transform 2000ms;
   z-index: 3;
+  
 }
 
 .how-cards:nth-last-child(n + 6) {
@@ -254,6 +214,52 @@ How many people can interpret this in English? There doesn't seem to be!`,
   --y: calc(-50% + 45px);
   transform: translate(-50%, var(--y)) scale(1.05);
   opacity: 1;
+}
+
+.how-card {
+  padding: 10px;
+  margin: 15px;
+  position: relative;
+}
+
+.how-card-img {
+  width: 320px;
+  height: 440px;
+  float: left;
+  margin-right: 50px;
+  border-radius: 25px;
+}
+
+.how-card-content {
+  text-align: center;
+  display: inline;
+  margin: 15px 0px 0px 30px;
+}
+
+.how-card-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 50px;
+  font-size: 22px;
+}
+
+.how-card-title {
+  margin-bottom: 30px;
+  text-align: left;
+  font-size: 32px;
+}
+
+.how-btn-next {
+  position: absolute;
+  left: 95%;
+  bottom: 45%;
+  font-size: 44px;
+  color: white;
+}
+
+.how-swap{
+  animation: swap 1200ms forwards;
 }
 
 @keyframes swap {
