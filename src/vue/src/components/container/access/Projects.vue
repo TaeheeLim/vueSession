@@ -15,35 +15,39 @@
         <div id="profile-list">
             <div>
                 <div>
-                    Proceddings( {{ progressList.length }} )
+                    Proceddings( {{ progressLength }} )
                 </div>
                 <div class="projects-div-ul">
                     <ul class="projects-ul">
-                        <li v-for="item in progressList" :key="item">
-                            <span>
-                                <i class="far fa-circle"></i>
-                            </span>
-                            <span class="test-span">
-                                <router-link to="/pdtail/dashboard">{{ item.name }}</router-link>
-                            </span>
+                        <li v-for="(item, index) in projectList" :key="index">
+                            <div v-if="item.isComplete === 'N'">
+                                <span>
+                                    <i class="far fa-circle"></i>
+                                </span>
+                                <span class="test-span">
+                                    <router-link to="/pdtail/dashboard">{{ item.name }}</router-link>
+                                </span>
+                            </div>
                         </li>
                     </ul>
                 </div>
             </div>
             <div>
                 <div class="project-completed">
-                    Completed( {{ completeList.length }} )
+                    Completed( {{ completeLength }} )
                 </div>
                 <div class="projects-div-ul">
                     <div>
                         <ul class="projects-ul">
-                            <li v-for="item in completeList" :key="item">
-                                <span>
-                                    <i class="far fa-circle"></i>
-                                </span>
-                                <span class="test-span">
-                                    <router-link to="/pdtail/dashboard">{{ item.name }} </router-link>
-                                </span>
+                            <li v-for="(item, index) in projectList" :key="index">
+                                <div v-if="item.isComplete === 'Y'">
+                                    <span>
+                                        <i class="far fa-circle"></i>
+                                    </span>
+                                    <span class="test-span">
+                                        <router-link to="/pdtail/dashboard">{{ item.name }} </router-link>
+                                    </span>
+                                </div>
                             </li>
                         </ul>
                     </div>
@@ -67,37 +71,44 @@
 import AddProjects from '@/components/component/acess/projects/AddProjects.vue'
 import Changes from '@/components/component/acess/projects/LatestChanges.vue'
 import Modal from '@/components/popup/CreateProject.vue'
-import { mapState } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
+
 export default {
     name : 'ProjectList',
     data() {
         return {
-            projectList : [],
-            progressList : [],
-            completeList : [],
+            progressLength : 0,
+            completeLength : 0,
         }
     },
     computed : {
         ...mapState({
-            IsModalOpen : state => state.projectList.IsModalOpen
+            IsModalOpen : state => state.projectList.IsModalOpen,
+            projectList : state => state.projectList.projectList,
         })
     },
 
     methods: {
+        ...mapMutations({
+            pushToProjectList : 'projectList/pushToProjectList',
+        }),
+
         getProjectsList(){
             this.axios.get('/projectDetail.json').then(e => {
-                this.projectList = e.data
-
-                for(let i = 0; i < this.projectList.length; i++){
-                    if(this.projectList[i].isComplete === 'N'){
-                        this.progressList.push(this.projectList[i])
-                    } else {
-                        this.completeList.push(this.projectList[i])
-                    }
-                }
+                this.pushToProjectList(e.data)
             })
 
-        }
+        },
+        getLength(){
+            for(let i = 0; i < this.projectList.length; i++){
+                if(this.projectList[i].isComplete === 'N'){
+                    this.progressLength++
+                } else {
+                    this.completeLength++
+                }
+            }
+        },
+
     },
     components : {
         AddProjects,
@@ -106,6 +117,7 @@ export default {
     },
     mounted() {
         this.getProjectsList()
+        this.getLength()
     },
 }
 </script>
