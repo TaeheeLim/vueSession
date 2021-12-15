@@ -86,7 +86,8 @@ export default {
         if(item.ele !== "insertImage") {
           return
         }
-        const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${this.image}" alt="img"/>`
+        const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${item.img}" alt="img"/>`
+        document.querySelector("#content").focus()
         document.execCommand('insertHTML', false, img)
       }else if(item.ele === 'foreColor') {
         document.execCommand('ForeColor', false, this.color)
@@ -128,9 +129,7 @@ export default {
     //   this.$emit('exportContent', returnData)
     // 
     insertImg(e) {
-      console.log(e)
-
-      const files = e.target.files
+      const files = e.currentTarget.files
       const file = files[0]
       const maxSize = 5 * 1024 * 1024
       const fileSize = file.size
@@ -139,21 +138,20 @@ export default {
         e.target.value = ''
         return
       }
+      const obj = {
+        ele: "insertImage",
+        img: ""
+      }
       this.exportFile = files
-      if(files && file){
+      if(files && file) {
         const reader = new FileReader()
         reader.onload = readerEvt => {
           const binaryString = readerEvt.target.result
-          this.image = btoa(binaryString)
-          this.btnClick('insertImage')
+          obj.img = btoa(binaryString)
+          this.btnClick(obj)
         }
         reader.readAsBinaryString(file)
       }
-
-      const obj = {
-        ele: "insertImage"
-      }
-      this.btnClick(obj)
     }
   },
   watch: {

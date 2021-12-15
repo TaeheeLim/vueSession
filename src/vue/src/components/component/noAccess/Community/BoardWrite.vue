@@ -35,7 +35,7 @@ export default {
         
         //게시글 insert
         getContent(e) {
-            console.log('아아아아아앙')
+            // console.log('아아아아아앙')
             var board = {
                 //jwt에서 회원 고유번호 or Token 꺼내와서 담아주기
                 idx : "",
@@ -48,9 +48,9 @@ export default {
                 file : e._file,
             }
             console.log(board)
-            this.axios.post('',null, { params : { data : board}}).then(e => {
-                console.log(e)
-            })
+            // this.axios.post('',null, { params : { data : board}}).then(e => {
+            //     console.log(e)
+            // })
 
         }
     },
