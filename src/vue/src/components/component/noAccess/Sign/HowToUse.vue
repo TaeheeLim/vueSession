@@ -147,8 +147,10 @@ How many people can interpret this in English? There doesn't seem to be!`,
 
 .how-stack {
   margin-top: 50px;
-  width: 1200px;
-  height: 900px;
+  max-width: 1200px;
+  max-height: 600px;
+  width: 80vw;
+  height: 70vh;
   position: relative;
   
 }
@@ -156,6 +158,8 @@ How many people can interpret this in English? There doesn't seem to be!`,
 .how-title-box {
   margin-top: 20px;
   font-size: 44px;
+  position: relative;
+  z-index: 9999;
 }
 
 .how-cards {
