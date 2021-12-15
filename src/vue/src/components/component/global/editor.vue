@@ -35,7 +35,7 @@ export default {
 
   data() {
     return {
-      exportFile: '',
+      exportFile: "",
       exportC: '',
       content: '',
       image: '',
@@ -89,7 +89,7 @@ export default {
         const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${item.img}" alt="img"/>`
         document.querySelector("#content").focus()
         document.execCommand('insertHTML', false, img)
-      }else if(item.ele === 'foreColor') {
+      }else if(item === 'foreColor') {
         document.execCommand('ForeColor', false, this.color)
       } else {
         document.execCommand(item.ele, false, null)
@@ -104,18 +104,8 @@ export default {
       if(fileSize > maxSize) {
         alert('첨부파일은 5MB 이내로 등록 가능합니다.')
         e.target.value = ''
-        return
       }
-      this.exportFile = files
-      if(files && file){
-        const reader = new FileReader()
-        reader.onload = readerEvt => {
-          const binaryString = readerEvt.target.result
-          this.image = btoa(binaryString)
-          this.btnClick('insertImage')
-        }
-        reader.readAsBinaryString(file)
-      }
+      this.exportFile = files[0]
     },
     getText() {
       this.content = document.querySelector('#content').innerHTML

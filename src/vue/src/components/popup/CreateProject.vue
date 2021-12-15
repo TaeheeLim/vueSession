@@ -1,7 +1,8 @@
 <template>
   <div>
-    <div class="bg-container">
+    <div class="bg-container" @click="close">
       <div class="white-container">
+        <button type="button" class="close-btn" @click="btnClose">X</button>
         <h1 class="createProject-title">Create Project</h1>
         <div class="createProject-content">
           <input
@@ -56,6 +57,7 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import "vue-cal/dist/i18n/ko.js";
 import moment from "moment";
+import {mapMutations} from "vuex";
 // import { CalendarIcon } from "@heroicons/vue/outline";
 
 export default {
@@ -74,6 +76,9 @@ export default {
     VueCal,
   },
   methods: {
+    ...mapMutations({
+      changeIsModalOpen: 'projectList/changeIsModalOpen'
+    }),
     pickDate(data) {
       let today = moment().format("YYYY-MM-DD HH:mm");
       let todayWithOutTime = moment().format("YYYY-MM-DD");
@@ -141,16 +146,14 @@ export default {
         return;
       }
 
-      let header = null;
 
-      let params = {
-        prjctNm: this.inputName,
-        prjctStartDate: this.inputStartDay,
-        prjctEndDate: this.inputEndDay,
-      };
+      const params = new URLSearchParams()
+      params.append("prjctNm", this.inputName)
+      params.append("prjctStartDate", this.inputStartDay)
+      params.append("prjctEndDate", this.inputEndDay)
 
       this.axios
-        .post("http://localhost:8099/", header, { params })
+        .post("/pdtail/createProject", params)
         .then((result) => {
           console.log(result);
         })
@@ -158,6 +161,14 @@ export default {
           console.error(err);
         });
     },
+    close(e) {
+      if(e.target.classList[0] === "bg-container") {
+        this.changeIsModalOpen()
+      }
+    },
+    btnClose() {
+      this.changeIsModalOpen()
+    }
   },
 };
 </script>
@@ -166,6 +177,15 @@ export default {
 .callModal {
   font-size: 50px;
   background: cornflowerblue;
+}
+
+.close-btn {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  z-index: 99999;
+  color: #fff;
+  cursor: pointer;
 }
 
 .bg-container {

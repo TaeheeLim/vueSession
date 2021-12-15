@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class Project {
     private Long prjctIdx;
 
     private String prjctNm;
-    private LocalDateTime prjctStartDate;
-    private LocalDateTime prjctEndDate;
+    private LocalDate prjctStartDate;
+    private LocalDate prjctEndDate;
     private int prjctProgress;
     private String prjctDelAt;
     private String prjctComplAt;
@@ -36,6 +37,7 @@ public class Project {
                 .prjctEndDate(prjctEndDate)
                 .prjctProgress(prjctProgress)
                 .prjctDelAt(prjctDelAt)
+                .prjctComplAt(prjctComplAt)
                 .build();
     }
 }
