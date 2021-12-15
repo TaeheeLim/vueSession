@@ -24,7 +24,6 @@ public class CommentDTO {
     private BoardDTO board;
     private MemberDTO member;
     private String answerCn;
-    private int answerReportNum;
     private LocalDateTime answerDate;
     private String answerDelAt;
 
@@ -34,7 +33,6 @@ public class CommentDTO {
                 .board(board.dtoToEntity())
                 .member(member.dtoToEntity())
                 .answerCn(answerCn)
-                .answerReportNum(answerReportNum)
                 .answerDate(answerDate)
                 .answerDelAt(answerDelAt)
                 .build();

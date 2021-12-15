@@ -28,8 +28,6 @@ public class Board {
 
     private String boardCn;
     private LocalDateTime boardDate;
-    private int likeNum;
-    private int reportNum;
     private String delAt;
 
     @OneToOne
@@ -44,8 +42,6 @@ public class Board {
                 .member(member.entityToDto())
                 .boardCn(boardCn)
                 .boardDate(boardDate)
-                .likeNum(likeNum)
-                .reportNum(reportNum)
                 .delAt(delAt)
                 .codeDetail(codeDetail.entityToDto())
                 .fileAt(fileAt)

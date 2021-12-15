@@ -83,7 +83,9 @@ export default {
         const url = prompt('Enter thr link here: ', 'http://')
         document.execCommand(item.ele, false, url);
       } else if(item.ele === 'insertImage') {
-        console.log(item.ele)
+        if(item.ele !== "insertImage") {
+          return
+        }
         const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${this.image}" alt="img"/>`
         document.execCommand('insertHTML', false, img)
       }else if(item.ele === 'foreColor') {
@@ -94,8 +96,6 @@ export default {
     },
 
     uploadFile(e) {
-      console.log('여긴 editor.vue-----')
-      console.log(e.target.files)
       const files = e.target.files
       const file = files[0]
       const maxSize = 5 * 1024 * 1024
@@ -127,7 +127,29 @@ export default {
     //   }
     //   this.$emit('exportContent', returnData)
     // 
-    insertImg() {
+    insertImg(e) {
+      console.log(e)
+
+      const files = e.target.files
+      const file = files[0]
+      const maxSize = 5 * 1024 * 1024
+      const fileSize = file.size
+      if(fileSize > maxSize) {
+        alert('첨부파일은 5MB 이내로 등록 가능합니다.')
+        e.target.value = ''
+        return
+      }
+      this.exportFile = files
+      if(files && file){
+        const reader = new FileReader()
+        reader.onload = readerEvt => {
+          const binaryString = readerEvt.target.result
+          this.image = btoa(binaryString)
+          this.btnClick('insertImage')
+        }
+        reader.readAsBinaryString(file)
+      }
+
       const obj = {
         ele: "insertImage"
       }
@@ -160,6 +182,11 @@ export default {
 body {
   font-family: sans-serif;
 }
+
+#content {
+  outline: none;
+}
+
 .main-content {
   top: 50%;
   left: 50%;

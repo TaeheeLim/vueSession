@@ -22,8 +22,6 @@ public class BoardDTO {
     private MemberDTO member;
     private String boardCn;
     private LocalDateTime boardDate;
-    private int likeNum;
-    private int reportNum;
     private String delAt;
     private CodeDetailDto codeDetail;
     private String fileAt;
@@ -34,8 +32,6 @@ public class BoardDTO {
                 .member(member.dtoToEntity())
                 .boardCn(boardCn)
                 .boardDate(boardDate)
-                .likeNum(likeNum)
-                .reportNum(reportNum)
                 .delAt(delAt)
                 .codeDetail(codeDetail.dtoToEntity())
                 .fileAt(fileAt)
