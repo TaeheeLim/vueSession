@@ -7,7 +7,13 @@
         <span :class="classData[i - 1]" :id="`text-${i - 1}`" class="user-text">
           {{ enterText[i - 1] }}</span
         >
-        <span class="copy" v-if="printToken && j === tokenPrintIndex" @click="copyToken"> [copy]</span>
+        <span
+          class="copy"
+          v-if="printToken && j === tokenPrintIndex"
+          @click="copyToken"
+        >
+          [copy]</span
+        >
       </div>
       <div class="userInput">
         {{ rootText }}
@@ -29,25 +35,17 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
 import signHelp from "@/assets/signHelp.js";
 
 export default {
   name: "Terminal",
-  computed: {
-    ...mapState({
-      loginInfo: (state) => state.sign.loginInfo,
-      signInfo: (state) => state.sign.signInfo,
-      findInfo: (state) => state.sign.signInfo,
-    }),
-  },
+  computed: {},
   updated() {
     // this.copyToken();
 
-    if(this.printToken){
-        this.tokenPrintIndex = this.consoleText.length -1 ; 
+    if (this.printToken) {
+      this.tokenPrintIndex = this.consoleText.length - 1;
     }
-
   },
   mounted() {},
   components: {},
@@ -74,11 +72,6 @@ export default {
     inputText: ["regex", "isExistId"],
   },
   methods: {
-    ...mapMutations({
-      login: "sign/login",
-      sign: "sign/sign",
-      find: "sign/find",
-    }),
     isExistId() {
       let header = null;
 
@@ -407,16 +400,14 @@ export default {
     },
     loginAccess() {
       this.addLine(`(login console) > `, `Loading...`, "com");
-      let header = null;
       let loginInfo = {
-        access: "login",
-        data: {
-          memId: this.inputData[1],
-          memPass: this.inputData[2],
-        },
+        memId: this.inputData[1],
+        memPass: this.inputData[2],
       };
-      header
+
       loginInfo
+
+      sessionStorage.setItem("memId", this.inputData[1]);
 
       // 자바 로그인 로직 작성 후 주석 해제
       // this.axios
@@ -442,8 +433,7 @@ export default {
       //   });
       // this.baseMode();
 
-      this.$router.push("/projects")
-
+      this.$router.push("/projects");
     },
 
     signAccess() {
@@ -458,7 +448,6 @@ export default {
           memCelNum: this.inputData[6],
         },
       };
-
 
       let header = null;
 
@@ -553,9 +542,9 @@ export default {
     },
     copyToken() {
       if (this.printToken) {
-          navigator.clipboard.writeText(this.tokenText)
-        }
-        this.printToken = false;
+        navigator.clipboard.writeText(this.tokenText);
+      }
+      this.printToken = false;
     },
     focus() {
       document.getElementById("inputBox").focus();
