@@ -1,109 +1,109 @@
 <template>
-<div class="main-container">
-  <div v-if="showAddForm" class="bg-container">
-    <div class="white-container">
-      <div class="color-picker-wrap">
-        <input
-          class="create-input"
-          v-model="inputBadge"
-          type="text"
-          placeholder="badge"
-          id="inputBadge"
-        />
-        <div class="vertical-wrap">
-          <label
-            id="pickColor"
-            for="color"
-            :style="{ background: pickColor }"
-          ></label>
-          <input id="color" type="color" v-model="pickColor" />
-          <CalendarIcon
-            id="inputDate"
-            class="icons calendar"
-            @click="showCalendar()"
+  <div class="main-container">
+    <div v-if="showAddForm" class="bg-container">
+      <div class="white-container">
+        <div class="color-picker-wrap">
+          <input
+            class="create-input"
+            v-model="inputBadge"
+            type="text"
+            placeholder="badge"
+            id="inputBadge"
           />
-        </div>
-        <vue-cal
-          locale="ko"
-          class="vuecal--date-picker"
-          xsmall
-          hide-view-selector
-          :time="false"
-          :transitions="false"
-          active-view="month"
-          :disable-views="['years,week,days']"
-          style="width: 210px; height: 230px"
-          @cell-click="pickDate($event)"
-          @dblclick="showCal = false"
-          v-if="showCal"
-        >
-        </vue-cal>
-      </div>
-
-      <textarea
-        class="create-input input-content"
-        v-model="inputContent"
-        type="text"
-        placeholder="content"
-        id="inputContent"
-      />
-      <div class="button-zone">
-        <PencilAltIcon
-          @click="addCard(addColumnIndex)"
-          class="icons btn create-btn"
-        />
-        <ReplyIcon @click="closeAddForm()" class="icons btn return-btn" />
-      </div>
-    </div>
-  </div>
-   <Container
-    group-name="cols"
-    tag="div"
-    orientation="horizontal"
-    @drop="onColumnDrop($event)"
-  >
-    <div
-      class="kanbanContainer"
-      v-for="(column, index) in kanban.columns"
-      :key="index"
-    >
-      <div>
-        <div class="kanban-title">
-          <span class="text-lg">{{ column.name }} </span>
-          <DocumentAddIcon class="icons" @click="beforeShowAddForm(index)" />
-        </div>
-        <Draggable class="kanban-column">
-          <Container
-            orientation="vertical"
-            group-name="col-items"
-            :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items'"
-            :get-child-payload="getCardPayload(column.id)"
-            :drop-placeholder="{
-              className: `drop-placeholder`,
-              animationDuration: '300',
-              showOnTop: true,
-            }"
-            :dragClass="`cardGhostDrag`"
-            :dropClass="`cardGhostDrop`"
-            @drop="(e) => onCardDrop(column.id, e)"
-          >
-            <KanbanItem
-              v-for="(item, cardIndex) in column.cards"
-              :key="item.id"
-              :columnIndex="index"
-              :cardIndex="cardIndex"
-              :item="item"
+          <div class="vertical-wrap">
+            <label
+              id="pickColor"
+              for="color"
+              :style="{ background: pickColor }"
+            ></label>
+            <input id="color" type="color" v-model="pickColor" />
+            <CalendarIcon
+              id="inputDate"
+              class="icons calendar"
+              @click="showCalendar()"
             />
-          </Container>
-        </Draggable>
+          </div>
+          <vue-cal
+            locale="ko"
+            class="vuecal--date-picker"
+            xsmall
+            hide-view-selector
+            :time="false"
+            :transitions="false"
+            active-view="month"
+            :disable-views="['years,week,days']"
+            style="width: 210px; height: 230px"
+            @cell-click="pickDate($event)"
+            @dblclick="showCalendar()"
+            v-if="showCal"
+          >
+          </vue-cal>
+        </div>
+
+        <textarea
+          class="create-input input-content"
+          v-model="inputContent"
+          type="text"
+          placeholder="content"
+          id="inputContent"
+        />
+        <div class="button-zone">
+          <PencilAltIcon
+            @click="addCard(addColumnIndex)"
+            class="icons btn create-btn"
+          />
+          <ReplyIcon @click="closeAddForm()" class="icons btn return-btn" />
+        </div>
       </div>
     </div>
-  </Container>
-</div>
+    <Container
+      group-name="cols"
+      tag="div"
+      orientation="horizontal"
+      @drop="onColumnDrop($event)"
+    >
+      <div
+        class="kanbanContainer"
+        v-for="(column, index) in kanban.columns"
+        :key="index"
+      >
+        <div>
+          <div class="kanban-title">
+            <span class="text-lg">{{ column.name }} </span>
+            <DocumentAddIcon class="icons" @click="beforeShowAddForm(index)" />
+          </div>
+          <Draggable class="kanban-column">
+            <Container
+              orientation="vertical"
+              group-name="col-items"
+              :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items'"
+              :get-child-payload="getCardPayload(column.id)"
+              :drop-placeholder="{
+                className: `drop-placeholder`,
+                animationDuration: '300',
+                showOnTop: true,
+              }"
+              :dragClass="`cardGhostDrag`"
+              :dropClass="`cardGhostDrop`"
+              @drop="(e) => onCardDrop(column.id, e)"
+            >
+              <KanbanItem
+                v-for="(item, cardIndex) in column.cards"
+                :key="item.id"
+                :columnIndex="index"
+                :cardIndex="cardIndex"
+                :item="item"
+              />
+            </Container>
+          </Draggable>
+        </div>
+      </div>
+    </Container>
+  </div>
 </template>
 
 <script>
-import { mapMutations , mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import moment from "moment";
 import KanbanItem from "./KanbanItem.vue";
 import VueCal from "vue-cal";
@@ -131,8 +131,8 @@ export default {
   },
   computed: {
     ...mapState({
-      showAddForm: state => state.kanban.showAddForm,
-      showCal: state => state.kanban.showCal,
+      showAddForm: (state) => state.kanban.showAddForm,
+      showCal: (state) => state.kanban.showCal,
     }),
   },
   data() {
@@ -151,7 +151,7 @@ export default {
       add: "kanban/add",
       showAdd: "kanban/showAdd",
       closeAdd: "kanban/closeAdd",
-      showCalendar: "kanban/showCalendar"
+      showCalendar: "kanban/showCalendar",
     }),
     pickDate(data) {
       let today = moment().format("YYYY-MM-DD HH:mm");
@@ -256,7 +256,7 @@ export default {
       payload.push(this.pickColor);
       payload.push(this.inputDate);
       payload.push(this.inputContent);
-      payload.push(this.$store.state.sign.loginInfo.id);
+      payload.push(sessionStorage.getItem("memId"));
 
       this.add(payload);
       this.showAddForm = false;
@@ -340,6 +340,10 @@ export default {
   border-radius: 15px;
 }
 
+.vuecal__cell--selected {
+  background: none;
+}
+
 .smooth-dnd-container.horizontal {
   display: flex !important;
   width: 100vw;
@@ -351,6 +355,7 @@ export default {
   display: flex;
   padding: 5px;
   width: 18%;
+  color: white;
 }
 
 .kanbanContainer > * {
