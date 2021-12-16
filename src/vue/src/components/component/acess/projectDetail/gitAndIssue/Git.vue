@@ -21,8 +21,10 @@ import {mapActions} from 'vuex'
 import {ref} from 'vue';
 import Tree from 'vue3-tree'
 import "vue3-tree/dist/style.css";
+import moment from "moment" // eslint-disable-line no-unused-vars
 
-const key = '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';
+
+const key = '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';
 
 export default {
   components: {
@@ -39,6 +41,7 @@ export default {
     ...mapMutations({
       setDecodeData: 'git/setDecodeData',
       setSelectedFileName: 'git/setSelectedFileName',
+      setIssueDate: 'git/setIssueDate',
     }),
     ...mapActions({
       getRepoList: 'git/getRepoList',
@@ -117,6 +120,22 @@ export default {
             }// for i of
           })
     },
+    getIssueList(){
+      const url = '/gitAndIssue/getAllList'
+
+      this.axios.get( url, {
+        params : {
+          prjctIdx : 1,
+        }
+      })
+      .then( (r)=>{
+        // 배열에다 =써야함
+        for(let i = 0; i < r.data.length; i++){
+          r.data[i].issueDate = r.data[i].issueDate.replace('T', ' ')
+        }
+        this.setIssueDate(r.data)
+      })
+    },
 
     decodeData() {
       this.setDecodeData(decodeURIComponent(escape(window.atob(this.encodedData))))
@@ -125,26 +144,13 @@ export default {
 
   mounted() {
     this.getFileList();
+    this.getIssueList();
   },
 }
 
 </script>
 
 <style scoped>
-/*
-.tree-row-item {
-    display: flex;
-    align-items: center;
-    position: relative;
-    padding: 0px 10px
-}
-    margin-top: 4px;
-    height: 15px;
-
-    vue3-tree/dist/style.css 로 가서 변경해줘야 함
-
-
-*/
 .Repo > h1:nth-child(1) {
   margin-bottom: 3px;
   color: #eee;

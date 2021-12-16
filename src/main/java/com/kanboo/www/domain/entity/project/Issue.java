@@ -44,4 +44,12 @@ public class Issue {
                 .issueState(issueState)
                 .build();
     }
+
+    public void addProject(Project project) {
+        this.project = project;
+    }
+
+    public void addMember(Member member) {
+        this.member = member;
+    }
 }

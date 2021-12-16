@@ -18,4 +18,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     int countByMemId(String memId);
 
     Member findByMemToken(String memToken);
+
+    Member findByMemIdx(Long memIdx);
 }

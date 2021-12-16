@@ -84,8 +84,10 @@ const git = {
                     state:'수정중',
                 },
             ],
+            realIssue : '',
             decodeData : '',
             selectedFileName : '',
+            insertedContent : '',
         }
     },
     mutations :{
@@ -100,22 +102,33 @@ const git = {
         setSelectedFileName(state, data){
             state.selectedFileName = data
         },
-
+        setInsertedContent(state, data){
+            state.insertedContent = data
+            console.log(state.insertedContent)
+        },
+        setIssueDate(state, data){
+            // console.log(data)
+            state.realIssue = data
+        },
         addIssueData(state){
-            state.origin.fileName = state.selectedFileName
-            state.issues.unshift(state.origin)
-            state.origin = {
-                fileName: '',
-                content : '',
-                nickname : '윤주원',
-                startDate : moment().format('YYYY-MM-DD HH:mm'),
-                currentTime : '오늘',
-                state : '버그',
-            }
-        }
+            console.log(state.origin.content)
+            console.log(state.selectedFileName)
+            // state.origin.fileName = state.selectedFileName
+            // state.issues.unshift(state.origin)
+            // state.origin = {
+            //     fileName: '',
+            //     content : '',
+            //     nickname : '윤주원',
+            //     startDate : moment().format('YYYY-MM-DD HH:mm'),
+            //     currentTime : '오늘',
+            //     state : '버그',
+            // }
+        },
+        
     },
 
     actions:{
+   
     },
 
 }

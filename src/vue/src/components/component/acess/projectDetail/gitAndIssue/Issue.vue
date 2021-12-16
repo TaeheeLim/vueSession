@@ -2,16 +2,16 @@
   <div class="issueDiv">
     <h1>Issue</h1>
     <div class="addIssue">
-      <input type="text" v-model="this.$store.state.git.selectedFileName" readonly size="8">
-      <input type="text" v-model="this.$store.state.git.origin.content" size="30">
-      <input type="button"  @click="addIssueData" value="등록">
+      <input type="text" class="issueTitle" v-model="this.$store.state.git.selectedFileName" readonly size="8">
+      <input type="text" class="issueText" size="30">
+      <input type="button"  @click=" useAxiosGetData" value="등록">
     </div>
     <hr>
     <div class="Issues">
-      <div class="getIssue" v-for="a in $store.state.git.issues" :key="a">
-        {{a.fileName}} &nbsp; {{a.content}} <br>
-        {{a.nickname}}&nbsp;{{a.startDate}}&nbsp;{{a.currentTime}}
-        <select v-model="a.state">
+      <div class="getIssue" v-for="a in $store.state.git.realIssue" :key="a">
+        {{a.fileName}} &nbsp; {{a.issueCn}} <br>
+        {{a.member.memNick}}&nbsp;{{a.issueDate}}&nbsp;{{a.currentTime}}
+        <select v-model="a.issueState">
           <option>버그</option>
           <option>수정중</option>
           <option>완료</option>
@@ -23,16 +23,48 @@
 
 <script>
 import { mapMutations } from 'vuex'
+import moment from "moment"
 
 export default {
   data() {
     return {
     }
   },
+  mounted() {
+  },
   methods : {
     ...mapMutations({
       addIssueData : 'git/addIssueData',
-    })
+      setInsertedContent : 'git/setInsertedContent',
+      getFileList : 'git/getFileList',
+    }),
+    useAxiosGetData(){
+      let issueText = document.querySelector('.issueText').value;
+      // let issueTitle = document.querySelector('.issueTitle').value;
+      
+      if( issueText === '' || issueText === null) return
+
+      const url = '/gitAndIssue/insert'
+
+      this.axios.post( url, null, {
+        params: {
+          issueIdx: null,
+          "project.prjctIdx": 1,
+          "member.memIdx" : 1,
+          issueCn: issueText,
+          issueDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+          issueState: '버그'
+        }
+      })
+      .then( (r)=>{
+        console.log(r.data)
+        this.$store.state.git.realIssue.unshift(r.data)
+        this.getFileList(),
+        document.querySelector('.issueText').value = ''
+        }
+      )
+      .catch()
+    },
   },
 }
 </script>
