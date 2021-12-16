@@ -39,13 +39,14 @@ export default {
   },
   data() {
     return {
-      eventsCssClasses: ['common', 'individual', 'notice', 'Emergency', 'vacation', 'note', 'gantt'],
+      eventsCssClasses: ['common', 'individual', 'notice', 'emergency', 'vacation', 'note', 'gantt'],
       showEventCreationDialog: false,
       changeTheme : false,
       changeLang : false,
     }
   },
   mounted() {
+    this.callCalendarData()
   },
   methods: {
     ...mapMutations({
@@ -90,6 +91,19 @@ export default {
       }
       this.$store.state.scheduler.data = copy;
     },
+    callCalendarData(){
+      const url = '/scheduler/getAllSchedules'
+      this.axios.get( url, {
+        params : {
+          'project.prjctIdx' : 1,
+          'member.memIdx' : 1,
+        }
+      })
+      .then( (r)=>{
+        console.log(r)
+      })
+    },
+
   },
 }
 </script>

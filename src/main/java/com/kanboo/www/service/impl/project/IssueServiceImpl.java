@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -53,6 +54,15 @@ public class IssueServiceImpl implements IssueService {
 			returnIssues.add(  issue.entityToDto() );
 		}
 		return returnIssues;
+	}
+
+	@Override
+	public IssueDTO updateIssue(IssueDTO issueDTO, String selectedIndex) {
+		Issue byIssueIdx = issueRepository.findByIssueIdx(issueDTO.getIssueIdx());
+		IssueDTO dto = byIssueIdx.entityToDto();
+		dto.setIssueState(selectedIndex);
+		Issue issue = issueRepository.save(dto.dtoToEntity());
+		return issue.entityToDto();
 	}
 
 }

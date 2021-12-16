@@ -24,7 +24,7 @@ import "vue3-tree/dist/style.css";
 import moment from "moment" // eslint-disable-line no-unused-vars
 
 
-const key = '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';
+const key = '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';
 
 export default {
   components: {
@@ -35,6 +35,7 @@ export default {
       data: ref([]),
       searchText: ref(''),
       encodedData: '',
+      errorFileNames : ['package-lock.json', '.DS_Store'],
     }
   },
   methods: {
@@ -42,6 +43,7 @@ export default {
       setDecodeData: 'git/setDecodeData',
       setSelectedFileName: 'git/setSelectedFileName',
       setIssueDate: 'git/setIssueDate',
+      setSelectedFileSize : 'git/setSelectedFileSize'
     }),
     ...mapActions({
       getRepoList: 'git/getRepoList',
@@ -52,6 +54,7 @@ export default {
         this.sendContent(e)
         return
       }
+
       this.axios.get(`${e.url}`, {
         headers: {
           Authorization: `token ${key}`
@@ -59,6 +62,10 @@ export default {
       })
           .then(res => {
             for (let i of res.data) {
+            
+              if(i.name === 'package-lock.json') {continue}
+              if(i.name === '.DS_Store') {continue}  
+              
               const a = {
                 idx: i.sha,
                 label: i.name,
@@ -76,6 +83,17 @@ export default {
             }
           })
     },
+    
+    filterErrorFiles(file){
+      //비동기라서 작동이 잘안됨
+      let flag = false;
+      for(let i = 0; i < this.errorFileNames.length; i++){
+        console.log(this.errorFileNames[i])
+        if(this.errorFileNames[i] === file){
+          return flag
+        }
+      }
+    },
 
     sendContent(e) {
       this.axios.get(`${e.url}`, {
@@ -83,13 +101,13 @@ export default {
           Authorization: `token ${key}`
         }
       })
-          .then(res => {
-            this.encodedData = res.data.content
-            this.decodeData()
-            this.setSelectedFileName(res.data.name)
-          })
+      .then(res => {
+        this.encodedData = res.data.content
+        this.decodeData()
+        this.setSelectedFileName(res.data.name)
+        this.setSelectedFileSize(res.data.size)
+      })
     },
-
     getFileList() {
       this.axios.get('https://api.github.com/repos/Juwon-Yun/kanboo_my_work/contents', {
         headers: {
@@ -100,10 +118,9 @@ export default {
             for (let i of res.data) {
 
               // 403 error 방지
-              if (i.name === 'package-lock.json') {
-                continue
-              }
-
+              if(i.name === 'package-lock.json') continue
+              if(i.name === '.DS_Store') continue  
+                
               const array = {
                 idx: i.sha,
                 label: i.name,
@@ -129,7 +146,6 @@ export default {
         }
       })
       .then( (r)=>{
-        // 배열에다 =써야함
         for(let i = 0; i < r.data.length; i++){
           r.data[i].issueDate = r.data[i].issueDate.replace('T', ' ')
         }
@@ -154,14 +170,16 @@ export default {
 .Repo > h1:nth-child(1) {
   margin-bottom: 3px;
   color: #eee;
+  font-size: 21px;
 }
 
 .nodeTree {
-  height: 20vh;
+  height: 21vh;
   background-color: #2C2F3B;
   overflow: scroll;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  border-radius: 5px;
 }
 
 .nodeTree::-webkit-scrollbar {

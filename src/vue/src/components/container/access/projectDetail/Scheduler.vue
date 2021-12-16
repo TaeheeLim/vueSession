@@ -191,6 +191,7 @@ export default {
   display: flex;
   justify-content: space-between;
   padding : 40px;
+  padding-right: 6vw;
 }
 .leftDiv{
   width: 15vw;

@@ -53,7 +53,7 @@
   /* 보라 */
   .vuecal__event.notice {background-color: rgba(195, 62, 212, 0.9);border: 1px solid rgb(195, 62, 212);color: #fff;}
   /* 빨강 */
-  .vuecal__event.Emergency {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
+  .vuecal__event.emergency {background-color: rgba(255, 102, 102, 0.9);border: 1px solid rgb(235, 82, 82);color: #fff;}
   /* 파랑 */
   .vuecal__event.vacation {background-color: rgba(77, 122, 248, 0.9);border: 1px solid rgb(77, 122, 248);color: #fff;}
   /* 회색 */

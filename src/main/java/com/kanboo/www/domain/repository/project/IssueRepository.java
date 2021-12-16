@@ -9,5 +9,5 @@ import java.util.Optional;
 
 @Repository
 public interface IssueRepository extends JpaRepository<Issue, Long>, IssueDslRepository {
-
+	Issue findByIssueIdx(Long Idx);
 }

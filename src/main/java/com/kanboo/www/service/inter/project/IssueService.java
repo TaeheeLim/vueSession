@@ -10,4 +10,5 @@ public interface IssueService {
 
 	List<IssueDTO> IssueHandler(Long projectIdx);
 
+	IssueDTO updateIssue(IssueDTO issueDTO, String selectedIndex);
 }

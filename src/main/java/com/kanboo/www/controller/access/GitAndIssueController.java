@@ -21,7 +21,7 @@ public class GitAndIssueController {
 			LoggerFactory.getLogger(GitAndIssueController.class);
 
 	@PostMapping(value="/insert")
-	public IssueDTO insertIssues(IssueDTO issueDTO){
+	public IssueDTO insertIssue(IssueDTO issueDTO){
 		return issueService.insertIssue(issueDTO);
 	}
 
@@ -30,4 +30,8 @@ public class GitAndIssueController {
 		return issueService.IssueHandler(project.getPrjctIdx());
 	}
 
+	@PostMapping(value = "/updateIssue")
+	public IssueDTO updateIssue(IssueDTO issueDTO, String selectedIndex){
+		return	issueService.updateIssue(issueDTO, selectedIndex);
+	}
 }

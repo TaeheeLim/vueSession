@@ -18,8 +18,8 @@
       <label for="notice">공지</label>
     </li>
     <li>
-      <input type="checkbox" class="filter-wrap" id="Emergency" @click="selectedCheckbox">
-      <label for="Emergency">긴급</label>
+      <input type="checkbox" class="filter-wrap" id="emergency" @click="selectedCheckbox">
+      <label for="emergency">긴급</label>
     </li>
     <li>
       <input type="checkbox" class="filter-wrap" id="vacation" @click="selectedCheckbox">

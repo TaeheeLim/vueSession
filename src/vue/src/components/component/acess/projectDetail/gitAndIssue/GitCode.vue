@@ -7,7 +7,13 @@
       <h1>{{this.$store.state.git.selectedFileName}}</h1>
     </div>
 
-    <div class="fileContent" >
+
+    <div class="fileContent">
+    <div v-if="this.$store.state.git.selectedFileSize !== ''" >
+      <h1 class="lineNum-fileSize">
+        {{this.$store.state.git.maxLineNum}} {{this.$store.state.git.selectedFileSize}}
+      </h1>
+    </div>
       <prism-editor
           class="my-editor"
           v-model="this.$store.state.git.decodeData"
@@ -41,20 +47,28 @@ export default {
     }
   },
   methods: {
+    ...mapMutations({
+      getDecodeData : 'git/getDecodeData',
+      setMaxLineNum : 'git/setMaxLineNum',
+    }),
     highlighter(code){
       return highlight(code, languages.js)
     },
-
-    ...mapMutations({
-      getDecodeData : 'git/getDecodeData',
-    }),
     input_S_decodeData(){
-      console.log(this.s_decodeData)
       return this.s_decodeData = this.$store.state.git.decodeData
+    },
+    callMaxLineNum(){
+      let line = document.querySelectorAll('.prism-editor__line-number.token.comment')
+      this.setMaxLineNum(line.length)
     },
   },
   mounted() {
     this.input_S_decodeData()
+  },
+  updated(){
+    this.callMaxLineNum()
+  },
+  watch : {
   },
 }
 </script>
@@ -67,6 +81,7 @@ export default {
 .gitCode > div > h1{
   margin-bottom: 3px;
   color : #eee;
+  font-size: 21px;
 }
 .fileContent{
   height: 92.5%;
@@ -99,5 +114,9 @@ export default {
 .ssh-pre{
   margin-top: 0px;
 }
-
+.lineNum-fileSize{
+  color : #eee;
+  font-size : 16px;
+  padding : 8px;
+}
 </style>

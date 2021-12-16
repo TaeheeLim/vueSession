@@ -89,7 +89,7 @@ const scheduler = {
           end: '2021-12-09 15:15',
           title: '테스트일정 제목',
           content: '테스트일정 내용',
-          class: 'Emergency',
+          class: 'emergency',
           deletable: true,
           resizable: true,
           draggable: true,
@@ -128,7 +128,7 @@ const scheduler = {
           end: '2021-12-09 15:15',
           title: '테스트일정 제목',
           content: '테스트일정 내용',
-          class: 'Emergency',
+          class: 'emergency',
           deletable: true,
           resizable: true,
           draggable: true,
@@ -167,7 +167,7 @@ const scheduler = {
           end: '2021-12-10 15:15',
           title: '테스트일정 제목',
           content: '테스트일정 내용',
-          class: 'Emergency',
+          class: 'emergency',
           deletable: true,
           resizable: true,
           draggable: true,
@@ -245,7 +245,7 @@ const scheduler = {
           end: '2021-12-16 15:15',
           title: '테스트일정 제목',
           content: '테스트일정 내용',
-          class: 'Emergency',
+          class: 'emergency',
           deletable: true,
           resizable: true,
           draggable: true,
@@ -254,7 +254,7 @@ const scheduler = {
         },
       ],
       copiedData : [{}],
-
+      realData :[],
       ganttData : [
         {
           // 간트 일정 별 색상을 따로 불러올 때 지정함 0~29% gray, 30%~59% blue, 60%~100% green
@@ -357,7 +357,7 @@ const scheduler = {
           state.clickedValue = 'notice'
           break;
         case '긴급':
-          state.clickedValue = 'Emergency'
+          state.clickedValue = 'emergency'
           break;
         case '휴가':
           state.clickedValue = 'vacation'
