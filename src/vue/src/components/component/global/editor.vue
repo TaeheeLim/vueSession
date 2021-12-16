@@ -35,7 +35,7 @@ export default {
 
   data() {
     return {
-      exportFile: '',
+      exportFile: "",
       exportC: '',
       content: '',
       image: '',
@@ -83,10 +83,13 @@ export default {
         const url = prompt('Enter thr link here: ', 'http://')
         document.execCommand(item.ele, false, url);
       } else if(item.ele === 'insertImage') {
-        console.log(item.ele)
-        const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${this.image}" alt="img"/>`
+        if(item.ele !== "insertImage") {
+          return
+        }
+        const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${item.img}" alt="img"/>`
+        document.querySelector("#content").focus()
         document.execCommand('insertHTML', false, img)
-      }else if(item.ele === 'foreColor') {
+      }else if(item === 'foreColor') {
         document.execCommand('ForeColor', false, this.color)
       } else {
         document.execCommand(item.ele, false, null)
@@ -94,8 +97,6 @@ export default {
     },
 
     uploadFile(e) {
-      console.log('여긴 editor.vue-----')
-      console.log(e.target.files)
       const files = e.target.files
       const file = files[0]
       const maxSize = 5 * 1024 * 1024
@@ -103,18 +104,8 @@ export default {
       if(fileSize > maxSize) {
         alert('첨부파일은 5MB 이내로 등록 가능합니다.')
         e.target.value = ''
-        return
       }
-      this.exportFile = files
-      if(files && file){
-        const reader = new FileReader()
-        reader.onload = readerEvt => {
-          const binaryString = readerEvt.target.result
-          this.image = btoa(binaryString)
-          this.btnClick('insertImage')
-        }
-        reader.readAsBinaryString(file)
-      }
+      this.exportFile = files[0]
     },
     getText() {
       this.content = document.querySelector('#content').innerHTML
@@ -127,11 +118,30 @@ export default {
     //   }
     //   this.$emit('exportContent', returnData)
     // 
-    insertImg() {
-      const obj = {
-        ele: "insertImage"
+    insertImg(e) {
+      const files = e.currentTarget.files
+      const file = files[0]
+      const maxSize = 5 * 1024 * 1024
+      const fileSize = file.size
+      if(fileSize > maxSize) {
+        alert('첨부파일은 5MB 이내로 등록 가능합니다.')
+        e.target.value = ''
+        return
       }
-      this.btnClick(obj)
+      const obj = {
+        ele: "insertImage",
+        img: ""
+      }
+      this.exportFile = files
+      if(files && file) {
+        const reader = new FileReader()
+        reader.onload = readerEvt => {
+          const binaryString = readerEvt.target.result
+          obj.img = btoa(binaryString)
+          this.btnClick(obj)
+        }
+        reader.readAsBinaryString(file)
+      }
     }
   },
   watch: {
@@ -160,6 +170,11 @@ export default {
 body {
   font-family: sans-serif;
 }
+
+#content {
+  outline: none;
+}
+
 .main-content {
   top: 50%;
   left: 50%;

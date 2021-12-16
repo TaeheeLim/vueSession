@@ -227,8 +227,6 @@ const kanban = {
 
       let day = startDay.from(endDay).split(" ");
 
-      console.log(startDay, endDay);
-
       if (day[day.length - 1] === "ago") {
         if (day[1] === "day" || day[1] === "days") {
           if (day[0] === "a" || day[0] === "an") {
@@ -262,6 +260,9 @@ const kanban = {
         showCardInMenu: false,
         user_name: userId,
       });
+
+      state.showAddForm = false;
+
     },
     // updateCard(state, payload) {},
   },

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data @Builder
@@ -16,10 +17,11 @@ public class ProjectDTO {
 
     private Long prjctIdx;
     private String prjctNm;
-    private LocalDateTime prjctStartDate;
-    private LocalDateTime prjctEndDate;
+    private LocalDate prjctStartDate;
+    private LocalDate prjctEndDate;
     private int prjctProgress;
     private String prjctDelAt;
+    private String prjctComplAt;
 
     public Project dtoToEntity() {
         return Project.builder()
@@ -29,6 +31,7 @@ public class ProjectDTO {
                 .prjctEndDate(prjctEndDate)
                 .prjctProgress(prjctProgress)
                 .prjctDelAt(prjctDelAt)
+                .prjctComplAt(prjctComplAt)
                 .build();
     }
 }

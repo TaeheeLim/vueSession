@@ -1,14 +1,8 @@
 const sign = {
   namespaced: true,
-  state: {
-    
-  },
-  mutations: {
+  state: {},
+  mutations: {},
+  actions: {},
+};
 
-  },
-  actions: {
-    
-  }
-}
-
-export default sign
+export default sign;

@@ -7,10 +7,13 @@ import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.service.inter.member.MemberService;
 import com.kanboo.www.util.CreateKTag;
 import com.kanboo.www.util.CreateTempPw;
+import com.kanboo.www.util.CryptoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,9 +26,17 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public boolean loginHandler(MemberDTO memberDTO) {
 
-        Member member = memberRepository
-                .findByMemIdAndMemPass(memberDTO.getMemId(), memberDTO.getMemPass());
+        Member member = null;
 
+        try {
+            member = memberRepository.findByMemIdAndMemPass(
+                    memberDTO.getMemId(),
+                    CryptoUtil.encryptSha512(memberDTO.getMemPass())
+            );
+
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            System.out.println(e.getMessage());
+        }
         return member != null;
     }
 
@@ -41,6 +52,15 @@ public class MemberServiceImpl implements MemberService {
         do {
             toKen = UUID.randomUUID().toString();
         } while (isExistToken(toKen) > 0);
+
+        String password = memberDTO.getMemPass();
+
+        try {
+            password = CryptoUtil.encryptSha512(password);
+            memberDTO.setMemPass(password);
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            System.out.println(e.getMessage());
+        }
 
         memberDTO.setRole(new RoleDto(1L, "ROLE_MEMBER"));
 

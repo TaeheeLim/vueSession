@@ -111,5 +111,6 @@ export default {
   overflow: hidden;
   color : #eee;
   margin-top: 5px;
+  box-shadow: 5px 5px 5px 5px white;
 }
 </style>

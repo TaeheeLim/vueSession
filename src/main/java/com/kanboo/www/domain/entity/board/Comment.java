@@ -30,7 +30,6 @@ public class Comment {
     private Member member;
 
     private String answerCn;
-    private int answerReportNum;
     private LocalDateTime answerDate;
     private String answerDelAt;
 
@@ -40,7 +39,6 @@ public class Comment {
                 .board(board.entityToDto())
                 .member(member.entityToDto())
                 .answerCn(answerCn)
-                .answerReportNum(answerReportNum)
                 .answerDate(answerDate)
                 .answerDelAt(answerDelAt)
                 .build();
