@@ -18,6 +18,7 @@ const community = {
     pushToBoardList(state, payload){
       payload["열렸니"] = false
       payload["수정했니"] = false
+      payload["commentList"] = []
       payload.isModify = true
       state.boardList.push(payload)
     },
@@ -109,8 +110,9 @@ const community = {
       //   "key" : key
       // }
 
-      axios.get('/BoardList.json')
+      axios.get('/boardTest')
                 .then(e => {
+                  console.log(e)
                   for(let item of e.data){
                     context.commit('pushToBoardList', item)
                   } 
@@ -119,9 +121,9 @@ const community = {
     },
 
     getBoardNum(context){
-      axios.get('/articleNum.json')
+      axios.get('/getArticleNum')
                 .then(e => {
-                context.commit('setNumberOfArticle', e.data.articleNum)
+                    context.commit('setNumberOfArticle', e.data)
                 })
     },
     //원래는 이 부분에서 현재보여지는 게시글의 개수인 articleOnView를 같이 넘김
