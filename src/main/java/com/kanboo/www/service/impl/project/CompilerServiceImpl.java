@@ -26,6 +26,7 @@ public class CompilerServiceImpl implements CompilerService {
         Map<String, String> map = new HashMap<>();
         map.put("filePath", "/src/");
         map.put("fileName", "Main");
+        map.put("fileExtension", ".java");
         map.put("fileDetail", code);
         map.put("project", "demo/project");
         boolean saveResult = saveCompileFile.saveFile(map);

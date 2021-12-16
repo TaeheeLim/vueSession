@@ -13,13 +13,13 @@ import java.util.Map;
 
 @Service
 public class SaveCompileFile {
-    private static final String rootPath = "./compileFiles/";
+    private static final String rootPath = "/Users/andaegeun/Desktop/kanboo/compileFiles/";
     private final Logger logger = LoggerFactory.getLogger(SaveCompileFile.class);
 
     public boolean saveFile(Map<String, String> map) {
 
         String path = map.get("filePath");
-        String fileName = map.get("fileName") + ".java";
+        String fileName = map.get("fileName") + map.get("fileExtension");
         String content = map.get("fileDetail");
         String projectName = map.get("project") + "/";
 

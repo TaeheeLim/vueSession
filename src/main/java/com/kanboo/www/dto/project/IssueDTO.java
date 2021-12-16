@@ -29,6 +29,7 @@ public class IssueDTO {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime issueDate;
     private String issueState;
+    private String issueGitFile;
 
     public Issue dtoToEntity() {
         return Issue.builder()
@@ -38,6 +39,7 @@ public class IssueDTO {
                 .issueCn(issueCn)
                 .issueDate(issueDate)
                 .issueState(issueState)
+                .issueGitFile(issueGitFile)
                 .build();
     }
 

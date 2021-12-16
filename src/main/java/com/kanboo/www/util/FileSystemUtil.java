@@ -14,7 +14,7 @@ public class FileSystemUtil {
     private final Logger logger = LoggerFactory.getLogger(FileSystemUtil.class);
 
     public boolean createFileOrDir(Map<String, String> map) {
-        String rootPath = map.get("rootPath") + "/";
+        String rootPath = "/Users/andaegeun/Desktop/kanboo" + map.get("rootPath") + "/";
         String projectName = map.get("project") + "/";
         String projectPath = map.get("path") + "/";
         String target = map.get("name");

@@ -42,6 +42,7 @@ public class Issue {
                 .issueCn(issueCn)
                 .issueDate(issueDate)
                 .issueState(issueState)
+                .issueGitFile(issueGitFile)
                 .build();
     }
 
