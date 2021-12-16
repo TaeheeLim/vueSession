@@ -32,7 +32,7 @@
           <div class="detail-item-progress">
             <div
               :style="{
-                background: detail.priority,
+                background: setColor(detail.priority),
                 width: `${detail.progress}%`,
               }"
               class="detail-item-progress-fill"
@@ -47,13 +47,13 @@
         <th>우선순위</th>
         <td>{{ detail.priority }}</td>
         <th>시작일</th>
-        <td>{{ detail.start }}</td>
+        <td>{{ openYear }}-{{ openMonth }}-{{ detail.start }}</td>
       </tr>
       <tr>
         <th>담장자</th>
         <td>{{ detail.memId }}</td>
         <th>마감임</th>
-        <td>{{ detail.end }}</td>
+        <td>{{ openYear }}-{{ openMonth }}-{{ detail.end }}</td>
       </tr>
       <tr>
         <th>설명</th>
@@ -68,62 +68,139 @@
     <table v-else-if="isUpdate" class="detail-table">
       <tr>
         <th>상태</th>
-        <td><input type="text" :value="`${detail.state}`"/></td>
+        <td>
+          <input
+            type="text"
+            :v-model="inputState"
+            :placeholder="inputState == '' ? detail.state : inputState"
+          />
+        </td>
         <th>진척도</th>
-        <td class="detail-progress">
-          <div class="detail-item-progress">
-            <div
-              :style="{
-                background: detail.priority,
-                width: `${detail.progress}%`,
-              }"
-              class="detail-item-progress-fill"
-            ></div>
-          </div>
-          <span class="detail-item-progress-percent">
-            <input type="text" :value="`${detail.progress}`" /></span>
+        <td>
+          <input
+            type="text"
+            :v-model="inputProgress"
+            :placeholder="inputProgress == '' ? detail.progress : inputProgress"
+          />
         </td>
       </tr>
       <tr>
         <th>우선순위</th>
-        <td><input type="text" :value="`${detail.priority}`" /></td>
+        <td class="select">
+          <span @click="showSelectBox">{{
+            inputPriority == "" ? detail.priority : inputPriority
+          }}</span>
+          <ul
+            @click="selectPriority"
+            class="select-list hide"
+            :class="{ show: isActive }"
+          >
+            <li>낮음</li>
+            <!-- #4caf50 -->
+            <li>보통</li>
+            <!-- #0091ff -->
+            <li>높음</li>
+            <!-- #ffbf00-->
+            <li>긴급</li>
+            <!--#ff6f00 -->
+            <li>즉시</li>
+            <!-- #f44336 -->
+          </ul>
+        </td>
         <th>시작일</th>
-        <td><input type="text" :value="`${detail.start}`"/></td>
+        <td @click="isPick(`start`)">
+          {{
+            inputStart == ""
+              ? `${openYear}-${openMonth}-${detail.start}`
+              : inputStart
+          }}
+        </td>
       </tr>
       <tr>
         <th>담장자</th>
-        <td><input type="text" :value="`${detail.memId}`"/></td>
-        <th>마감임</th>
-        <td><input type="text" :value="`${detail.end}`"/></td>
+        <td>{{ detail.memId }}</td>
+        <th>종료일</th>
+        <td @click="isPick(`end`)">
+          {{
+            inputEnd == ""
+              ? `${openYear}-${openMonth}-${detail.end}`
+              : inputEnd
+          }}
+        </td>
+      </tr>
+      <tr>
+        <th>제목</th>
+      </tr>
+      <tr>
+        <td colspan="4">
+          <input
+            type="text"
+            :v-model="inputTitle"
+            :placeholder="inputTitle == '' ? detail.title : inputTitle"
+          />
+        </td>
       </tr>
       <tr>
         <th>설명</th>
       </tr>
       <tr>
-        <td colspan="4"><input type="text" :value="`${detail.content}`"/></td>
+        <td colspan="4">
+          <input
+            type="text"
+            :v-model="inputContent"
+            :placeholder="inputContent == '' ? detail.content : inputContent"
+          />
+        </td>
       </tr>
     </table>
     <!-- 수정 모드 일때 (isUpdate == true) 보여질 Element 끝 -->
+    <vue-cal
+      locale="ko"
+      class="vuecal--date-picker"
+      xsmall
+      hide-view-selector
+      :time="false"
+      :transitions="true"
+      active-view="month"
+      :disable-views="['years', 'year', 'week', 'day']"
+      @cell-click="pickDate($event)"
+      v-if="showCal"
+    >
+    </vue-cal>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import VueCal from "vue-cal";
+import "vue-cal/dist/vuecal.css";
+import "vue-cal/dist/i18n/ko.js";
+import moment from "moment";
 
 export default {
   data() {
     return {
       isUpdate: false,
+      inputPriority: "",
       inputState: "",
       inputProgress: "",
-      inputPriority: "",
+      isActive: false,
+      showCal: false,
+      startOrEnd: "",
+      inputContent: "",
+      inputTitle: "",
       inputStart: "",
       inputEnd: "",
-      
     };
+  },
+  components: {
+    VueCal,
   },
   computed: mapState({
     detail: (state) => state.gantt.detail,
+    openYear: (state) => state.gantt.openYear,
+    openMonth: (state) => state.gantt.openMonth,
+    userId: () => sessionStorage.getItem("memId"),
   }),
   methods: {
     ...mapMutations({
@@ -135,11 +212,119 @@ export default {
     },
     completeModify() {
       this.isUpdate = true;
-      let payload = "";
+
+      let start,end;
+
+      if(this.inputStart !== ''){
+        start = this.inputStart.split("-");
+        payload.push({
+          start :{
+            year : start[0],
+            month : start[1]
+          }
+        })
+      }
+
+      if(this.inputEnd !== ''){
+        end = this.inputEnd.split("-");
+        payload.push({
+          end : {
+            year : end[0],
+            month : end[1],
+          }
+        })
+      }
+
+
+      let payload = [];
+
+      payload.push(
+        {
+        memId: this.userId,
+        title: this.inputTitle == "" ? this.detail.title : this.inputTitle,
+        content: this.inputContent == "" ? this.detail.content : this.inputContent,
+        start: this.inputStart == "" ? this.detail.start : start[2],
+        end: this.inputEnd == "" ? this.detail.end : end[2],
+        state: this.inputState == "" ? this.detail.state : this.inputState,
+        priority: this.inputPriority == "" ? this.detail.priority : this.inputPriority,
+        progress: this.inputProgress == "" ? this.detail.progress : this.inputProgress,
+      }
+      );
+
       this.update(payload);
     },
     cancelModify() {
       this.isUpdate = false;
+    },
+    pickDate(data) {
+      let today = moment().format("YYYY-MM-DD");
+      let nowTime = moment().format("HH:mm:ss");
+
+      let todayWithOutTime = moment().format("YYYY-MM-DD");
+      let selectDate = moment(data.format("YYYY-MM-DD"))._i;
+
+      let temp = `${selectDate} ${nowTime}`;
+
+      selectDate = moment(temp, "YYYY-MM-DD");
+
+      if (
+        selectDate.from(today).split(" ")[0] !== "in" &&
+        selectDate._i !== todayWithOutTime
+      ) {
+        let target = document.querySelector(
+          ".vuecal__cell--selected .vuecal__cell-content"
+        );
+        target.style.background = "red";
+        setTimeout(() => {
+          target.style.background = "none";
+        }, 1000);
+        clearTimeout();
+        return;
+      } else {
+        selectDate = selectDate._i.split(" ")[0];
+        this.showCal = !this.showCal;
+
+        switch (this.startOrEnd) {
+          case "start":
+            this.inputStart = selectDate;
+            break;
+          case "end":
+            this.inputEnd = selectDate;
+            break;
+        }
+      }
+    },
+    isPick(position) {
+      this.showCal = true;
+      switch (position) {
+        case "start":
+          this.startOrEnd = "start";
+          break;
+        case "end":
+          this.startOrEnd = "end";
+          break;
+      }
+    },
+    showSelectBox() {
+      this.isActive = !this.isActive;
+    },
+    selectPriority(e) {
+      this.inputPriority = e.target.innerHTML;
+      this.isActive = false;
+    },
+    setColor(str) {
+      switch (str) {
+        case "낮음":
+          return "#4caf50";
+        case "보통":
+          return "#0091ff";
+        case "높음":
+          return "#ffbf00";
+        case "긴급":
+          return "#ff6f00";
+        case "즉시":
+          return "#f44336";
+      }
     },
   },
 };
@@ -148,12 +333,30 @@ export default {
 <style scoped>
 .detail-container {
   border-radius: 25px;
-  margin: 20px;
   height: calc(30vh - 40px);
-  width: 100%;
+  width: 95%;
+  margin: 20px 20px 0 0;
   padding: 20px;
   background: #2c2f3b;
+  position: relative;
 }
+
+
+.vuecal--date-picker {
+  position: absolute;
+  top: 5%;
+  right: 10%;
+  box-shadow: 0px 3px 35px rgba(0, 0, 0, 0.5);
+  border-radius: 15px;
+  width: 210px;
+  height: 230px;
+  overflow: hidden;
+}
+
+.vuecal--date-picker ::-webkit-scrollbar {
+  width: 0px;
+}
+
 
 .detail-header {
   display: flex;
@@ -195,16 +398,17 @@ export default {
   animation: show;
 }
 
-.detail-table th,td {
+.detail-table th,
+td {
   width: 30px;
 }
 
-.detail-table input{
+.detail-table input {
   border: none;
   outline: none;
   background: none;
   color: #ff8906;
-  width: 30px;
+  width: 100px;
 }
 
 .detail-progress {
@@ -227,6 +431,43 @@ export default {
   position: absolute;
   top: 0;
   right: 10%;
+}
+
+.select {
+  position: relative;
+  cursor: pointer;
+}
+
+.select-list {
+  position: absolute;
+  top: 45%;
+  bottom: -55%;
+  transition: all 1s ease-out;
+  background: #2c2f3b;
+}
+
+.select-list :nth-child(1) {
+  color: #4caf50;
+}
+.select-list :nth-child(2) {
+  color: #0091ff;
+}
+.select-list :nth-child(3) {
+  color: #ffbf00;
+}
+.select-list :nth-child(4) {
+  color: #ff6f00;
+}
+.select-list :nth-child(5) {
+  color: #f44336;
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
 }
 
 @keyframes show {

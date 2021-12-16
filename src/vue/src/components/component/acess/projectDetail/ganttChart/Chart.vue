@@ -1,21 +1,28 @@
 <template>
   <div class="chart-container">
-    <button @click="prevMonth">이전달</button>
-    <button @click="nextMonth"> 다음달 </button>
-    {{month}}
-    <ul class="chart-date">
-      <li v-for="day in date" :key="day">
-        {{ day }}
-      </li>
-    </ul>
+    <div class="date-container">
+      <div class="chart-header">
+        <ChevronLeftIcon class="icons" @click="prevMonth" />
+        <span class="">{{ getMonthName(month) }}</span>
+        <ChevronRightIcon class="icons" @click="nextMonth" />
+      </div>
+      <ul class="chart-date">
+        <li v-for="day in date" :key="day">
+          {{ day }}
+        </li>
+      </ul>
+    </div>
     <ul class="chart-bars">
       <li
-        v-for="(task, index) in chart.tasks[month]"
+        v-for="(task, index) in chart.tasks[year][month]"
         :key="index"
         @click="showInfo(index)"
       >
         <span
-          :style="{ background: task.priority, width: `${task.progress}%` }"
+          :style="{
+            background: setColor(task.priority),
+            width: `${task.progress}%`,
+          }"
         >
         </span>
         <p>{{ task.title }}</p>
@@ -34,22 +41,29 @@
 
 <script>
 import moment from "moment";
-import { mapMutations , mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/vue/outline";
 
 export default {
   name: "chart",
   data() {
     return {
-      ganttData: "",
       date: [],
+      year: "",
       month: "",
+      monthName : "",
       isToday: "true",
       todayLineOffsetLeft: 0,
       todayLineOffsetTop: 0,
     };
   },
+  components: {
+    ChevronLeftIcon,
+    ChevronRightIcon,
+  },
   computed: mapState({
-    chart : state => state.gantt.chart
+    chart: (state) => state.gantt.chart,
+    monthName : () => this.getMonthName(this.month)
   }),
   created() {
     this.dateRender();
@@ -68,11 +82,17 @@ export default {
       this.date = [];
 
       let today = moment().format("YYYY-MM-DD").split("-");
+
+      if (this.year === "") {
+        this.year = today[0];
+      }
+
       if (this.month === "") {
         this.month = today[1];
       }
 
       let lastDay = new Date(today[0], this.month, 0).getDate();
+      console.log("dd");
 
       for (let day = 1; day < lastDay + 1; day++) {
         if (day < 10) {
@@ -84,13 +104,11 @@ export default {
     createChart() {
       let today = moment().format("YYYY-MM-DD").split("-");
 
-      if(today[1] == this.month){
+      if (today[1] == this.month) {
         this.isToday = true;
       } else {
         this.isToday = false;
       }
-
-      this.chart.tasks[this.month];
 
       let days = document.querySelectorAll(".chart-date li");
       let tasks = document.querySelectorAll(".chart-bars li");
@@ -103,20 +121,19 @@ export default {
 
       f_arr = days.filter((day) => day.textContent === today[2]);
 
-      this.todayLineOffsetLeft = f_arr[0].offsetLeft + 28;
+      this.todayLineOffsetLeft = f_arr[0].offsetLeft + 65;
       this.todayLineOffsetTop = f_arr[0].offsetTop + 30;
 
       tasks.forEach((el, index) => {
-        console.log(el,index)
-        let start = this.chart.tasks[this.month][index].start;
+        let start = this.chart.tasks[this.year][this.month][index].start;
 
         f_arr = days.filter((day) => day.textContent === start);
-        left = f_arr[0].offsetLeft - 19;
+        left = f_arr[0].offsetLeft + 20;
 
-        let end = this.chart.tasks[this.month][index].end;
+        let end = this.chart.tasks[this.year][this.month][index].end;
 
         f_arr = days.filter((day) => day.textContent === end);
-        width = f_arr[0].offsetLeft + f_arr[0].offsetWidth - left - 19;
+        width = f_arr[0].offsetLeft + f_arr[0].offsetWidth - left + 20;
 
         el.style.left = `${left}px`;
         el.style.width = `${width}px`;
@@ -125,28 +142,69 @@ export default {
       });
     },
     showInfo(index) {
-
-      let payload = []
-      payload.push(this.month,index,this.month)
-
+      let payload = [];
+      payload.push(this.month, index, this.month, this.year);
       this.select(payload);
     },
     prevMonth() {
-      for (let key of Object.keys(this.chart.tasks)) {
-        if(this.month-1 == key){
+      console.log(1);
+      for (let key of Object.keys(this.chart.tasks[this.year])) {
+        if (this.month - 1 == key) {
           this.month--;
           this.dateRender();
           return;
-        } 
+        }
       }
     },
     nextMonth() {
-      for (let key of Object.keys(this.chart.tasks)) {
-        if(this.month+1 == key){
+      for (let key of Object.keys(this.chart.tasks[this.year])) {
+        if (this.month + 1 == key) {
           this.month++;
           this.dateRender();
           return;
-        } 
+        }
+      }
+    },
+    setColor(str) {
+      switch (str) {
+        case "낮음":
+          return "#4caf50";
+        case "보통":
+          return "#0091ff";
+        case "높음":
+          return "#ffbf00";
+        case "긴급":
+          return "#ff6f00";
+        case "즉시":
+          return "#f44336";
+      }
+    },
+    getMonthName(month) {
+      switch (month) {
+        case 1:
+          return "January";
+        case 2:
+          return "February";
+        case 3:
+          return "March";
+        case 4:
+          return "April";
+        case 5:
+          return "May";
+        case 6:
+          return "June";
+        case 7:
+          return "July";
+        case 8:
+          return "August";
+        case 9:
+          return "September";
+        case 10:
+          return "October";
+        case 11:
+          return "November";
+        case 12:
+          return "December";
       }
     },
   },
@@ -163,8 +221,31 @@ export default {
   position: relative;
   overflow: scroll;
   overflow-x: hidden;
-  margin: 20px;
+  width: 100%;
 }
+
+.chart-header {
+  height: 60px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.icons {
+  width: 40px;
+  vertical-align: sub;
+  display: inline-block;
+}
+
+.date-container {
+  position: fixed;
+  background: #2c2f3b;
+  z-index: 3;
+  width: 94%;
+  left: 3%;
+  top: 90px;
+}
+
 .chart-date {
   display: flex;
   margin: 0 0 20px 0;
@@ -187,6 +268,11 @@ export default {
   right: 0;
   height: 100%;
   border-right: 1px solid #fff;
+}
+
+.chart-bars {
+  position: relative;
+  top: 16%;
 }
 
 .chart-bars li {
@@ -231,7 +317,7 @@ export default {
 .todayLine {
   top: 0;
   position: absolute;
-  height: 100%;
+  height: 100vh;
   border-right: 1px solid red;
   opacity: 0.5;
 }
