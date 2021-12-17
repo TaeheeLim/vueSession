@@ -14,35 +14,6 @@ const scheduler = {
       isModal : false,
       callAddFunction : false,
 
-      // modal variables
-      flagStartDate : false,
-      flagEndDate : false,
-
-      autoScrollData1 : '',
-      autoScrollData2 : '',
-      endDate : '',
-      startDate :'',
-      eventTitle : '',
-      eventContent : '',
-      selectedClass : '',
-
-      clickedValue : '공통',
-
-      isAllDay : '',
-      deleteflag : '',
-      resizeflag : '',
-
-      filterValue : '',
-
-      buttonText : [
-        '공통',
-        '개인',
-        '공지',
-        '긴급',
-        '휴가',
-        '기타'
-      ],
-
       fakedata :[
         {
           id : '16',
@@ -270,15 +241,12 @@ const scheduler = {
     showData(state){
       console.log(state.addEventData)
     },
-
     setSelectDate(state, event){
       state.selectedDate = event
     },
-
     setModal(state){
       state.isModal = true
     },
-
     closeModal(state, e){
       for(let i in e.target.classList){
         if(e.target.classList[i] === 'black-bg' || e.target.classList[i] === 'closeModalBtn'){
@@ -288,25 +256,12 @@ const scheduler = {
         }
       }
     },
-
     setCallAddFunction(state){
       // console.log(e)
       state.callAddFunction = !state.callAddFunction
       if(state.callAddFunction) {
         state.isModal = false
       }
-    },
-    setClickedValue(state, e){
-      // console.log(e)
-      state.clickedValue = e
-    },
-    setFlagStartDate(state,  e){
-      // console.log(e)
-      state.flagStartDate = e
-    },
-    setflagEndDate(state,  e){
-      state.flagEndDate = e
-      console.log(state.flagEndDate)
     },
     setFilterValue(state, e){
       this.commit('scheduler/copyDataFunction')
@@ -317,109 +272,14 @@ const scheduler = {
         state.data = filtered
       }
     },
-    getStartDate(state, e){
-      state.flagStartDate = !state.flagStartDate
-      state.startDate = e.format('YYYY-MM-DD')
-    },
-    getEndDate(state,e){
-      state.flagEndDate = !state.flagEndDate
-      state.endDate = e.format('YYYY-MM-DD')
-    },
+    
     setModalTrue(state){
       state.isModal = true
     },
     setModalFalse(state){
       state.isModal = false
     },
-    resetValue(state){
-      state.autoScrollData2 = ''
-      state.autoScrollData1 = ''
-      state.endDate = ''
-      state.startDate = ''
-      state.eventTitle = ''
-      state.eventContent = ''
-      state.selectedClass = ''
-      state.isAllDay = ''
-      state.deleteflag = ''
-      state.resizeflag = ''
-      state.clickedValue = '공통'
-    },
-
-    async createEventUseModal(state){
-      switch (state.clickedValue) {
-        case '공통':
-          state.clickedValue = 'common'
-          break;
-        case '개인':
-          state.clickedValue = 'individual'
-          break;
-        case '공지':
-          state.clickedValue = 'notice'
-          break;
-        case '긴급':
-          state.clickedValue = 'emergency'
-          break;
-        case '휴가':
-          state.clickedValue = 'vacation'
-          break;
-        case '기타':
-          state.clickedValue = 'note'
-          break;
-      }
-
-      if(state.isAllDay !== true){
-        state.isAllDay = false
-      }
-
-      if(state.deleteflag === ''){
-        state.deleteflag = true
-      }else{
-        state.deleteflag = false
-      }
-
-      if(state.resizeflag === ''){
-        state.resizeflag = true
-      }else{
-        state.resizeflag = false
-      }
-
-      // timepicker 분값이 mm 이면 알람추가??
-      console.log(state.autoScrollData1)
-      console.log(state.autoScrollData2)
-
-      if(state.autoScrollData1 === state.autoScrollData2 || state.autoScrollData1 > state.autoScrollData2){
-        this.commit('scheduler/resetValue')
-        return
-      }
-      const copy = [...state.data]
-      const arr ={
-        id : 'a002',
-        start : state.startDate +' '+ state.autoScrollData1,
-        end : state.endDate + ' ' + state.autoScrollData2,
-        title : state.eventTitle,
-        content : state.eventContent,
-        class : state.clickedValue,
-        deletable: state.deleteflag,
-        resizable: state.resizeflag,
-        draggable: true,
-        allDay : state.isAllDay,
-
-      }
-
-      // console.log(arr)
-      state.data.push(arr)
-      // console.log('data => ', state.data )
-
-
-      if(copy.length !== state.data.length){
-        // this.resetValue()
-        this.commit('scheduler/resetValue')
-      }
-
-      this.commit('scheduler/setModalFalse')
-      // this.setModalFalse()
-
-    },
+    
     copyDataFunction(state){
       state.copiedData = [...state.data]
     },
@@ -441,9 +301,13 @@ const scheduler = {
       }
       state.isToggle = !state.isToggle
     },
+
     setData(state, arr){
       state.data = arr
-    }
+    },
+    pushData(state, arr){
+      state.data.push(arr)
+    },
   },
 }
 

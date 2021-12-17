@@ -75,3 +75,9 @@ button {
 	position: relative;
 	padding: 2px 4px
 }
+.vue__time-picker .dropdown ul li:not([disabled]).active,
+.vue__time-picker .dropdown ul li:not([disabled]).active:focus,
+.vue__time-picker .dropdown ul li:not([disabled]).active:hover {
+    background: #2C2F3B;
+    color: #fff;
+}

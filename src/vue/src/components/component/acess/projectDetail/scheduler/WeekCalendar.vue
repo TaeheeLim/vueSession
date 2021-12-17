@@ -31,7 +31,7 @@
 </template>
 
 <script scoped>
-import { mapMutations } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 import VueCal from 'vue-cal'
 
 export default {
@@ -45,6 +45,11 @@ export default {
       changeTheme : false,
       changeLang : false,
     }
+  },
+  computed : {
+    ...mapState({
+      datas : state => state.scheduler.data,
+    })
   },
   mounted() {
     this.callCalendarData()
@@ -80,12 +85,19 @@ export default {
         calTitle : e.event.title,
         class : e.event.class,
       }
+
+      for(let i = 0; i < this.datas.length; i++){
+        if(this.datas[i].id === e.event.id){
+          this.datas[i].start = momentedStartTime
+          this.datas[i].end = momentedEndTime
+          this.datas[i].title = e.event.title
+          this.datas[i].content = e.event.content
+          this.datas[i].class = e.event.class
+        }
+      }
       this.callAxios('update', dataArr)
     },
     callCalendarData(){
-      const emptyArr = []
-      this.setData(emptyArr)
-
       let copy = [...this.$store.state.scheduler.data];
 
       const url = '/calendar/getAllSchedules'
@@ -101,7 +113,6 @@ export default {
           r.data[i].calEndDate = r.data[i].calEndDate.replace('T', ' ')
           const arr = {
             id :  r.data[i].calIdx,
-            // 테스트데이터 잘못넣어서 start, end거꾸로 넣었음 
             start: r.data[i].calStartDate,
             end: r.data[i].calEndDate,
             title: r.data[i].calTitle,
@@ -116,13 +127,15 @@ export default {
             // isgantt : false,
           }
           copy.push(arr)
+          
           // 삭제여부, 삭제이유도 넘어오지만 처리하지않음
           // r.data[i].calDelAt
           // r.data[i].calDelResn
         } 
-        if(this.$store.state.scheduler.data.length === 0){
+        if(this.datas.length === 0){
           this.setData(copy)
         } 
+
       })
     },
     
@@ -162,9 +175,6 @@ export default {
             'codeDetail.codeDetailIdx' : dataArr.class,
             'codeDetail.masterCode.masterCodeIdx' : 'CAL',
           }
-        })
-        .then( ()=>{
-          this.callCalendarData()
         })
       }
     }

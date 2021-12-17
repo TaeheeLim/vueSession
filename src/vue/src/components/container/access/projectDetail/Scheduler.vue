@@ -1,6 +1,5 @@
 <template >
-  <!-- default는 종일 탭이 없는거고 토글은 종일텝이 나오는 것 (일반 스케쥴 보여줌 ) -->
-  <div class="black-bg" v-if="this.$store.state.scheduler.isModal" @click="closeModal">
+  <div class="black-bg" v-if="this.isModal" @click="closeModal">
     <div class="white-bg">
       <div class="white-bg-left" >
         <vue-cal
@@ -32,33 +31,33 @@
 
       <div class="white-bg-right">
 
-        <input class="titleInput" type="text"  placeholder="Enter the Title..." v-model="this.$store.state.scheduler.eventTitle">
-        <textarea class="contentInput" rows="100" cols="100"  placeholder="Enter the Detail..." v-model="this.$store.state.scheduler.eventContent"></textarea>
+        <input class="titleInput" type="text"  placeholder="Enter the Title..." v-model="this.eventTitle">
+        <textarea class="contentInput" rows="100" cols="100"  placeholder="Enter the Detail..." v-model="this.eventContent"></textarea>
 
         <div class="timePicker">
           <span>
-            <input class="startDate" type="text" placeholder="Start Date..." @click="setStartIndex" v-model="this.$store.state.scheduler.startDate" readonly>
+            <input class="startDate" type="text" placeholder="Start Date..." @click="setStartIndex" v-model="this.startDate" readonly>
           </span>
           <span>
-            <input class="endDate" type="text" placeholder="End Date..." @click="setEndIndex" v-model="this.$store.state.scheduler.endDate" readonly>
+            <input class="endDate" type="text" placeholder="End Date..." @click="setEndIndex" v-model="this.endDate" readonly>
           </span>
 
-          <vue-timepicker :minute-range="[0, 6, [10, 30], 42, 50]"  drop-direction="auto"  auto-scroll v-model="this.$store.state.scheduler.autoScrollData1"></vue-timepicker>
-          <vue-timepicker :minute-range="[0, 6, [10, 30], 42, 50]"  drop-direction="auto"  auto-scroll v-model="this.$store.state.scheduler.autoScrollData2"></vue-timepicker>
+          <vue-timepicker :minute-range="[0, 6, [10, 30], 42, 50]"  drop-direction="auto"  auto-scroll v-model="this.startTimePicker"></vue-timepicker>
+          <vue-timepicker :minute-range="[0, 6, [10, 30], 42, 50]"  drop-direction="auto"  auto-scroll v-model="this.endTimePicker"></vue-timepicker>
         </div>
 
         <div class="rightInput">
-          <input  type="checkbox" id="isAllDay" v-model="this.$store.state.scheduler.isAllDay" >
+          <input  type="checkbox" id="isAllDay" v-model="this.isAllDay" >
           <label for="isAllDay" >IsAllDay...?</label>
-          <input  type="checkbox" id="delete" v-model="this.$store.state.scheduler.deleteflag" >
+          <input  type="checkbox" id="delete" v-model="this.deleteflag" >
           <label for="delete" >Don't Delete...!</label>
-          <input  type="checkbox" id="resize" v-model="this.$store.state.scheduler.resizeflag" >
+          <input  type="checkbox" id="resize" v-model="this.resizeflag" >
           <label for="resize" >Don't Resize...!</label>
         </div>
 
         <div class="classification-btn" style="display : flex; ">
-          <div  v-for="(a, i) in this.$store.state.scheduler.buttonText" :key="i" >
-            <button v-if="a === this.$store.state.scheduler.clickedValue" style="color : #FF8906; width : 100%; "
+          <div  v-for="(a, i) in this.buttonText" :key="i" >
+            <button v-if="a === this.clickedValue" style="color : #FF8906; width : 100%; "
                     @click="filterClick" class="filterBtn">
               {{a}}</button>
 
@@ -111,7 +110,7 @@
 import MonthCalendar from '@/components/component/acess/projectDetail/scheduler/MonthCalendar.vue'
 import WeekCalendar from '@/components/component/acess/projectDetail/scheduler/WeekCalendar.vue'
 import Filter from '@/components/component/acess/projectDetail/scheduler/Filter.vue'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapState } from 'vuex'
 
 import VueTimepicker from 'vue3-timepicker'
 import 'vue3-timepicker/dist/VueTimepicker.css'
@@ -134,23 +133,58 @@ export default {
     return {
       startZIndex : 1,
       endZIndex : 0,
+
+      // modal variables
+      flagStartDate : false,
+      flagEndDate : false,
+
+      startTimePicker : '',
+      endTimePicker : '',
+      endDate : '',
+      startDate :'',
+      eventTitle : '',
+      eventContent : '',
+      selectedClass : '',
+
+      clickedValue : '공통',
+
+      isAllDay : '',
+      deleteflag : '',
+      resizeflag : '',
+
+      filterValue : '',
+
+      buttonText : [
+        '공통',
+        '개인',
+        '공지',
+        '긴급',
+        '휴가',
+        '기타'
+      ],
+      // modal variables
+
     }
+  },
+  computed : {
+    ...mapState({
+      isModal : state => state.scheduler.isModal
+    })
   },
   methods: {
     ...mapMutations({
       showData : 'scheduler/showData',
       closeModal : 'scheduler/closeModal',
       setCallAddFunction : 'scheduler/setCallAddFunction',
-      createEventUseModal : 'scheduler/createEventUseModal',
-      getStartDate : 'scheduler/getStartDate',
-      getEndDate : 'scheduler/getEndDate',
-      setClickedValue : 'scheduler/setClickedValue',
       setFlagStartDate : 'scheduler/setFlagStartDate',
       setflagEndDate : 'scheduler/setflagEndDate',
       setModalTrue : 'scheduler/setModalTrue',
       resetValue : 'scheduler/resetValue',
+      setModalFalse : 'scheduler/setModalFalse',
+      pushData : 'scheduler/pushData',
     }),
 
+    // modal functions start
     // 필터 클릭시 색 변경
     filterClick(e){
       if(e.type === 'click'){
@@ -162,18 +196,127 @@ export default {
         this.setClickedValue(e.target.innerHTML)
       }
     },
-
     setStartIndex(){
       this.endZIndex = 0
       this.startZIndex = 1
       this.setFlagStartDate(true)
     },
-
     setEndIndex(){
       this.endZIndex = 1
       this.startZIndex = 0
-      this.setflagEndDate(true)
+      this.setFlagEndDate(true)
     },
+    getStartDate(e){
+      this.flagStartDate = !this.flagStartDate
+      this.startDate = e.format('YYYY-MM-DD')
+    },
+    getEndDate(e){
+      this.flagEndDate = !this.flagEndDate
+      this.endDate = e.format('YYYY-MM-DD')
+    },
+    setFlagStartDate(e){
+      this.flagStartDate = e
+    },
+    setFlagEndDate(e){
+      this.flagEndDate = e
+    },
+    setClickedValue(e){
+      this.clickedValue = e
+    },
+    resetValue(){
+      this.startTimePicker = ''
+      this.endTimePicker = ''
+      this.endDate = ''
+      this.startDate = ''
+      this.eventTitle = ''
+      this.eventContent = ''
+      this.selectedClass = ''
+      this.isAllDay = ''
+      this.deleteflag = ''
+      this.resizeflag = ''
+      this.clickedValue = '공통'
+    },
+    async createEventUseModal(){
+      switch (this.clickedValue) {
+        case '공통':
+          this.clickedValue = 'common'
+          break;
+        case '개인':
+          this.clickedValue = 'individual'
+          break;
+        case '공지':
+          this.clickedValue = 'notice'
+          break;
+        case '긴급':
+          this.clickedValue = 'emergency'
+          break;
+        case '휴가':
+          this.clickedValue = 'vacation'
+          break;
+        case '기타':
+          this.clickedValue = 'note'
+          break;
+      }
+
+      if(this.isAllDay !== true){
+        this.isAllDay = false
+      }
+      
+      if(this.deleteflag === ''){
+        this.deleteflag = true
+      }else{
+        this.deleteflag = false
+      }
+      
+      if(this.resizeflag === ''){
+        this.resizeflag = true
+      }else{
+        this.resizeflag = false
+      }
+
+      if(this.startTimePicker === this.endTimePicker || this.startTimePicker > this.endTimePicker){
+        this.resetValue()
+        return
+      }
+      const copy = [...this.$store.state.scheduler.data]
+      const url = '/calendar/insertSchedule'
+      const arr ={
+        id : '',
+        start : this.startDate +' '+ this.startTimePicker,
+        end : this.endDate + ' ' + this.endTimePicker,
+        title : this.eventTitle,
+        content : this.eventContent,
+        class : this.clickedValue,
+        deletable: this.deleteflag,
+        resizable: this.resizeflag,
+        draggable: true,
+        allDay : this.isAllDay,
+
+      }
+      this.pushData(arr)
+
+      if(copy.length !== this.$store.state.scheduler.data.length){
+        this.resetValue()
+      }
+      
+      this.axios.post( url, null, {
+        params : {
+          calIdx : null,
+          'project.prjctIdx' : 1,
+          'member.memIdx' : 1,
+          calStartDate : arr.start,
+          calEndDate : arr.end,
+          calColor : arr.class,
+          calCn : arr.content,
+          calTitle : arr.title,
+          calDelAt : 'n',
+        }
+      })
+      .then( 
+        this.setModalFalse()
+       )
+    },
+    // modal Functions end
   },
 }
 
@@ -352,4 +495,5 @@ export default {
   display: flex;
   justify-content: space-around;
 }
+
 </style>
