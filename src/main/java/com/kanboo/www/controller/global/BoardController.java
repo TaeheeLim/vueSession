@@ -27,14 +27,15 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/boardTest")
-    public List<BoardDTO> testBoard() {
-        return boardService.getAllList(0, "나세권", "memNick");
+    public List<BoardDTO> testBoard(String selected, String key, int articleOnvView) {
+        return boardService.getAllList(articleOnvView, key, selected);
     }
 
     @GetMapping("/getArticleNum")
     public long getArticleNum() {
         return boardService.getArticleNum();
     }
+
 
 }
 

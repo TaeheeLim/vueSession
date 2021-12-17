@@ -11,7 +11,7 @@ const community = {
     content : '',
     updateCheck : false,
     selected : 'All',
-    key : '',
+    key : 'none',
   },
   
   mutations: {
@@ -106,11 +106,20 @@ const community = {
     //articleOnView state에 ?
     getBoardList(context){
       // var object = {
-      //   "selected" : selected,
-      //   "key" : key
+      //   "selected" : context.state.selected,
+      //   "key" : context.state.key,
+      //   "articleOnvView" : context.state.articlesOnView,
       // }
 
-      axios.get('/boardTest')
+      axios.get('/boardTest',  {
+                params : {
+                  selected :  context.state.selected,
+                  key : context.state.key,
+                  articleOnvView : context.state.articlesOnView
+                }
+      }
+               )
+
                 .then(e => {
                   console.log(e)
                   for(let item of e.data){
