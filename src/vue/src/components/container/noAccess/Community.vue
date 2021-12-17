@@ -10,8 +10,8 @@
       <div class="input-container">
         <select v-model="selected" id="select">
           <option value="All">All</option>
-          <option value="MEM_NICK">Writer</option>
-          <option value="BOARD_CN">Content</option>
+          <option value="memNick">Writer</option>
+          <option value="boardCN">Content</option>
         </select>
         <input type="text" class="search-input" @keyup.enter="search" v-model="key">
         <img src="@/assets/돋보기2.png" @click="sendingSelected">
@@ -73,7 +73,6 @@ export default {
         "key" : this.key,
         "selected" : this.selected
       }
-
       this.getSelectedAndKey(object)
     },
 

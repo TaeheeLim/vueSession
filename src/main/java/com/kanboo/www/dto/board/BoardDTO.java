@@ -1,6 +1,9 @@
 package com.kanboo.www.dto.board;
 
 import com.kanboo.www.domain.entity.board.Board;
+import com.kanboo.www.domain.entity.board.BoardReport;
+import com.kanboo.www.domain.entity.board.Comment;
+import com.kanboo.www.domain.entity.board.Likes;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.dto.global.CodeDetailDto;
 import com.kanboo.www.dto.member.MemberDTO;
@@ -11,6 +14,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Builder
@@ -25,6 +30,8 @@ public class BoardDTO {
     private String delAt;
     private CodeDetailDto codeDetail;
     private String fileAt;
+    private int totalComments;
+    private int totalLikes;
 
     public Board dtoToEntity() {
         return Board.builder()
@@ -35,6 +42,8 @@ public class BoardDTO {
                 .delAt(delAt)
                 .codeDetail(codeDetail.dtoToEntity())
                 .fileAt(fileAt)
+                .totalComments(totalComments)
+                .totalLikes(totalLikes)
                 .build();
     }
 }
