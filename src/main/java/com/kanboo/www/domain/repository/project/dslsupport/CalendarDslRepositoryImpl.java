@@ -3,6 +3,7 @@ package com.kanboo.www.domain.repository.project.dslsupport;
 import com.kanboo.www.domain.entity.global.CodeDetail;
 import com.kanboo.www.domain.entity.global.QCodeDetail;
 import com.kanboo.www.domain.entity.global.QMasterCode;
+import com.kanboo.www.domain.entity.global.QRole;
 import com.kanboo.www.domain.entity.member.QMember;
 import com.kanboo.www.domain.entity.project.Calendar;
 import com.kanboo.www.domain.entity.project.QCalendar;
@@ -51,4 +52,5 @@ public class CalendarDslRepositoryImpl implements CalendarDslRepository{
 				)
 				.fetch();
 	}
+
 }

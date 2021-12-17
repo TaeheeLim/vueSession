@@ -8,4 +8,6 @@ public interface CalendarService {
 	List<CalendarDTO> calendarHandler(CalendarDTO calendarDTO);
 
 	CalendarDTO updateCalendar(CalendarDTO calendarDTO);
+
+	CalendarDTO insertCalendar(CalendarDTO calendarDTO);
 }

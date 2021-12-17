@@ -24,5 +24,9 @@ public class CalendarController {
 		return calendarService.updateCalendar(calendarDTO);
 	}
 
-
+	@PostMapping(value = "/insertSchedule")
+	public CalendarDTO insertSchedule(CalendarDTO calendarDTO){
+		System.out.println(calendarDTO);
+		return calendarService.insertCalendar(calendarDTO);
+	}
 }
