@@ -35,31 +35,40 @@
 </template>
 
 <script>
-import signHelp from "@/assets/signHelp.js";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "Terminal",
-  computed: {},
+  computed: {
+    ...mapState({
+      signHelp: (state) => state.sign.signHelp,
+      loginHelp: (state) => state.sign.loginHelp,
+      findHelp: (state) => state.sign.findHelp,
+      etcHelp: (state) => state.sign.etcHelp,
+      welcomeHelp: (state) => state.sign.welcomeHelp,
+    }),
+  },
+  mounted() {
+    this.isLang();
+  },
   updated() {
-    // this.copyToken();
-
     if (this.printToken) {
       this.tokenPrintIndex = this.consoleText.length - 1;
     }
+    this.focus();
   },
-  mounted() {},
-  components: {},
   data() {
     return {
       rootText: `Kanboo bash(base console) > `,
       modeText: [`(base console) > `],
       consoleText: [`Kanboo bash`],
-      enterText: [`Choose Menu 1.login 2.sign 3.find 4.clear 5.cd.. 6.cd home`],
+      enterText: [
+        "메뉴를 선택해주세요. 도움이 필요하시면 help를 입력해주세요. 1.login 2.sign 3.find 4.clear 5.cd.. 6.cd home 7.help",
+      ],
       classData: [`com`],
       inputType: "text",
       inputData: [],
       inputText: "",
-      signHelp: signHelp.en,
       idCheck: false,
       signReg: false,
       reservedWord: false,
@@ -72,6 +81,12 @@ export default {
     inputText: ["regex", "isExistId"],
   },
   methods: {
+    ...mapMutations({
+      isLang: "sign/isLang",
+    }),
+    selectLang(payload) {
+      this.isLang(payload);
+    },
     isExistId() {
       let header = null;
 
@@ -107,9 +122,9 @@ export default {
           case "login":
             this.modeText = [`(${this.inputData[0]} console) > `];
             if (this.inputData.length == 1) {
-              this.enterText = [`Enter your ID`];
+              this.enterText = [`${this.loginHelp[0]}`];
             } else if (this.inputData.length == 2) {
-              this.enterText = [`Enter your Password`];
+              this.enterText = [`${this.loginHelp[1]}`];
             }
             this.addLine(`(${this.inputData[0]} console) > `, data, "");
             return;
@@ -122,17 +137,19 @@ export default {
             return;
           case "find":
             this.modeText = [`(${this.inputData[0]} console) > `];
-            this.enterText = [`Enter your Token`];
+            this.enterText = [`${this.findHelp[1]}`];
             this.addLine(`(${this.inputData[0]} console) > `, data, "");
             return;
           default:
             this.modeText = [`(base console) > `];
-            this.enterText = [
-              `Choose Menu 1.login 2.sign 3.find 4.clear 5.cd.. 6.cd home`,
-            ];
+            this.enterText = [`${this.welcomeHelp[0]}`];
             this.nothing(originalData);
             return;
         }
+      }
+
+      if (data === "ko" || data === "en") {
+        this.isLang(data);
       }
 
       if (this.inputData.length > 0) {
@@ -173,6 +190,12 @@ export default {
             this.nothing(originalData);
             break;
         }
+
+        if (data === "help") {
+          for (let i = 1; i < this.welcomeHelp.length; i++) {
+            this.addLine(`(Help console) > `, this.welcomeHelp[i], "com");
+          }
+        }
       }
     },
     baseMode() {
@@ -191,13 +214,13 @@ export default {
           this.rootText = `Kanboo bash(login console) > `;
           this.inputData.push(data);
           this.addLine(`(base console) > `, originalData, "");
-          this.addLine(`(login console) > `, `Enter your ID`, `com`);
+          this.addLine(`(login console) > `, `${this.loginHelp[0]}`, `com`);
           return;
         case 1:
           // 아이디 입력
           this.form(data, "ID");
           this.inputData.push(data);
-          this.addLine(`(login console) > `, `Enter your PW`, `com`);
+          this.addLine(`(login console) > `, `${this.loginHelp[1]}`, `com`);
           this.inputType = "password";
           return;
         case 2:
@@ -283,12 +306,12 @@ export default {
           this.rootText = `Kanboo bash(find console) > `;
           this.addLine(`(base console) > `, originalData, "");
           this.inputData.push(originalData);
-          this.addLine(`(find console) > `, `ID or PW ?`, `com`);
+          this.addLine(`(find console) > `, `${this.findHelp[0]}`, `com`);
           return;
         case 1:
           this.addLine(`(find console) > `, data, "");
           this.inputData.push(data);
-          this.addLine(`(find console) > `, `Enter your Token`, `com`);
+          this.addLine(`(find console) > `, `${this.findHelp[1]}`, `com`);
           return;
         case 2:
           this.addLine(`(find console) > `, originalData, "");
@@ -334,21 +357,14 @@ export default {
               case 1:
                 this.addLine(
                   `(${this.inputData[0]} console) > `,
-                  `Enter your ID`,
+                  `${this.loginHelp[0]}`,
                   `com`
                 );
                 return;
               case 2:
                 this.addLine(
                   `(${this.inputData[0]} console) > `,
-                  `Enter your PW`,
-                  `com`
-                );
-                return;
-              case 3:
-                this.addLine(
-                  `(${this.inputData[0]} console) > `,
-                  `Enter your nickName`,
+                  `${this.loginHelp[1]}`,
                   `com`
                 );
                 return;
@@ -380,10 +396,10 @@ export default {
           case "find":
             switch (this.inputData.length) {
               case 1:
-                this.addLine(`(find console) > `, `ID or PW ?`, `com`);
+                this.addLine(`(find console) > `, `${this.findHelp[0]}`, `com`);
                 return;
               case 2:
-                this.addLine(`(find console) > `, `Enter your Token`, `com`);
+                this.addLine(`(find console) > `, `${this.findHelp[1]}`, `com`);
                 return;
             }
             return;
@@ -405,7 +421,7 @@ export default {
         memPass: this.inputData[2],
       };
 
-      loginInfo
+      loginInfo;
 
       sessionStorage.setItem("memId", this.inputData[1]);
 
@@ -424,12 +440,12 @@ export default {
       //       this.login(loginInfo);
       //     } else {
       //       this.addLine(`(login console) > `, `Login access Fail`, `com`);
-      //       this.addLine(`(base console) > `, `Choose Menu`, `com`);
+      //       this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
       //     }
       //   })
       //   .catch(() => {
       //     this.addLine(`(login console) > `, `Login access Fail`, `com`);
-      //     this.addLine(`(base console) > `, `Choose Menu`, `com`);
+      //     this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
       //   });
       // this.baseMode();
 
@@ -473,7 +489,7 @@ export default {
         .catch((err) => {
           console.error(err);
           this.addLine(`(sign console) > `, `Sign access Fail`, `com`);
-          this.addLine(`(base console) > `, `Choose Menu`, `com`);
+          this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
         });
       this.baseMode();
     },
@@ -507,27 +523,15 @@ export default {
               break;
             case "pw":
               if (data.data == true) {
-                this.addLine(
-                  `(find console) > `,
-                  `A temporary password has been sent via SMS.`,
-                  "com"
-                );
+                this.addLine(`(find console) > `, `${this.etcHelp[1]}`, "com");
               } else {
-                this.addLine(
-                  `(find console) > `,
-                  `You entered an Invalid Token`,
-                  "com"
-                );
+                this.addLine(`(find console) > `, `${this.etcHelp[0]}`, "com");
               }
               break;
           }
         })
         .catch(() => {
-          this.addLine(
-            `(find console) > `,
-            `You entered an Invalid Token`,
-            "com"
-          );
+          this.addLine(`(find console) > `, `${this.etcHelp[0]}`, "com");
         });
       this.baseMode();
     },
@@ -561,6 +565,9 @@ export default {
         "cd..",
         "cd ..",
         "cd home",
+        "help",
+        "en",
+        "ko"
       ];
 
       if (this.inputData.length > 0 && this.inputData[0] === "sign") {

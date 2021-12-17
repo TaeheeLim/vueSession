@@ -50,10 +50,14 @@ export default {
       return `${temp.format("M")}월 ${temp.format("D")}일 ${temp.format("HH")}:${temp.format("mm")}`;
     },
     addReply(index) {
+      
+      let today = moment().format("YYYY-MM-DD HH:mm:ss")
+
       let payload = [];
       let data = {
         memId: "admin",
         content: this.inputText,
+        date: today
       };
       payload.push(index,data);
       this.insert(payload);
@@ -103,7 +107,6 @@ export default {
 
 .card {
   width: 100%;
-  height: fit-content;
   background: #2c2f3b;
   margin-bottom: 20px;
   padding: 20px;
@@ -158,5 +161,63 @@ export default {
 
 ::-webkit-scrollbar {
   width: 0px;
+}
+
+@media (max-width:1268px){
+  .body{
+    overflow: scroll;
+    height: 50vh;
+  }
+}
+
+@media (max-width:768px){
+
+  .body {
+    overflow: scroll;
+    height: 50vh;
+    width: 100%;
+  }
+}
+
+@media(max-width: 535px){
+  .header{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header .search{
+    margin-top: 25px;
+    height: 30px; 
+    width: 100%;
+  }
+
+  .body{
+    overflow: scroll;
+    height: 50vh;
+    width: 100%;
+  }
+
+  .card-header{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .board-writer{
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .board-date{
+    font-size: 10px;
+  }
+
+  .card p{
+    font-size: 12px;
+  }
+
+  .card-reply span{
+    font-size: 12px;
+  }
+
 }
 </style>

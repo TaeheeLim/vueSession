@@ -122,7 +122,7 @@ export default {
 }
 .chat-box {
   width: 20vw;
-  min-width: 150px;
+  min-width: 260px;
   height: 40vh;
   background: #2c2f3b;
   border-radius: 5px;
@@ -189,8 +189,6 @@ export default {
 
 .chat-text {
   margin-left: 10px;
-  height: fit-content;
-  width: fit-content;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -281,22 +279,6 @@ export default {
 
 ::-webkit-scrollbar {
   width: 0px;
-  /* border-width: initial;
-  border-style: none;
-  border-color: initial;
-  border-image: initial; */
-}
-
-::-webkit-scrollbar-thumb {
-  /* border-radius: 30px;
-  background-color: rgb(141, 133, 133);
-  box-shadow: 0px 3px 12px rgba(255, 255, 255, 0.227);
-  width: 0px;
-  height: 8px;
-  border-width: initial;
-  border-style: none;
-  border-color: initial;
-  border-image: initial; */
 }
 
 .chat-mini {
@@ -311,4 +293,11 @@ export default {
 .chat-mini i {
   font-size: 12px;
 }
+
+@media (max-width:768px) {
+  span{
+  font-size: 10px;
+}
+}
+
 </style>
