@@ -3,17 +3,27 @@
   <div class="container">
     <div class="real-container"> 
       <div class="left-container">
-        <router-link @click="step=0; category='free'" class ="board-direction" to="/community/free">자유게시판</router-link>
-        <router-link @click="step=0; category='qna'" class ="board-direction" to="/community/qna">문의 게시판</router-link>
+        <router-link @click="changeCodeDetail(1);
+                            emptyInputBox();
+                            step=0;
+                            category='free';
+                            "
+                     class ="board-direction" to="/community/free">자유게시판</router-link>
+        <router-link @click="changeCodeDetail(33);
+                            emptyInputBox();
+                            step=0;
+                            category='qna';
+                            "
+                     class ="board-direction" to="/community/qna">문의 게시판</router-link>
         <button  @click="[click(), step=1, this.changeUpdateCheck()]" class="board-direction" :disabled="blockWrite == true">글 작성</button>
       </div>
       <div class="input-container">
-        <select v-model="selected" id="select">
+        <select v-model="selected" id="select" @change="sendingSelected">
           <option value="All">All</option>
           <option value="memNick">Writer</option>
           <option value="boardCN">Content</option>
         </select>
-        <input type="text" class="search-input" @keyup.enter="search" v-model="key">
+        <input type="text" class="search-input" @keyup.enter="sendingSelected" v-model="key">
         <img src="@/assets/돋보기2.png" @click="sendingSelected">
       </div>
     </div>  
@@ -31,7 +41,7 @@
 
 <script>
 import Write from '@/components/component/noAccess/Community/BoardWrite.vue';
-import { mapMutations, mapState } from 'vuex';
+import {mapActions, mapMutations, mapState} from 'vuex';
 
 export default {
   data(){
@@ -61,6 +71,13 @@ export default {
     ...mapMutations({
       changeUpdateCheck : 'community/changeUpdateCheck',
       getSelectedAndKey : 'community/getSelectedAndKey',
+      changeCodeDetail : 'community/changeCodeDetail',
+      resetData: 'community/resetData',
+    }),
+
+    ...mapActions({
+      getBoardList: "community/getBoardList",
+      getBoardNum : 'community/getBoardNum',
     }),
 
     click(){
@@ -68,19 +85,48 @@ export default {
       console.log(this.isOpen)
     },
 
-    sendingSelected(){
-      var object= {
+    sendingSelected() {
+      this.resetData()
+      const object= {
         "key" : this.key,
         "selected" : this.selected
       }
       this.getSelectedAndKey(object)
+      this.getBoardNum()
+      this.getBoardList()
     },
 
+    emptyInputBox(){
+      // document.querySelector('.search-input').value = null
+      this.key = ''
+      this.selected = 'All'
+      const object= {
+        "key" : this.key,
+        "selected" : this.selected
+      }
+      this.getSelectedAndKey(object)
+      this.resetData()
+      this.getBoardNum()
+      this.getBoardList()
+    },
+
+  },
+  watch: {
+    '$route' () {
+      this.resetData()
+    }
+  },
+  mounted() {
+    this.getBoardList()
   }
 }
 </script>
 
 <style scoped>
+.container {
+  width: 60vw;
+}
+
 input {
   color: #000;
 }
@@ -88,10 +134,9 @@ input {
 .head-container {
   display: flex;
   justify-content: center;
+  padding-top: 10px;
   gap: 20px;
-  margin-top: 22px;
-  margin-bottom: 10px;
-  width: 100vm;
+  width: 100vw;
   height: calc(100vh - 70px);
   overflow: hidden;
 }

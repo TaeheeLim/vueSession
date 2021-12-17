@@ -5,21 +5,14 @@ import com.kanboo.www.domain.entity.global.QCodeDetail;
 import com.kanboo.www.domain.entity.global.QMasterCode;
 import com.kanboo.www.domain.entity.member.QMember;
 import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Predicate;
 import com.querydsl.jpa.JPAExpressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.QueryParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.EntityManager;
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 public class BoardDSLRepositoryImpl implements BoardDSLRepository{
@@ -30,7 +23,7 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
 //    private JPAQueryFactory queryFactory = new JPAQueryFactory(em);
 
     @Override
-    public List<Board> getAllList(int articleOnView, String keyword, String selected) {
+    public List<Board> getAllList(String selected, String key, int articleOnvView, String codeDetails) {
         QBoard board = QBoard.board;
         QLikes likes = QLikes.likes;
         QBoardReport reports = QBoardReport.boardReport;
@@ -43,12 +36,15 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
 
         if(selected.equals("memNick")) {
             booleanBuilder.and(
-                    board.member.memNick.contains(keyword)
+                    board.member.memNick.contains(key)
             );
         } else if(selected.equals("boardCN")) {
             booleanBuilder.and(
-                    board.boardCn.contains(keyword)
+                    board.boardCn.contains(key)
             );
+        } else if(selected.equals("All")){
+            booleanBuilder.or(board.member.memNick.contains(key))
+                          .or(board.boardCn.contains(key));
         }
 
         return query
@@ -65,20 +61,65 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
                                     .where(reports.board.boardIdx.eq(board.boardIdx))
                     ).lt(5L)
                             .and(board.delAt.eq("N"))
-                            .and(board.codeDetail.codeDetailIdx.eq("1"))
+                            .and(board.codeDetail.codeDetailIdx.eq(codeDetails))
                             .and(booleanBuilder)
             )
             .distinct()
-            .offset(articleOnView) .limit(5)
+
+            .offset(articleOnvView) .limit(5)
             .fetch();
     }
 
     @Override
-    public long getArticleNum(){
+    public long getArticleNum(String keyword, String selected, String codeDetails){
         JPAQueryFactory query = new JPAQueryFactory(em);
         QBoard board = QBoard.board;
+        QBoardReport reports = QBoardReport.boardReport;
+        QMember member = QMember.member;
 
-        return query.select(board.count()).from(board).fetchCount();
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        if(selected.equals("memNick")){
+            booleanBuilder.and(board.member.memNick.contains(keyword));
+        } else if(selected.equals("boardCN")){
+            booleanBuilder.and(board.boardCn.contains(keyword));
+        } else if(selected.equals("All")){
+            booleanBuilder.and(board.member.memNick.contains(keyword))
+                    .or(board.boardCn.contains(keyword));
+        }
+
+        return query.select(board.count())
+                .from(board, member)
+                .where(board.codeDetail.codeDetailIdx.eq(codeDetails)
+                        .and(board.member.memIdx.eq(member.memIdx))
+                        .and(booleanBuilder)
+                        .and((JPAExpressions
+                                .select(reports.count())
+                                .from(reports)
+                                .where(reports.board.boardIdx.eq(board.boardIdx))
+                        ).lt(5L))
+                )
+                .fetchCount();
+    }
+
+    @Override
+    public List<Comment> getComments(long boardIdx, int commentsOnView) {
+        QComment comment = QComment.comment;
+        QBoard qBoard = QBoard.board;
+        QMember qMember = QMember.member;
+
+        JPAQueryFactory query = new JPAQueryFactory(em);
+
+        return query.select(comment)
+                        .from(comment)
+                        .innerJoin(comment.board, qBoard)
+                        .fetchJoin()
+                        .innerJoin(comment.member, qMember)
+                        .fetchJoin()
+                        .where(comment.board.boardIdx.eq(boardIdx))
+                        .offset(commentsOnView)
+                        .limit(5)
+                        .fetch();
     }
 
 }

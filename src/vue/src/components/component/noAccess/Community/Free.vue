@@ -2,6 +2,8 @@
 <div @scroll="getArticle" class="router-wrapper">
     <div class="router-wrapper2">
         <div class="board" v-for="(item, index) in this.boardList" :key="index">
+            <div class="null-content" v-if="item.isNull">{{item.content}}</div>
+            <div v-else>
             <div class="name-div">
                 <div>
                     <div>{{item.member.memNick}}</div>
@@ -57,7 +59,12 @@
                 <button id="button-id" class="comment-btn" @click="insertComment(item)">등록</button>
             </div>
             <BoardComment :board="item"/>
+            </div>
         </div>
+
+        <span id="goback">
+          <button id="goback-btn" @click="backToFirst">처음으로</button>
+        </span>
     </div>
 </div>
 </template>
@@ -74,20 +81,19 @@ export default {
         return {
             updateContent : '',
             axiosState : false,
-            //총 게시글 수
-            numberOfArticle : 0,
-            //보여지는 게시글 수
-            articlesOnView : 0,
             isUpdate : false,
             isExport : 0,
             isReportClick : false,
             likeToggle : false,
+            isBoardNull: false
         }
     },
     computed : {
         ...mapState({
             boardList : state => state.community.boardList,
             updateCheck : state => state.community.updateCheck,
+            numberOfArticle : state => state.community.numberOfArticle,
+            articlesOnView : state => state.community.articlesOnView,
         })
     },
 
@@ -158,19 +164,16 @@ export default {
             this.isExport++
         },
 
-        getArticle(e){  
-            // if(this.articlesOnView === this.numberOfArticle) {
-            //     return
-            // }
+        getArticle(e){
+            if(this.articlesOnView === this.numberOfArticle) {
+                return
+            }
 
             const fullSroll = e.target.scrollHeight
             const nowScroll = e.target.scrollTop
 
             if((fullSroll - nowScroll) < (fullSroll / 1.5) && !this.axiosState) {
-                //원래는 이 부분에서 현재보여지는 게시글의 개수인 articlesOnView 같이 넘김
-                //Controller에서 보여지는 개시글의 개수를 받아서 jpa문법으로 페이징처리를 위함
-                //params : {articleNum : this.articleOnView}
-                    this.getMoreList()
+                this.getMoreList()
             }
         },
         //게시판 삭제
@@ -191,7 +194,7 @@ export default {
                 .then(() => {});
         },
         getCommentList(item) {
-            if(item.댓글수 <= 0) {
+            if(item.totalComments <= 0) {
                 return
             }
             this.getComments(item)
@@ -204,6 +207,9 @@ export default {
               .then(() => {
                   commentContent.value = ''
               })
+        },
+        backToFirst(){
+          document.querySelector('.router-wrapper').scroll(0,0)
         }
 
     },
@@ -221,12 +227,11 @@ export default {
         }
     },
     
-    mounted() {
-        this.getBoardList()
+    Mounted() {
         this.getBoardNum()
     },
 
-    components : {
+  components : {
         BoardComment,
         editor,
     },
@@ -366,5 +371,25 @@ img {
     background: #FF8906;
     margin-left: 10px;
     height: 40px;
+}
+
+#goback {
+  border-radius: 10px;
+  background-color: coral;
+  color: #fff;
+  position: absolute;
+  bottom: 10px;
+  right: 13vw;
+  z-index: 9999;
+}
+
+#goback-btn {
+  color: #fff;
+  padding: 5px;
+}
+
+.null-content {
+  font-size: 20px;
+  color: #fff;
 }
 </style>

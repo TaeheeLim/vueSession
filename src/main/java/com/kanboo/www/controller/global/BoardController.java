@@ -3,6 +3,7 @@ package com.kanboo.www.controller.global;
 import com.kanboo.www.domain.entity.board.Board;
 import com.kanboo.www.domain.repository.board.boardQueryDSL.BoardDSLRepositoryImpl;
 import com.kanboo.www.dto.board.BoardDTO;
+import com.kanboo.www.dto.board.CommentDTO;
 import com.kanboo.www.service.inter.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -27,13 +28,18 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/boardTest")
-    public List<BoardDTO> testBoard(String selected, String key, int articleOnvView) {
-        return boardService.getAllList(articleOnvView, key, selected);
+    public List<BoardDTO> testBoard(String selected, String key, int articleOnvView, String codeDetail) {
+        return boardService.getAllList(selected, key, articleOnvView, codeDetail);
     }
 
     @GetMapping("/getArticleNum")
-    public long getArticleNum() {
-        return boardService.getArticleNum();
+    public long getArticleNum(String key, String selected, String codeDetails) {
+        return boardService.getArticleNum(key, selected, codeDetails);
+    }
+
+    @GetMapping("/BoardComment")
+    public List<CommentDTO> getComments(long boardIdx, int commentsOnView){
+        return boardService.getComments(boardIdx, commentsOnView);
     }
 
 
