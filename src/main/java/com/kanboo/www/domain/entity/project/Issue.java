@@ -34,6 +34,10 @@ public class Issue {
     private String issueState;
     private String issueGitFile;
 
+    public void changeIssueState(String issueState) {
+        this.issueState = issueState;
+    }
+
     public IssueDTO entityToDto() {
         return IssueDTO.builder()
                 .issueIdx(issueIdx)

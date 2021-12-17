@@ -13,6 +13,7 @@ import com.kanboo.www.service.inter.project.IssueService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,11 +58,10 @@ public class IssueServiceImpl implements IssueService {
 	}
 
 	@Override
+	@Transactional
 	public IssueDTO updateIssue(IssueDTO issueDTO, String selectedIndex) {
-		Issue byIssueIdx = issueRepository.findByIssueIdx(issueDTO.getIssueIdx());
-		IssueDTO dto = byIssueIdx.entityToDto();
-		dto.setIssueState(selectedIndex);
-		Issue issue = issueRepository.save(dto.dtoToEntity());
+		Issue issue = issueRepository.findByIssueIdx(issueDTO.getIssueIdx());
+		issue.changeIssueState(selectedIndex);
 		return issue.entityToDto();
 	}
 

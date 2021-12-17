@@ -43,7 +43,7 @@ const scheduler = {
         '기타'
       ],
 
-      data :[
+      fakedata :[
         {
           id : '16',
           start: '2021-12-09 09:15',
@@ -254,6 +254,7 @@ const scheduler = {
         },
       ],
       copiedData : [{}],
+      data : [],
       realData :[],
       ganttData : [
         {
@@ -271,7 +272,6 @@ const scheduler = {
     },
 
     setSelectDate(state, event){
-      console.log(event)
       state.selectedDate = event
     },
 
@@ -441,6 +441,9 @@ const scheduler = {
       }
       state.isToggle = !state.isToggle
     },
+    setData(state, arr){
+      state.data = arr
+    }
   },
 }
 

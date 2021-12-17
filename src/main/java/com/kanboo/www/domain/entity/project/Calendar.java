@@ -43,6 +43,18 @@ public class Calendar {
     private String calDelAt;
     private String calDelResn;
 
+    public void changeStartDate(LocalDateTime calStartDate) {
+        this.calStartDate = calStartDate;
+    }
+
+    public void changeEndDate(LocalDateTime calEndDate) {
+        this.calEndDate = calEndDate;
+    }
+
+    public void changeTitle(String calTitle) {
+        this.calTitle = calTitle;
+    }
+
     public CalendarDTO entityToDto() {
         return CalendarDTO.builder()
                 .calIdx(calIdx)

@@ -14,7 +14,7 @@
         Content : {{a.issueCn}} <br><br>
         {{a.member.memNick}}&nbsp;&nbsp;{{a.issueDate}}&nbsp;&nbsp;{{a.currentTime}}
         
-        <select class="stateSelect" v-model="a.issueState" @change="showMeTheConsole" >
+        <select class="stateSelect" v-model="a.issueState" @change="updateIssueState" >
           <option>버그</option>
           <option>수정중</option>
           <option>완료</option>
@@ -41,7 +41,7 @@ export default {
       setInsertedContent : 'git/setInsertedContent',
       getFileList : 'git/getFileList',
     }),
-    showMeTheConsole(e){
+    updateIssueState(e){
       let selectedIndex = e.target.options.selectedIndex 
       switch (selectedIndex) {
         case 0:

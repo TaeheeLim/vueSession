@@ -7,6 +7,7 @@
         hide-view-selector
         :time-from="0 * 60"
         :time-to="24 * 60"
+        :transitions="false"
         active-view="week"
         :disable-views="['years', 'year', 'month', 'day']"
         resize-x
@@ -15,8 +16,8 @@
         class="vuecal--dark-theme vuecal--full-height-delete"
 
         @event-delete="deleteEventFunction"
-        @event-duration-change="resizeUpdateEventFunction"
-        @event-drop="dropUpdateEventFunction"
+        @event-duration-change="updateEventFunction"
+        @event-drop="updateEventFunction"
 
         :selected-date=$store.state.scheduler.selectedDate
         ref="vuecal"
@@ -55,8 +56,8 @@ export default {
       setCallAddFunction : 'scheduler/setCallAddFunction',
       closeModal : 'scheduler/closeModal',
       toggleAllDayContent : 'scheduler/toggleAllDayContent',
+      setData : 'scheduler/setData',
     }),
-
     deleteEventFunction(e){
       let copy = [...this.$store.state.scheduler.data];
       for(let i = 0; i<copy.length; i++){
@@ -64,35 +65,30 @@ export default {
           copy.splice(i,1);
         }
       }
-      this.$store.state.scheduler.data = copy;
+      this.setData(copy)
     },
 
-    dropUpdateEventFunction(e){
-      let copy = [...this.$store.state.scheduler.data];
+    updateEventFunction(e){
       let momentedStartTime = e.event.start.format('YYYY-MM-DD HH:mm')
       let momentedEndTime = e.event.end.format('YYYY-MM-DD HH:mm')
-
-      for(let i = 0; i<copy.length; i++){
-        if(e.event.id === copy[i].id){
-          copy[i].start = momentedStartTime
-          copy[i].end = momentedEndTime
-        }
+      let dataArr = {
+        calIdx : e.event.id,
+        calStartDate : momentedStartTime,
+        calEndDate : momentedEndTime,
+        calColor : e.event.class,
+        calCn : e.event.content,
+        calTitle : e.event.title,
+        class : e.event.class,
       }
-      this.$store.state.scheduler.data = copy;
-    },
-    resizeUpdateEventFunction(e){
-      let momentedEndTime=e.event.end.format('YYYY-MM-DD HH:mm')
-      let copy = [...this.$store.state.scheduler.data];
-
-      for(let i = 0; i < copy.length; i++){
-        if(e.event.id === copy[i].id){
-          copy[i].end = momentedEndTime
-        }
-      }
-      this.$store.state.scheduler.data = copy;
+      this.callAxios('update', dataArr)
     },
     callCalendarData(){
-      const url = '/scheduler/getAllSchedules'
+      const emptyArr = []
+      this.setData(emptyArr)
+
+      let copy = [...this.$store.state.scheduler.data];
+
+      const url = '/calendar/getAllSchedules'
       this.axios.get( url, {
         params : {
           'project.prjctIdx' : 1,
@@ -100,14 +96,89 @@ export default {
         }
       })
       .then( (r)=>{
-        console.log(r)
+        for(let i = 0; i < r.data.length; i++){
+          r.data[i].calStartDate = r.data[i].calStartDate.replace('T', ' ')
+          r.data[i].calEndDate = r.data[i].calEndDate.replace('T', ' ')
+          const arr = {
+            id :  r.data[i].calIdx,
+            // 테스트데이터 잘못넣어서 start, end거꾸로 넣었음 
+            start: r.data[i].calStartDate,
+            end: r.data[i].calEndDate,
+            title: r.data[i].calTitle,
+            content: r.data[i].calCn,
+            class: r.data[i].calColor,
+
+            // 옵션들을 다룰수있지만 처리하지않음
+            // deletable: true,
+            // resizable: true,
+            // draggable: true,
+            // allDay : false,
+            // isgantt : false,
+          }
+          copy.push(arr)
+          // 삭제여부, 삭제이유도 넘어오지만 처리하지않음
+          // r.data[i].calDelAt
+          // r.data[i].calDelResn
+        } 
+        if(this.$store.state.scheduler.data.length === 0){
+          this.setData(copy)
+        } 
       })
     },
+    
+    callAxios(type, dataArr){
+      switch (dataArr.class) {
+        case "common":
+          dataArr.class = 1
+          break;
+        case "individual":
+          dataArr.class = 2
+          break;
+        case "notice":
+          dataArr.class = 3
+          break;
+        case "emergency":
+          dataArr.class = 4
+          break;
+        case "vacation":
+          dataArr.class = 5
+          break;
+        case "note":
+          dataArr.class = 6
+          break;
+      }
+      if(type === 'update'){
+        const url = '/calendar/updateSchedule'
+        this.axios.post( url, null, {
+          params : {
+            calIdx : dataArr.calIdx,
+            calStartDate : dataArr.calStartDate ,
+            calEndDate : dataArr.calEndDate ,
+            calColor : dataArr.calColor,
+            calTitle : dataArr.calTitle,
+            calCn : dataArr.calCn,
+            'project.prjctIdx' : 1,
+            'member.memIdx' : 1,
+            'codeDetail.codeDetailIdx' : dataArr.class,
+            'codeDetail.masterCode.masterCodeIdx' : 'CAL',
+          }
+        })
+        .then( ()=>{
+          this.callCalendarData()
+        })
+      }
+    }
 
   },
+  watch : {
+  }
 }
 </script>
 
 <style>
+
+.vuecal--dark-theme.vuecal--full-height-delete{
+  transition: all 1s ease;
+}
 
 </style>
