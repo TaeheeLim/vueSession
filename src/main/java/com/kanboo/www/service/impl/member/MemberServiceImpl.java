@@ -62,7 +62,7 @@ public class MemberServiceImpl implements MemberService {
             System.out.println(e.getMessage());
         }
 
-        memberDTO.setRole(new RoleDto(1L, "ROLE_MEMBER"));
+//        memberDTO.setRole(new RoleDto(1L, "ROLE_MEMBER"));
 
         memberDTO.setMemToken(toKen);
         memberDTO.setMemTag(kTag);

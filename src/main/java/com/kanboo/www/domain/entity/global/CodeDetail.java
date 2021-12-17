@@ -6,10 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 @Getter
@@ -21,7 +18,7 @@ public class CodeDetail {
     @Id
     private String codeDetailIdx;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "master_code_idx")
     private MasterCode masterCode;
 
@@ -31,7 +28,7 @@ public class CodeDetail {
     public CodeDetailDto entityToDto() {
         return CodeDetailDto.builder()
                 .codeDetailIdx(codeDetailIdx)
-                .masterCode(masterCode.entityToDto())
+//                .masterCode(masterCode.entityToDto())
                 .codeDetailKo(codeDetailKo)
                 .codeDetailEn(codeDetailEn)
                 .build();

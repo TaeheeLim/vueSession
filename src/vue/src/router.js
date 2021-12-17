@@ -30,6 +30,7 @@ import ErdAndView from './components/container/access/projectDetail/ErdAndView.v
 import Table from './components/component/acess/projectDetail/erdAndView/erd/Table.vue'
 
 import Setting from './components/container/access/projectDetail/Setting.vue'
+import Admin from './components/container/admin/Admin.vue'
 
 
 
@@ -63,6 +64,10 @@ const routes = [
   {
     path: '/projects',
     component: Projects,
+  },
+  {
+    path: '/admin',
+    component : Admin
   },
   {
     path: "/pdtail",

@@ -4,8 +4,8 @@
         <div class="board" v-for="(item, index) in this.boardList" :key="index">
             <div class="name-div">
                 <div>
-                    <div>{{item.name}}</div>
-                    <div>{{item.date}}</div>
+                    <div>{{item.member.memNick}}</div>
+                    <div>{{item.boardDate}}</div>
                 </div>
                 <!-- 이 부분에다가 v-if로 토큰값 비교해서 작성자일 경우 수정,삭제 버튼.. 아닐경우 신고 버튼-->
                 <div class="icon-container" v-if="item.수정했니 === false">
@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="content-div no-read-only" v-if="item.isModify == true">
-                {{ item.content }}
+                {{ item.boardCn }}
             </div>
 
             <div class="content-div read-only" v-if="item.isModify == false">
@@ -42,14 +42,14 @@
             <div id="btn-div">
                 <div @click="like(item); setLikeFlag()" v-if="!likeToggle">
                     <i class="far fa-thumbs-up"></i>
-                    <span>{{ item.좋아요 }} 개</span> 
+                    <span>{{ item.totalLikes }} 개</span>
                 </div>
                 <div class="clickedThumbs-up" @click="cancelLike(item); setLikeFlag()" v-else>
                     <i class="far fa-thumbs-up"></i>
-                    <span>{{ item.좋아요 }} 개</span> 
+                    <span>{{ item.totalLikes }} 개</span>
                 </div>
                 <div>
-                    <button @click="getCommentList(item)" class="comment-btn">댓글 {{ item.댓글수 }}개</button>
+                    <button @click="getCommentList(item)" class="comment-btn">댓글 {{ item.totalComments }}개</button>
                 </div>
             </div>
             <div class="comment-wrapper">
@@ -86,7 +86,7 @@ export default {
     },
     computed : {
         ...mapState({
-            boardList : state=>state.community.boardList,
+            boardList : state => state.community.boardList,
             updateCheck : state => state.community.updateCheck,
         })
     },

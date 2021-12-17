@@ -28,7 +28,7 @@ public class Member {
     private String memImg;
     private String memPass;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "roleIdx")
     private Role role;
 
@@ -42,7 +42,6 @@ public class Member {
                 .memTag(memTag)
                 .memImg(memImg)
                 .memPass(memPass)
-                .role(role.entityToDto())
                 .build();
     }
 
