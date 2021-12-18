@@ -73,11 +73,11 @@ const sign = {
   mutations: {
     isLang(state, payload) {
       if (state.isFirst) {
-        state.signHelp = state.languages.ko.sign;
-        state.loginHelp = state.languages.ko.login;
-        state.findHelp = state.languages.ko.find;
-        state.etcHelp = state.languages.ko.etc;
-        state.welcomeHelp = state.languages.ko.welcome;
+        state.signHelp = state.languages.en.sign;
+        state.loginHelp = state.languages.en.login;
+        state.findHelp = state.languages.en.find;
+        state.etcHelp = state.languages.en.etc;
+        state.welcomeHelp = state.languages.en.welcome;
         state.isFirst = false;
       } else {
         state.signHelp = state.languages[payload].sign;

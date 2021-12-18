@@ -3,6 +3,7 @@ package com.kanboo.www.service.impl.member;
 import com.kanboo.www.domain.entity.member.Ban;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.repository.member.MemberRepository;
+import com.kanboo.www.dto.global.RoleDto;
 import com.kanboo.www.dto.member.BanDTO;
 import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.service.inter.member.MemberService;
@@ -66,10 +67,19 @@ public class MemberServiceImpl implements MemberService {
 
 //        memberDTO.setRole(new RoleDto(1L, "ROLE_MEMBER"));
 
-        memberDTO.setMemToken(toKen);
-        memberDTO.setMemTag(kTag);
+        Member beforeMember = Member.builder()
+                .memIdx(memberDTO.getMemIdx())
+                .memId(memberDTO.getMemId())
+                .memNick(memberDTO.getMemNick())
+                .memCelNum(memberDTO.getMemCelNum())
+                .memToken(toKen)
+                .memTag(kTag)
+                .memImg(memberDTO.getMemImg())
+                .memPass(memberDTO.getMemPass())
+                .role(new RoleDto(2L, "ROLE_MEMBER").dtoToEntity())
+                .build();
 
-        Member member = memberRepository.save(memberDTO.dtoToEntity());
+        Member member = memberRepository.save(beforeMember);
 
         return member.entityToDto();
     }

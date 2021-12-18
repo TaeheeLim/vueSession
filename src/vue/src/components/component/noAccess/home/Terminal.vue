@@ -63,7 +63,7 @@ export default {
       modeText: [`(base console) > `],
       consoleText: [`Kanboo bash`],
       enterText: [
-        "메뉴를 선택해주세요. 도움이 필요하시면 help를 입력해주세요. 1.login 2.sign 3.find 4.clear 5.cd.. 6.cd home 7.help",
+        "Choose the menu. Typing 'help' if you want. 1.login 2.sign 3.find 4.clear 5.cd.. 6.cd home 7.help",
       ],
       classData: [`com`],
       inputType: "text",
@@ -96,7 +96,7 @@ export default {
         this.inputData[0] === "sign"
       ) {
         this.axios
-          .post(`http://localhost:8099/access/idCheck`, header, {
+          .post(`/access/idCheck`, header, {
             params: {
               memId: `${this.inputText}`,
             },
@@ -429,30 +429,24 @@ export default {
       sessionStorage.setItem("memId", this.inputData[1]);
 
       // 자바 로그인 로직 작성 후 주석 해제
-      // this.axios
-      //   .post("http://localhost:8099/access/login", header, {
-      //     params: {
-      //       memId: this.inputData[1],
-      //       memPass: this.inputData[2],
-      //     },
-      //   })
-      //   .then((data) => {
-      //     sessionStorage.setItem("token", data.data);
-      //     if (data.data !== "fail") {
-      //       this.addLine(`(login console) > `, `success`, `com`);
-      //       this.login(loginInfo);
-      //     } else {
-      //       this.addLine(`(login console) > `, `Login access Fail`, `com`);
-      //       this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
-      //     }
-      //   })
-      //   .catch(() => {
-      //     this.addLine(`(login console) > `, `Login access Fail`, `com`);
-      //     this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
-      //   });
-      // this.baseMode();
-
-      this.$router.push("/projects");
+      this.axios
+        .post("/access/login", null, {
+          params: {
+            memId: this.inputData[1],
+            memPass: this.inputData[2],
+          },
+        })
+        .then((data) => {
+          sessionStorage.setItem("token", data.data);
+          if (data.data !== "fail") {
+            this.addLine(`(login console) > `, `success`, `com`);
+            this.$router.push("/projects")
+          } else {
+            this.addLine(`(login console) > `, `Login access Fail`, `com`);
+            this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
+          }
+        })
+      this.baseMode();
     },
 
     signAccess() {
@@ -471,7 +465,7 @@ export default {
       let header = null;
 
       this.axios
-        .post("http://localhost:8099/access/sign", header, {
+        .post("/access/sign", header, {
           params: {
             memId: signInfo.data.memId,
             memPass: signInfo.data.memPass,
@@ -489,11 +483,6 @@ export default {
           this.tokenText = token.data;
           this.sign(signInfo);
         })
-        .catch((err) => {
-          console.error(err);
-          this.addLine(`(sign console) > `, `Sign access Fail`, `com`);
-          this.addLine(`(base console) > `, `${this.welcomeHelp[0]}`, `com`);
-        });
       this.baseMode();
     },
 
@@ -514,7 +503,7 @@ export default {
       }
 
       this.axios
-        .post(`http://localhost:8099/access/${url}`, header, { params })
+        .post(`/access/${url}`, header, { params })
         .then((data) => {
           switch (mode) {
             case "id":
@@ -533,9 +522,6 @@ export default {
               break;
           }
         })
-        .catch(() => {
-          this.addLine(`(find console) > `, `${this.etcHelp[0]}`, "com");
-        });
       this.baseMode();
     },
 

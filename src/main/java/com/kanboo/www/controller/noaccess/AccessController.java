@@ -33,7 +33,6 @@ public class AccessController {
 
     @PostMapping("/sign")
     public String signHandler(MemberDTO memberDTO) {
-        System.out.println(memberDTO);
         MemberDTO member = memberService.signHandler(memberDTO);
         return member.getMemToken();
     }
