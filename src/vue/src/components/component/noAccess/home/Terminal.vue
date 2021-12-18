@@ -114,6 +114,9 @@ export default {
     },
     enter() {
       let data = this.inputText.toLowerCase();
+      if(data === '로그인') data = 'login'
+      if(data === '회원가입') data = 'sign'
+      if(data === '찾기') data = 'find'
       let originalData = this.inputText;
       if (data === "clear") {
         this.consoleText = [`Kanboo bash`];
@@ -567,7 +570,10 @@ export default {
         "cd home",
         "help",
         "en",
-        "ko"
+        "ko",
+        "로그인",
+        "회원가입",
+        "찾기"
       ];
 
       if (this.inputData.length > 0 && this.inputData[0] === "sign") {

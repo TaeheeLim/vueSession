@@ -1,7 +1,10 @@
 package com.kanboo.www.service.inter.member;
 
 import com.kanboo.www.domain.entity.member.Member;
+import com.kanboo.www.dto.member.BanDTO;
 import com.kanboo.www.dto.member.MemberDTO;
+
+import java.util.List;
 
 public interface MemberService {
 
@@ -18,5 +21,7 @@ public interface MemberService {
     MemberDTO findIdHandler(MemberDTO memberDTO);
 
     String resetPwHandler(MemberDTO memberDTO);
+
+    List<MemberDTO> getAllMember();
 
 }

@@ -1,8 +1,9 @@
 package com.kanboo.www.service.impl.member;
 
+import com.kanboo.www.domain.entity.member.Ban;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.repository.member.MemberRepository;
-import com.kanboo.www.dto.global.RoleDto;
+import com.kanboo.www.dto.member.BanDTO;
 import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.service.inter.member.MemberService;
 import com.kanboo.www.util.CreateKTag;
@@ -14,7 +15,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -104,5 +106,21 @@ public class MemberServiceImpl implements MemberService {
         }
 
         return newPw;
+    }
+
+    @Override
+    public List<MemberDTO> getAllMember() {
+
+//        List<Member> all = memberRepository.findAll();
+        List<Member> all = memberRepository.findAllMemberBanInfo();
+        List<MemberDTO> result = new ArrayList<>();
+        for (Member m : all) {
+            MemberDTO memberDTO = m.entityToDto();
+            if(m.getBan() != null) {
+                memberDTO.setBan(m.getBan().entityToDto());
+            }
+            result.add(memberDTO);
+        }
+        return result;
     }
 }

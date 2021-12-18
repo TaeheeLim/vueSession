@@ -4,13 +4,13 @@ const sign = {
     languages: {
       ko: {
         welcome: [
-          "메뉴를 선택해주세요. 1.login 2.sign 3.find 4.clear 5.cd.. 6.cd home 7.help",
+          "메뉴를 선택해주세요. 1.로그인 2.회원가입 3.찾기 4.clear 5.cd.. 6.cd home 7.help",
           `깐부 터미널에 오신것을 환영합니다. 이 공간에서의 모든 로직은 모두 타이핑으로 이루어집니다.`,
           `다음 메뉴를 원하시는 메뉴를 타이핑해주세요. 로그인을 하시려면 login을 타이핑 하시면 됩니다.`,
           `메뉴 설명`,
-          `1. login : 로그인`,
-          `2. sign : 회원가입`,
-          `3. find : 아이디 , 비밀번호 찾기`,
+          `1. 로그인`,
+          `2. 회원가입`,
+          `3. 찾기 : 아이디 , 비밀번호 찾기`,
           `4. clear : 모든 내용 지우기`,
           `5. cd .. : 한 단계 뒤로`,
           `6. cd home : 처음으로`,
@@ -38,8 +38,8 @@ const sign = {
           `Welcome to Kanboo Terminal. All logic in this space is done by typing.`,
           `Please type in the menu you want the next menu to be. To log in, just type login.`,
           "Menu Description",
-          `1. login : login`,
-          `2. sign: sign up for membership`,
+          `1. login`,
+          `2. sign`,
           `3. find : Find ID and password`,
           `4. clear : clear everything`,
           `5. cd .. : one step back `,

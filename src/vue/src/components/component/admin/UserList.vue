@@ -13,11 +13,10 @@
           :end="data.end"
         >
           <span> Id : {{ data.id }} #{{ data.tag }} </span>
-
           <span style="text-align: left">
-            상태 :
+            상태 : 
             <!-- {{ data.start !== '' ? isBan(data.start, data.end) : '정상' }} -->
-            <select @change="(e) => modifyState(e, data.id)">
+            <select @change="(e) => modifyState(e, data.idx)">
               <option :selected="data.start == ''" value="정상">정상</option>
               <option
                 :selected="isBan(data.start, data.end) == '7일 정지'"
@@ -49,7 +48,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import moment from "moment";
 export default {
   data() {
@@ -64,15 +63,22 @@ export default {
       userListData: (state) => state.userList.userListData,
     }),
   },
+  mounted() {
+    this.setMemberList();
+  },
   methods: {
     ...mapMutations({
       update: "userList/update",
+    }),
+    ...mapActions({
+      setMemberList: "userList/setMemberList"
     }),
     isBan(start, end) {
       let startDay = moment(start, "YYYY-MM-DD");
       let endDay = moment(end, "YYYY-MM-DD");
 
       let info = startDay.from(endDay).split(" ");
+      console.log(info)
       // 7일정지 , 30일정지 , 영구정지
       switch (info[0]) {
         case "a":
@@ -97,9 +103,9 @@ export default {
       result += " 남음";
       return result;
     },
-    modifyState(e, id) {
+    modifyState(e, idx) {
       let payload = [];
-      payload.push(id, e.target.value);
+      payload.push(idx, e.target.value);
       this.update(payload);
     },
   },

@@ -32,6 +32,9 @@ public class Member {
     @JoinColumn(name = "roleIdx")
     private Role role;
 
+    @OneToOne(mappedBy = "member")
+    private Ban ban;
+
     public MemberDTO entityToDto() {
         return MemberDTO.builder()
                 .memIdx(memIdx)

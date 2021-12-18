@@ -24,6 +24,7 @@ public class MemberDTO {
     private String memImg;
     private String memPass;
     private RoleDto role;
+    private BanDTO ban;
 
     public Member dtoToEntity() {
         return Member.builder()
@@ -36,6 +37,7 @@ public class MemberDTO {
                 .memImg(memImg)
                 .memPass(memPass)
                 .role(role.dtoToEntity())
+                .ban(ban.dtoToEntity())
                 .build();
     }
 }
