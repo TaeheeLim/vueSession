@@ -20,6 +20,7 @@ public class CompilerServiceImpl implements CompilerService {
     private final SaveCompileFile saveCompileFile;
     private final CompilerUtil compilerUtil;
     private static final String rootPath = "./compileFiles/";
+    private final CompilerRepository compilerRepository;
 
     @Override
     public Map<String, String> runDemo(String code) {
@@ -58,6 +59,7 @@ public class CompilerServiceImpl implements CompilerService {
 
         return compilerUtil.terminalCompile(cmdList.get("runJarCmd"));
     }
+
 
 
 }

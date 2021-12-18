@@ -11,4 +11,6 @@ public interface IssueService {
 	List<IssueDTO> IssueHandler(Long projectIdx);
 
 	IssueDTO updateIssue(IssueDTO issueDTO, String selectedIndex);
+
+	List<IssueDTO> getLastestIssue(Long projectIdx);
 }

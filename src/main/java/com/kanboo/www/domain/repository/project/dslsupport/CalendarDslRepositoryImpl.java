@@ -15,6 +15,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,20 @@ public class CalendarDslRepositoryImpl implements CalendarDslRepository{
 				.where(
 						qCalendar.project.prjctIdx.eq(projectIdx)
 								.and(booleanBuilder)
+				)
+				.fetch();
+	}
+
+	@Override
+	public List<Calendar> findAllByThisWeek(Long projectIdx, LocalDateTime start, LocalDateTime end) {
+		QCalendar qCalendar = QCalendar.calendar;
+
+		JPAQuery<Calendar> query = new JPAQuery<>(em);
+
+		return query.from(qCalendar)
+				.where(
+						qCalendar.project.prjctIdx.eq(projectIdx)
+								.and(qCalendar.calStartDate.between(start, end))
 				)
 				.fetch();
 	}

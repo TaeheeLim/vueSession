@@ -14,4 +14,6 @@ public interface BoardService {
     long getArticleNum(String keyword, String selected, String codeDetails);
 
     List<CommentDTO> getComments(long boardIdx, int commentsOnView);
+
+    List<BoardDTO> getProjectLastest(Long projectIdx);
 }

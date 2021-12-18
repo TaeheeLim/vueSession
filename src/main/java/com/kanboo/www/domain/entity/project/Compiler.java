@@ -23,10 +23,7 @@ public class Compiler {
     @JoinColumn(name = "prjct_idx")
     private Project project;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "com_idx")
-    private Compiler compiler;
-
+    private Long parentComIdx;
     private String comSe;
     private String comNm;
 
@@ -34,7 +31,7 @@ public class Compiler {
         return CompilerDTO.builder()
                 .comIdx(comIdx)
                 .project(project.entityToDto())
-                .compiler(compiler.entityToDto())
+                .parentComIdx(parentComIdx)
                 .comSe(comSe)
                 .comNm(comNm)
                 .build();

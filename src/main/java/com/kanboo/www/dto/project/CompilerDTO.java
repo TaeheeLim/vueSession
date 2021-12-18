@@ -20,7 +20,7 @@ public class CompilerDTO {
 
     private Long comIdx;
     private ProjectDTO project;
-    private CompilerDTO compiler;
+    private Long parentComIdx;
     private String comSe;
     private String comNm;
 
@@ -28,7 +28,7 @@ public class CompilerDTO {
         return Compiler.builder()
                 .comIdx(comIdx)
                 .project(project.dtoToEntity())
-                .compiler(compiler.dtoToEntity())
+                .parentComIdx(parentComIdx)
                 .comSe(comSe)
                 .comNm(comNm)
                 .build();

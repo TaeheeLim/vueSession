@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,5 +69,15 @@ public class CalendarServiceImpl implements CalendarService {
 
 		Calendar calendar = calendarRepository.save(calendarDTO.dtoToEntity());
 		return calendar.entityToDto();
+	}
+
+	@Override
+	public List<CalendarDTO> getThisWeekSchedule(Long projectIdx, LocalDateTime startDate, LocalDateTime endDate) {
+		List<Calendar> calendarList = calendarRepository.findAllByThisWeek(projectIdx, startDate, endDate);
+		List<CalendarDTO> list = new ArrayList<>();
+		calendarList.forEach(item -> {
+			list.add(item.entityToDto());
+		});
+		return list;
 	}
 }

@@ -16,5 +16,5 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardDSLRep
 
     List<Comment> getComments(long boardIdx, int commentsOnView);
 
-
+    List<Board> findByPrjctIdxOnFive(Long projectIdx);
 }

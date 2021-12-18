@@ -51,5 +51,14 @@ public class BoardServiceImpl implements BoardService {
         return list;
     }
 
+    @Override
+    public List<BoardDTO> getProjectLastest(Long projectIdx) {
+        List<Board> boards = boardRepository.findByPrjctIdxOnFive(projectIdx);
+        List<BoardDTO> boardDTOS = new ArrayList<>();
+        boards.forEach(item -> {
+            boardDTOS.add(item.entityToDto());
+        });
 
+        return boardDTOS;
+    }
 }

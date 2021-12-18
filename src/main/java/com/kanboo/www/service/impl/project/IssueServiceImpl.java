@@ -65,4 +65,14 @@ public class IssueServiceImpl implements IssueService {
 		return issue.entityToDto();
 	}
 
+	@Override
+	public List<IssueDTO> getLastestIssue(Long projectIdx) {
+		List<Issue> issueList = issueRepository.findAllByProjectIdxDesc(projectIdx);
+		List<IssueDTO> issueDTOS = new ArrayList<>();
+		issueList.forEach(item -> {
+			issueDTOS.add(item.entityToDto());
+		});
+		return issueDTOS;
+	}
+
 }

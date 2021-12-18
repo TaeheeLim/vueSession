@@ -1,14 +1,19 @@
 package com.kanboo.www.dto.project;
 
+import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.entity.project.Project;
+import com.kanboo.www.dto.member.ProjectMemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
+import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data @Builder
 @NoArgsConstructor
@@ -22,6 +27,8 @@ public class ProjectDTO {
     private int prjctProgress;
     private String prjctDelAt;
     private String prjctComplAt;
+    private String prjctReadMe;
+    private List<ProjectMemberDTO> projectMembers = new ArrayList<>();
 
     public Project dtoToEntity() {
         return Project.builder()
@@ -32,6 +39,7 @@ public class ProjectDTO {
                 .prjctProgress(prjctProgress)
                 .prjctDelAt(prjctDelAt)
                 .prjctComplAt(prjctComplAt)
+                .prjctReadMe(prjctReadMe)
                 .build();
     }
 }
