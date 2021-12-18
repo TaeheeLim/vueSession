@@ -1,5 +1,6 @@
 package com.kanboo.www.service.impl.project;
 
+import com.kanboo.www.domain.entity.global.CodeDetail;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.entity.project.Calendar;
 import com.kanboo.www.domain.entity.project.Project;
@@ -57,17 +58,20 @@ public class CalendarServiceImpl implements CalendarService {
 
 	@Override
 	public CalendarDTO insertCalendar(CalendarDTO calendarDTO) {
-		Project project = projectRepository.findByPrjctIdx(calendarDTO.getProject().getPrjctIdx());
-		Member member = memberRepository.findByMemIdx(calendarDTO.getProject().getPrjctIdx());
-		Member findRoleByMemIdx = memberRepository.findByMemIdx(calendarDTO.getMember().getMemIdx());
-
-		MemberDTO memberDTO = new MemberDTO();
-		memberDTO.setRole( findRoleByMemIdx.getRole().entityToDto() );
-		calendarDTO.setProject(project.entityToDto());
-		calendarDTO.setMember(member.entityToDto());
-		calendarDTO.getMember().setRole(memberDTO.getRole());
-
-		Calendar calendar = calendarRepository.save(calendarDTO.dtoToEntity());
+		Member m = Member.builder().memIdx(calendarDTO.getMember().getMemIdx()).build();
+		Project p = Project.builder().prjctIdx(calendarDTO.getProject().getPrjctIdx()).build();
+		CodeDetail cd = CodeDetail.builder().codeDetailIdx(calendarDTO.getCodeDetail().getCodeDetailIdx()).build();
+		Calendar c = Calendar.builder()
+				.project(p)
+				.member(m)
+				.calStartDate(calendarDTO.getCalStartDate())
+				.calEndDate(calendarDTO.getCalEndDate())
+				.calColor(calendarDTO.getCalColor())
+				.codeDetail(cd)
+				.calCn(calendarDTO.getCalCn())
+				.calTitle(calendarDTO.getCalTitle())
+				.build();
+		Calendar calendar = calendarRepository.save(c);
 		return calendar.entityToDto();
 	}
 

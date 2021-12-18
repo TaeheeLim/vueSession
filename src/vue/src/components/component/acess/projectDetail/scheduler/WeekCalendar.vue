@@ -71,6 +71,7 @@ export default {
         }
       }
       this.setData(copy)
+      this.callAxios('delete', e)
     },
 
     updateEventFunction(e){
@@ -97,6 +98,7 @@ export default {
       }
       this.callAxios('update', dataArr)
     },
+
     callCalendarData(){
       let copy = [...this.$store.state.scheduler.data];
 
@@ -107,38 +109,38 @@ export default {
           'member.memIdx' : 1,
         }
       })
-      .then( (r)=>{
-        for(let i = 0; i < r.data.length; i++){
-          r.data[i].calStartDate = r.data[i].calStartDate.replace('T', ' ')
-          r.data[i].calEndDate = r.data[i].calEndDate.replace('T', ' ')
-          const arr = {
-            id :  r.data[i].calIdx,
-            start: r.data[i].calStartDate,
-            end: r.data[i].calEndDate,
-            title: r.data[i].calTitle,
-            content: r.data[i].calCn,
-            class: r.data[i].calColor,
+          .then( (r)=>{
+            for(let i = 0; i < r.data.length; i++){
+              r.data[i].calStartDate = r.data[i].calStartDate.replace('T', ' ')
+              r.data[i].calEndDate = r.data[i].calEndDate.replace('T', ' ')
+              const arr = {
+                id :  r.data[i].calIdx,
+                start: r.data[i].calStartDate,
+                end: r.data[i].calEndDate,
+                title: r.data[i].calTitle,
+                content: r.data[i].calCn,
+                class: r.data[i].calColor,
 
-            // 옵션들을 다룰수있지만 처리하지않음
-            // deletable: true,
-            // resizable: true,
-            // draggable: true,
-            // allDay : false,
-            // isgantt : false,
-          }
-          copy.push(arr)
-          
-          // 삭제여부, 삭제이유도 넘어오지만 처리하지않음
-          // r.data[i].calDelAt
-          // r.data[i].calDelResn
-        } 
-        if(this.datas.length === 0){
-          this.setData(copy)
-        } 
+                // 옵션들을 다룰수있지만 처리하지않음
+                // deletable: true,
+                // resizable: true,
+                // draggable: true,
+                // allDay : false,
+                // isgantt : false,
+              }
+              copy.push(arr)
 
-      })
+              // 삭제여부, 삭제이유도 넘어오지만 처리하지않음
+              // r.data[i].calDelAt
+              // r.data[i].calDelResn
+            }
+            if(this.datas.length === 0){
+              this.setData(copy)
+            }
+
+          })
     },
-    
+
     callAxios(type, dataArr){
       switch (dataArr.class) {
         case "common":
@@ -177,6 +179,17 @@ export default {
           }
         })
       }
+
+      if(type === 'delete'){
+        const url = '/calendar/deleteSchedule'
+        this.axios.post( url, null, {
+          params : {
+            calIdx : dataArr.id,
+          }
+        })
+
+      }
+
     }
 
   },
