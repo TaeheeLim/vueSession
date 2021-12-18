@@ -14,4 +14,6 @@ public interface BoardDSLRepository {
     long getArticleNum(String keyword, String selected, String codeDetails);
 
     List<Comment> getComments(long boardIdx, int commentsOnView);
+
+    List<Board> findByPrjctIdxOnFive(Long projectIdx);
 }

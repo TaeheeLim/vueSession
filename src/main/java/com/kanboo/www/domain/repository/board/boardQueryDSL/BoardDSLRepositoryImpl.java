@@ -6,6 +6,7 @@ import com.kanboo.www.domain.entity.global.QMasterCode;
 import com.kanboo.www.domain.entity.member.QMember;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.JPAExpressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -120,6 +121,20 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
                         .offset(commentsOnView)
                         .limit(5)
                         .fetch();
+    }
+
+    @Override
+    public List<Board> findByPrjctIdxOnFive(Long projectIdx) {
+        QBoard board = QBoard.board;
+        QProjectBoard projectBoard = QProjectBoard.projectBoard;
+
+        JPAQuery<Board> query = new JPAQuery<>(em);
+
+        return query.from(projectBoard, board)
+                .where(projectBoard.project.prjctIdx.eq(projectIdx))
+                .orderBy(board.boardDate.desc())
+                .offset(0) .limit(6)
+                .fetch();
     }
 
 }

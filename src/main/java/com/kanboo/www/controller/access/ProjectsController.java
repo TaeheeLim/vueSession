@@ -39,7 +39,7 @@ public class ProjectsController {
         LocalDate endDate = LocalDate.parse(map.get("prjctEndDate") + "",
                 DateTimeFormatter.ISO_DATE);
 
-        ProjectDTO project = new ProjectDTO(null, prjctNm, startDate, endDate, 0, "N", "N");
+        ProjectDTO project = new ProjectDTO(null, prjctNm, startDate, endDate, 0, "N", "N", null, null);
 
         ProjectDTO saveProject = projectService.save(project);
 
