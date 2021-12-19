@@ -62,9 +62,13 @@ export default {
       })
           .then(res => {
             for (let i of res.data) {
-            
-              if(i.name === 'package-lock.json') {continue}
-              if(i.name === '.DS_Store') {continue}  
+
+              if (i.name === 'package-lock.json') {
+                continue
+              }
+              if (i.name === '.DS_Store') {
+                continue
+              }
               
               const a = {
                 idx: i.sha,
