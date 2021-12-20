@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.DatatypeConverter;
 import java.security.Key;
 import java.util.Date;
@@ -15,7 +16,7 @@ import java.util.Date;
 public class JwtSecurityService {
     private static final String SECRET_KEY = "ashjkdlehfaljksdhfcxbnakljshedfnjklasmehasdfasdfasdfsdafasdfasdfasdfasdfasdfsdafsdafsdafsdafasdfsdafasdfsdfsdffkljahsdkljfhasdkljfhalsjkdfh";
 
-    public String createToken(String member, Long expTime) {
+    public String createToken(String memTag, Long expTime) {
         if(expTime <= 0) {
             throw new RuntimeException("Expired Time must exceed zero");
         }
@@ -23,15 +24,17 @@ public class JwtSecurityService {
         SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS512;
         byte[] secretKeyBytes = DatatypeConverter.parseBase64Binary(SECRET_KEY);
         Key signingKey = new SecretKeySpec(secretKeyBytes, signatureAlgorithm.getJcaName());
-
         return Jwts.builder()
-                .setSubject(member)
+                .setSubject(memTag)
                 .signWith(signingKey, signatureAlgorithm)
                 .setExpiration(new Date(System.currentTimeMillis() + expTime))
                 .compact();
     }
 
     public String getToken(String token) {
+        if(token == null || token.isEmpty()) {
+            return null;
+        }
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
                 .build()

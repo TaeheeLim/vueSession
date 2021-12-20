@@ -16,4 +16,6 @@ public interface BoardService {
     List<CommentDTO> getComments(long boardIdx, int commentsOnView);
 
     List<BoardDTO> getProjectLastest(Long projectIdx);
+
+    boolean deleteBoard(long boardIdx);
 }

@@ -3,10 +3,7 @@ package com.kanboo.www.domain.entity.member;
 import com.kanboo.www.domain.entity.member.idclass.ProjectMemberId;
 import com.kanboo.www.domain.entity.project.Project;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 

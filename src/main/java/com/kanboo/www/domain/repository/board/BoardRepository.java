@@ -15,4 +15,8 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardDSLRep
     long getArticleNum(String keyword, String selected, String codeDetails);
 
     List<Comment> getComments(long boardIdx, int commentsOnView);
+
+    Board findByBoardIdx(long boardIdx);
+
+    long deleteByBoardIdx(long boardIdx);
 }

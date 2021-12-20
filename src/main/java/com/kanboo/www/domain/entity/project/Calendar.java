@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Subselect;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -41,7 +42,10 @@ public class Calendar {
     private String calCn;
     private String calTitle;
     private String calDelAt;
-    private String calDelResn;
+    private String calIsAllDay;
+    private String calIsDeletable;
+    private String calIsResizable;
+
 
     public void changeStartDate(LocalDateTime calStartDate) {
         this.calStartDate = calStartDate;
@@ -58,16 +62,15 @@ public class Calendar {
     public CalendarDTO entityToDto() {
         return CalendarDTO.builder()
                 .calIdx(calIdx)
-                .project(project.entityToDto())
-                .member(member.entityToDto())
                 .calStartDate(calStartDate)
                 .calEndDate(calEndDate)
                 .calColor(calColor)
-                .codeDetail(codeDetail.entityToDto())
                 .calCn(calCn)
                 .calTitle(calTitle)
                 .calDelAt(calDelAt)
-                .calDelResn(calDelResn)
+                .calIsAllDay(calIsAllDay)
+                .calIsDeletable(calIsDeletable)
+                .calIsResizable(calIsResizable)
                 .build();
     }
 }

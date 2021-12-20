@@ -6,10 +6,11 @@
     <div class="project-state">
         <div id="project-top">
             <div id="img-div">
-                <img id="profile-img" src="@/assets/profile.png" @click="search">
+                <img v-if="member.memImg === null" id="profile-img" src="@/assets/profile.png" alt="profile">
+                <img v-else id="profile-img" :src="member.memImg">
             </div>
             <div id="nick-div">
-                KADE
+                {{member.memNick}}
             </div>
         </div>
         <div id="profile-list">
@@ -20,12 +21,12 @@
                 <div class="projects-div-ul">
                     <ul class="projects-ul">
                         <li v-for="(item, index) in projectList" :key="index">
-                            <div v-if="item.isComplete === 'N'">
+                            <div v-if="item.prjctComplAt === 'n'">
                                 <span>
                                     <i class="far fa-circle"></i>
                                 </span>
                                 <span class="test-span">
-                                    <router-link to="/pdtail/dashboard">{{ item.name }}</router-link>
+                                    <router-link to="/pdtail/dashboard">{{ item.prjctNm }}</router-link>
                                 </span>
                             </div>
                         </li>
@@ -40,12 +41,12 @@
                     <div>
                         <ul class="projects-ul">
                             <li v-for="(item, index) in projectList" :key="index">
-                                <div v-if="item.isComplete === 'Y'">
+                                <div v-if="item.prjctComplAt === 'y'">
                                     <span>
                                         <i class="far fa-circle"></i>
                                     </span>
                                     <span class="test-span">
-                                        <router-link to="/pdtail/dashboard">{{ item.name }} </router-link>
+                                        <router-link to="/pdtail/dashboard">{{ item.prjctNm }} </router-link>
                                     </span>
                                 </div>
                             </li>
@@ -85,6 +86,7 @@ export default {
         ...mapState({
             IsModalOpen : state => state.projectList.IsModalOpen,
             projectList : state => state.projectList.projectList,
+            member: state => state.projectList.member
         })
     },
 
@@ -94,19 +96,25 @@ export default {
         }),
 
         getProjectsList(){
-            this.axios.get('/projectDetail.json').then(e => {
+          //axios address mapping
+            this.axios.get('/pdtail/allList', {
+              params: {
+                token: sessionStorage.getItem('token')
+              }
+            }).then(e => {
                 this.pushToProjectList(e.data)
             })
 
         },
         getLength(){
-            for(let i = 0; i < this.projectList.length; i++){
-                if(this.projectList[i].isComplete === 'N'){
-                    this.progressLength++
-                } else {
-                    this.completeLength++
-                }
-            }
+          //axios mapping 후 주석 해제
+            // for(let i = 0; i < this.projectList.length; i++){
+            //     if(this.projectList[i].isComplete === 'N'){
+            //         this.progressLength++
+            //     } else {
+            //         this.completeLength++
+            //     }
+            // }
         },
 
     },
@@ -117,7 +125,7 @@ export default {
     },
     mounted() {
         this.getProjectsList()
-        this.getLength()
+        // this.getLength()
     },
 }
 </script>

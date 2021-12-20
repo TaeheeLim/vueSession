@@ -1,10 +1,8 @@
 package com.kanboo.www.service.impl.member;
 
-import com.kanboo.www.domain.entity.member.Ban;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.repository.member.MemberRepository;
 import com.kanboo.www.dto.global.RoleDto;
-import com.kanboo.www.dto.member.BanDTO;
 import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.service.inter.member.MemberService;
 import com.kanboo.www.util.CreateKTag;
@@ -17,6 +15,7 @@ import javax.transaction.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +26,7 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
 
     @Override
-    public boolean loginHandler(MemberDTO memberDTO) {
+    public MemberDTO loginHandler(MemberDTO memberDTO) {
 
         Member member = null;
 
@@ -36,11 +35,11 @@ public class MemberServiceImpl implements MemberService {
                     memberDTO.getMemId(),
                     CryptoUtil.encryptSha512(memberDTO.getMemPass())
             );
-
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            return member.entityToDto();
+        } catch (Exception e) {
             System.out.println(e.getMessage());
+            return null;
         }
-        return member != null;
     }
 
     @Override
@@ -59,10 +58,9 @@ public class MemberServiceImpl implements MemberService {
         String password = memberDTO.getMemPass();
 
         try {
-            password = CryptoUtil.encryptSha512(password);
-            memberDTO.setMemPass(password);
+            memberDTO.setMemPass(CryptoUtil.encryptSha512(password));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
 
 //        memberDTO.setRole(new RoleDto(1L, "ROLE_MEMBER"));

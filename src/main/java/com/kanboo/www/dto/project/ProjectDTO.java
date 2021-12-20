@@ -1,6 +1,8 @@
 package com.kanboo.www.dto.project;
 
 import com.kanboo.www.domain.entity.member.ProjectMember;
+import com.kanboo.www.domain.entity.project.Calendar;
+import com.kanboo.www.domain.entity.project.Issue;
 import com.kanboo.www.domain.entity.project.Project;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,8 @@ public class ProjectDTO {
     private String prjctComplAt;
     private String prjctReadMe;
     private List<ProjectMemberDTO> projectMembers = new ArrayList<>();
+    private List<IssueDTO> issueList = new ArrayList<>();
+    private List<CalendarDTO> calendarList = new ArrayList<>();
 
     public Project dtoToEntity() {
         return Project.builder()

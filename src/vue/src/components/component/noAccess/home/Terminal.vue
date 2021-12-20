@@ -437,9 +437,9 @@ export default {
           },
         })
         .then((data) => {
-          sessionStorage.setItem("token", data.data);
-          if (data.data !== "fail") {
+          if (data.data !== "") {
             this.addLine(`(login console) > `, `success`, `com`);
+            sessionStorage.setItem("token", data.data);
             this.$router.push("/projects")
           } else {
             this.addLine(`(login console) > `, `Login access Fail`, `com`);

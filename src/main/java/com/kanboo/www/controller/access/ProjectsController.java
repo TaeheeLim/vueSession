@@ -1,23 +1,24 @@
 package com.kanboo.www.controller.access;
 
+import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.repository.project.CompilerRepository;
 import com.kanboo.www.domain.repository.project.ProjectRepository;
+import com.kanboo.www.dto.member.ProjectMemberDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
+import com.kanboo.www.security.JwtSecurityService;
 import com.kanboo.www.service.inter.project.ProjectService;
 import com.kanboo.www.util.FileSystemUtil;
 import com.kanboo.www.util.SaveCompileFile;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -39,7 +40,12 @@ public class ProjectsController {
         LocalDate endDate = LocalDate.parse(map.get("prjctEndDate") + "",
                 DateTimeFormatter.ISO_DATE);
 
-        ProjectDTO project = new ProjectDTO(null, prjctNm, startDate, endDate, 0, "N", "N", null, null);
+        ProjectDTO project = ProjectDTO.builder()
+                                        .prjctNm(prjctNm)
+                                        .prjctStartDate(startDate)
+                                        .prjctEndDate(endDate)
+                                        .build();
+
 
         ProjectDTO saveProject = projectService.save(project);
 
@@ -91,5 +97,10 @@ public class ProjectsController {
         }
 
         return null;
+    }
+
+    @GetMapping("/allList")
+    public Map<String, Object> getAllList(String token) {
+        return projectService.getAllList(token);
     }
 }

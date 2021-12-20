@@ -6,15 +6,15 @@
                         <i class="fas fa-plus-circle"></i>
                     </div>
             </li>
-            <li class="list-item" v-for="item in projectsList" :key="item">
+            <li class="list-item" v-for="item in projectList" :key="item">
                 <router-link to="/pdtail/dashboard">
                     <div class="detail">
-                        <div class="prjct-name">{{ item.name }}</div>
-                        <div>
-                            <span>기간: {{ item.startDate }} ~ {{ item.endDate }}</span>
-                            <span>진행도: {{ item.progress }}</span>
+                        <div class="prjct-name">{{ item.prjctNm }}</div>
+                        <div class="detail-wrap">
+                            <span>기간: {{ item.prjctStartDate }} ~ {{ item.prjctEndDate }}</span>
+                            <span>진행도: {{ item.prjctProgress }}</span>
                         </div>
-                        <div>팀장: {{ item.PL}}</div>
+                        <div>팀장: </div>
                     </div>
                 </router-link>
             </li>
@@ -23,36 +23,26 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import {mapMutations, mapState} from 'vuex'
 
 
 export default {
     name : 'AddProjects',
     data() {
         return {
-            projectsList : [],
+
         }
+    },
+    computed: {
+      ...mapState({
+        projectList : state => state.projectList.projectList
+      })
     },
     methods: {
         ...mapMutations({
             changeIsModalOpen : 'projectList/changeIsModalOpen',
         }),
-
-        getProjects(){
-            this.axios.get('/projectDetail.json').then(e => {
-                this.projectsList = e.data
-
-            })
-        },
-        
     },
-    mounted() {
-        this.getProjects()
-    },
-    components : {
-        
-    }
-
 }
 </script>
 
@@ -97,9 +87,6 @@ export default {
 .detail > div:nth-child(2) {
     margin-top: 10px;
 }
-.detail > div:nth-child(2) > span:nth-child(2){
-    padding-left: 100px;
-}
 
 .detail > div:nth-child(3) {
     padding-top: 10px;
@@ -140,6 +127,9 @@ li:hover .prjct-name {
     color: white;
 } */
 
-
+.detail-wrap {
+  display: flex;
+  justify-content: space-between;
+}
 
 </style>

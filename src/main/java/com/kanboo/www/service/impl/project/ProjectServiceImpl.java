@@ -2,22 +2,25 @@ package com.kanboo.www.service.impl.project;
 
 import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.entity.project.Compiler;
+import com.kanboo.www.domain.entity.project.Issue;
 import com.kanboo.www.domain.entity.project.Project;
+import com.kanboo.www.domain.repository.member.MemberRepository;
 import com.kanboo.www.domain.repository.project.CompilerRepository;
 import com.kanboo.www.domain.repository.project.ProjectMemberRepository;
 import com.kanboo.www.domain.repository.project.ProjectRepository;
+import com.kanboo.www.dto.member.ProjectMemberDTO;
+import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
+import com.kanboo.www.security.JwtSecurityService;
 import com.kanboo.www.service.inter.project.ProjectService;
 import com.kanboo.www.util.FileSystemUtil;
 import com.kanboo.www.util.SaveCompileFile;
+import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +30,8 @@ public class ProjectServiceImpl implements ProjectService {
     private final FileSystemUtil fileSystemUtil;
     private final CompilerRepository compilerRepository;
     private final SaveCompileFile saveCompileFile;
+    private final JwtSecurityService jwtSecurityService;
+    private final ProjectMemberRepository projectMemberRepository;
 
     @Override
     public ProjectDTO save(ProjectDTO project) {
@@ -99,5 +104,24 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         return result;
+    }
+
+    @Override
+    public Map<String, Object> getAllList(String token) {
+        String exeToken = jwtSecurityService.getToken(token);
+        if(!exeToken.isEmpty()) {
+            Map<String, Object> resultMap = new HashMap<>();
+
+            List<ProjectMember> allList = projectMemberRepository.getAllList(exeToken);
+            List<ProjectMemberDTO> list = new ArrayList<>();
+            allList.forEach(item -> {
+                list.add(item.entityToDto());
+            });
+
+            resultMap.put("projectMemberDtoList", list);
+
+            return resultMap;
+        }
+        return null;
     }
 }

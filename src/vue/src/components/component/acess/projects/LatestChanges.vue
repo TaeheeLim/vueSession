@@ -4,50 +4,54 @@
 </div>
 <div id="contain">
 <div id="change-list" @mousewheel="wheel">
-    <div class="list-detail" v-for="(item,index) in changesList" :key="index">
+    <div v-for="item in projectList" :key="item">
+    <div class="list-detail" v-if="item.issueList.length !== 0 || item.calendarList.length !== 0">
         <div class="list-wrapper">
             <router-link id="prjct-name" to="/pdtail/dashboard">
-                {{ item.name }}
+                {{ item.prjctNm }}
             </router-link>
-            <div class="content-children">
+            <div class="content-children" v-if="item.issueList.length !== 0">
                 <router-link to="/pdtail/dashboard">
                     Issue
                 </router-link>
-                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="(a) in item.issue" :key="a">
-                    <div class="title-wrap" v-if="a.content.length >= 10">{{ `${a.content.substring(0, 10)}...` }}</div>
-                    <div class="title-wrap" v-else>{{ a.content }}</div>
+                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="issue in item.issueList" :key="issue">
+                    <div class="title-wrap" v-if="issue.issueCn.length >= 10">{{ `${issue.issueCn.substring(0, 10)}...` }}</div>
+                    <div class="title-wrap" v-else>{{ issue.issueCn }}</div>
                     <div class="balloon">
                         <div>
-                            <span>{{ a.date }}</span>
-                            <span>{{ a.state }}</span>
+                            <span>{{ issue.issueDate }}</span>
+                            <span>{{ issue.issueState }}</span>
                         </div>
                         <div>
-                            {{ a.content }}
+                            {{ issue.issueCn }}
                         </div>
                     </div>
                 </router-link>
             </div>
-            <div class="content-children">
+            <div class="content-children" v-if="item.calendarList.length !== 0">
                 <router-link to="/pdtail/dashboard">
                     Schedule
                 </router-link>
-                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="a in item.schedule" :key="a">
-                    <div class="title-wrap" v-if="a.content.length >= 10">{{ `${a.content.substring(0, 10)}...` }}</div>
-                    <div class="title-wrap" v-else>{{ a.content }}</div>
+                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="calendar in item.calendarList" :key="calendar">
+                    <div class="title-wrap" v-if="calendar.calCn.length >= 10">{{ `${calendar.calCn.substring(0, 10)}...` }}</div>
+                    <div class="title-wrap" v-else>{{ calendar.calCn }}</div>
                     <div class="balloon">
                         <div>
-                            {{ a.content }}
+                            {{ calendar.calStartDate }}
                         </div>
                     </div>
                 </router-link>
             </div>
         </div>
     </div>
+    </div>
 </div>
 </div>
 </template>
 
 <script>
+import {mapState} from "vuex";
+
 export default {
     name : 'LatestChanges',
     data() {
@@ -61,6 +65,11 @@ export default {
             changesList : [],
         }
         
+    },
+    computed: {
+      ...mapState({
+        projectList: state => state.projectList.projectList
+      })
     },
     methods: {
         //가로 스크롤 ^^
@@ -79,9 +88,10 @@ export default {
             }
         },
         getChanges(){
-            this.axios.get('/projectDetail.json').then(e => {
-                this.changesList = e.data
-            })
+          //axios address mapping
+            // this.axios.get('/projectDetail.json').then(e => {
+            //     this.changesList = e.data
+            // })
         }
     },
     

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,5 +61,18 @@ public class BoardServiceImpl implements BoardService {
         });
 
         return boardDTOS;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteBoard(long boardIdx){
+        Board board = boardRepository.findByBoardIdx(boardIdx);
+
+        if(board != null){
+            board.changeDelAt("Y");
+            return true;
+        }
+
+        return false;
     }
 }

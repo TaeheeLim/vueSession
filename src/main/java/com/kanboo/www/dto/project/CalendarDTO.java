@@ -35,7 +35,10 @@ public class CalendarDTO {
     private String calCn;
     private String calTitle;
     private String calDelAt;
-    private String calDelResn;
+    private String calIsAllDay;
+    private String calIsDeletable;
+    private String calIsResizable;
+
 
     public Calendar dtoToEntity() {
         return Calendar.builder()
@@ -49,7 +52,9 @@ public class CalendarDTO {
                 .calCn(calCn)
                 .calTitle(calTitle)
                 .calDelAt(calDelAt)
-                .calDelResn(calDelResn)
+                .calIsAllDay(calIsAllDay)
+                .calIsDeletable(calIsDeletable)
+                .calIsResizable(calIsResizable)
                 .build();
     }
 }

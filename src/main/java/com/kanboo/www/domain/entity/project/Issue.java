@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Subselect;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -41,8 +42,6 @@ public class Issue {
     public IssueDTO entityToDto() {
         return IssueDTO.builder()
                 .issueIdx(issueIdx)
-                .project(project.entityToDto())
-                .member(member.entityToDto())
                 .issueCn(issueCn)
                 .issueDate(issueDate)
                 .issueState(issueState)

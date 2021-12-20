@@ -41,7 +41,7 @@ export default {
 }
 
 nav {
-  widows: 100%;
+  width: 100%;
   height: 70px;
   background: #75757529;
   color: #ffffff;

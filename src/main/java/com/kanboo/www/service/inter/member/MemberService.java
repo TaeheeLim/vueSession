@@ -1,14 +1,12 @@
 package com.kanboo.www.service.inter.member;
 
-import com.kanboo.www.domain.entity.member.Member;
-import com.kanboo.www.dto.member.BanDTO;
 import com.kanboo.www.dto.member.MemberDTO;
 
 import java.util.List;
 
 public interface MemberService {
 
-    boolean loginHandler(MemberDTO memberDTO);
+    MemberDTO loginHandler(MemberDTO memberDTO);
 
     MemberDTO signHandler(MemberDTO memberDTO);
 

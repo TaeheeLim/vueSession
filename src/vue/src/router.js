@@ -1,4 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router"
+import axios from 'axios'
 
 // import global from './routers/global'
 import Home from './components/container/noAccess/Home.vue'
@@ -64,6 +65,22 @@ const routes = [
   {
     path: '/projects',
     component: Projects,
+    beforeEnter: (to, from, next) => {
+      const _token = sessionStorage.getItem("token")
+      const url = '/token/check'
+
+      axios.post(url, null,{
+        params: {
+          token: _token
+        }
+      }).then(res => {
+        if(res.data !== "") {
+          next()
+        } else {
+          next('/signin')
+        }
+      })
+    }
   },
   {
     path: '/admin',
