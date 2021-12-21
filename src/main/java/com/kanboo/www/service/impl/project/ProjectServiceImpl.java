@@ -1,5 +1,6 @@
 package com.kanboo.www.service.impl.project;
 
+import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.entity.project.Compiler;
 import com.kanboo.www.domain.entity.project.Issue;
@@ -9,6 +10,8 @@ import com.kanboo.www.domain.repository.project.CompilerRepository;
 import com.kanboo.www.domain.repository.project.ProjectMemberRepository;
 import com.kanboo.www.domain.repository.project.ProjectRepository;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
+import com.kanboo.www.dto.member.ProjectMemberDTOInter;
+import com.kanboo.www.dto.member.nativedto.ProjectMemberNative;
 import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
 import com.kanboo.www.security.JwtSecurityService;
@@ -17,8 +20,12 @@ import com.kanboo.www.util.FileSystemUtil;
 import com.kanboo.www.util.SaveCompileFile;
 import com.querydsl.core.Tuple;
 import lombok.RequiredArgsConstructor;
+import org.qlrm.mapper.JpaResultMapper;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.util.*;
 
@@ -32,11 +39,14 @@ public class ProjectServiceImpl implements ProjectService {
     private final SaveCompileFile saveCompileFile;
     private final JwtSecurityService jwtSecurityService;
     private final ProjectMemberRepository projectMemberRepository;
+    private final MemberRepository memberRepository;
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
-    public ProjectDTO save(ProjectDTO project) {
-        Project save = projectRepository.save(project.dtoToEntity());
-        return save.entityToDto();
+    public Project save(ProjectDTO project) {
+        return projectRepository.save(project.dtoToEntity());
     }
 
     @Override
@@ -123,5 +133,72 @@ public class ProjectServiceImpl implements ProjectService {
             return resultMap;
         }
         return null;
+    }
+
+    @Override
+    public void saveProject(Map<String, Object> param) {
+        /** 파라미터 조회 */
+        ProjectDTO project = (ProjectDTO) param.get("project");
+        String tag = param.get("tag") + "";
+
+        /** 저장 */
+        Member member = memberRepository.findByMemTag(tag);
+        Project saveProject = projectRepository.save(project.dtoToEntity());
+        ProjectMember pm = ProjectMember.builder()
+                .project(saveProject)
+                .member(member)
+                .prjctMemRole("PM")
+                .build();
+        ProjectMember save = projectMemberRepository.save(pm);
+
+        String successYn = "N";
+        if(save != null) {
+            Map<String, String> creatDirPath = new HashMap<>();
+            creatDirPath.put("rootPath", "/compileFiles/member");
+            creatDirPath.put("project", saveProject.getPrjctIdx() + saveProject.getPrjctNm());
+            creatDirPath.put("path", "project");
+            creatDirPath.put("name", "src");
+            creatDirPath.put("type", "dir");
+            fileSystemUtil.createFileOrDir(creatDirPath);
+
+            creatDirPath.put("name", "class");
+            fileSystemUtil.createFileOrDir(creatDirPath);
+
+            creatDirPath.put("name", "META-INF");
+            fileSystemUtil.createFileOrDir(creatDirPath);
+
+            creatDirPath.put("name", "lib");
+            fileSystemUtil.createFileOrDir(creatDirPath);
+
+            Map<String, String> createFile = new HashMap<>();
+            StringBuilder manifest = new StringBuilder();
+            manifest.append("Class-Path: ../class/\n");
+            manifest.append("Main-Class: Main");
+
+            createFile.put("filePath", "/META-INF/");
+            createFile.put("fileName", "Manifest");
+            createFile.put("fileExtension", ".text");
+            createFile.put("fileDetail", manifest.toString());
+            createFile.put("project", "/member/" + saveProject.getPrjctIdx() + saveProject.getPrjctNm() + "/project");
+            saveCompileFile.saveFile(createFile);
+
+            StringBuilder main = new StringBuilder();
+            main.append("public class Main {\n");
+            main.append("   public static void main(String[] args) {\n");
+            main.append("       \n");
+            main.append("   }\n");
+            main.append("}");
+
+            createFile.put("filePath", "/src/");
+            createFile.put("fileName", "Main");
+            createFile.put("fileExtension", ".java");
+            createFile.put("fileDetail", main.toString());
+            boolean isSave = saveCompileFile.saveFile(createFile);
+            if(isSave) {
+                param.put("project", saveProject.entityToDto());
+                successYn = "Y";
+            }
+        }
+        param.put("successYn",successYn);
     }
 }

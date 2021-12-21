@@ -2,10 +2,7 @@ package com.kanboo.www.domain.entity.member;
 
 import com.kanboo.www.domain.entity.global.Role;
 import com.kanboo.www.dto.member.MemberDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 

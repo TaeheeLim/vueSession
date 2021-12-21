@@ -24,4 +24,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberDsl
 
     Member findByMemId(String memId);
 
+    Member findByMemTag(String memTag);
+
 }

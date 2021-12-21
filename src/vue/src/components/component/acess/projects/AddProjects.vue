@@ -7,7 +7,7 @@
                     </div>
             </li>
             <li class="list-item" v-for="item in projectList" :key="item">
-                <router-link to="/pdtail/dashboard">
+                <a @click="moveToDashBoard(item)">
                     <div class="detail">
                         <div class="prjct-name">{{ item.prjctNm }}</div>
                         <div class="detail-wrap">
@@ -16,7 +16,7 @@
                         </div>
                         <div>팀장: </div>
                     </div>
-                </router-link>
+                </a>
             </li>
         </ul>
     </div>
@@ -41,6 +41,7 @@ export default {
     methods: {
         ...mapMutations({
             changeIsModalOpen : 'projectList/changeIsModalOpen',
+            moveToDashBoard: 'projectList/moveToDashBoard'
         }),
     },
 }

@@ -1,56 +1,60 @@
 <template>
-<div id="change-head">
-    Latest Changes
-</div>
-<div id="contain">
-<div id="change-list" @mousewheel="wheel">
-    <div v-for="item in projectList" :key="item">
-    <div class="list-detail" v-if="item.issueList.length !== 0 || item.calendarList.length !== 0">
-        <div class="list-wrapper">
-            <router-link id="prjct-name" to="/pdtail/dashboard">
-                {{ item.prjctNm }}
-            </router-link>
-            <div class="content-children" v-if="item.issueList.length !== 0">
-                <router-link to="/pdtail/dashboard">
-                    Issue
-                </router-link>
-                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="issue in item.issueList" :key="issue">
-                    <div class="title-wrap" v-if="issue.issueCn.length >= 10">{{ `${issue.issueCn.substring(0, 10)}...` }}</div>
-                    <div class="title-wrap" v-else>{{ issue.issueCn }}</div>
-                    <div class="balloon">
-                        <div>
-                            <span>{{ issue.issueDate }}</span>
-                            <span>{{ issue.issueState }}</span>
-                        </div>
-                        <div>
-                            {{ issue.issueCn }}
-                        </div>
-                    </div>
-                </router-link>
+<div class="change-container">
+  <div id="change-head">
+      Latest Changes
+  </div>
+  <div id="contain">
+  <div id="change-list" @mousewheel="wheel">
+      <div v-for="item in projectList" :key="item">
+      <div class="list-detail" v-if="item.issueList.length !== 0 || item.calendarList.length !== 0">
+          <div class="list-wrapper">
+              <a id="prjct-name" @click="moveToDashBoard(item)">
+                  {{ item.prjctNm }}
+              </a>
+            <div class="children-wrap" :class="colOrRow">
+              <div class="content-children" v-if="item.issueList.length !== 0">
+                  <a @click="moveToIssue(item)">
+                      Issue
+                  </a>
+                  <a class="balloon-wrap" @click="moveToIssue(issue)" v-for="issue in item.issueList" :key="issue">
+                      <div class="title-wrap" v-if="issue.issueCn.length >= 10">{{ `${issue.issueCn.substring(0, 10)}...` }}</div>
+                      <div class="title-wrap" v-else>{{ issue.issueCn }}</div>
+                      <div class="balloon">
+                          <div>
+                              <span>{{ issue.issueDate }}</span>
+                              <span>{{ issue.issueState }}</span>
+                          </div>
+                          <div>
+                              {{ issue.issueCn }}
+                          </div>
+                      </div>
+                  </a>
+              </div>
+              <div class="content-children" v-if="item.calendarList.length !== 0">
+                  <a @click="moveToCalendar(item)">
+                      Schedule
+                  </a>
+                  <a class="balloon-wrap" @click="moveToCalendar(calendar)" v-for="calendar in item.calendarList" :key="calendar">
+                      <div class="title-wrap" v-if="calendar.calCn.length >= 10">{{ `${calendar.calCn.substring(0, 10)}...` }}</div>
+                      <div class="title-wrap" v-else>{{ calendar.calCn }}</div>
+                      <div class="balloon">
+                          <div>
+                              {{ calendar.calStartDate }}
+                          </div>
+                      </div>
+                  </a>
+              </div>
             </div>
-            <div class="content-children" v-if="item.calendarList.length !== 0">
-                <router-link to="/pdtail/dashboard">
-                    Schedule
-                </router-link>
-                <router-link class="balloon-wrap" to="/pdtail/dashboard" v-for="calendar in item.calendarList" :key="calendar">
-                    <div class="title-wrap" v-if="calendar.calCn.length >= 10">{{ `${calendar.calCn.substring(0, 10)}...` }}</div>
-                    <div class="title-wrap" v-else>{{ calendar.calCn }}</div>
-                    <div class="balloon">
-                        <div>
-                            {{ calendar.calStartDate }}
-                        </div>
-                    </div>
-                </router-link>
-            </div>
-        </div>
-    </div>
-    </div>
-</div>
+          </div>
+      </div>
+      </div>
+  </div>
+  </div>
 </div>
 </template>
 
 <script>
-import {mapState} from "vuex";
+import {mapMutations, mapState} from "vuex";
 
 export default {
     name : 'LatestChanges',
@@ -63,6 +67,7 @@ export default {
             countLeft: -1,
             countRight: -1,
             changesList : [],
+            colOrRow: 'row'
         }
         
     },
@@ -92,21 +97,61 @@ export default {
             // this.axios.get('/projectDetail.json').then(e => {
             //     this.changesList = e.data
             // })
-        }
+        },
+        resizeHandler(e) {
+          if(e.currentTarget.innerHeight < 900) {
+            this.colOrRow = "row"
+          } else {
+            this.colOrRow = "col"
+          }
+        },
+        ...mapMutations({
+          moveToDashBoard: 'projectList/moveToDashBoard',
+          moveToIssue: 'projectList/moveToIssue',
+          moveToCalendar: 'projectList/moveToCalendar'
+        })
     },
     
     mounted() {
         this.getChanges()
+    },
+    created() {
+      window.addEventListener('resize', this.resizeHandler)
     }
 }
 </script>
 
 <style scoped>
+.col {
+  display: flex;
+  flex-direction: column;
+}
+
+.col > div:first-child {
+  margin-bottom: 10px;
+}
+
+.row {
+  display: flex;
+}
+
+a {
+  cursor: pointer;
+}
+
+.change-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+#change-head {
+  margin-bottom: 10px;
+}
+
 #change-list {
     width: 100%;
     display: flex;
-    flex-direction: row;
-    margin-top: 30px;
     gap: 60px;
     overflow: scroll;
     -ms-overflow-style: none; /* IE and Edge */
@@ -119,8 +164,7 @@ export default {
 
 .list-detail {
     border-radius: 10px;
-    width: 240px; 
-    height: 260px;
+    width: 240px;
     font-size: 20px;
     background-color: #2C2F3B;
     padding: 10px;
@@ -141,7 +185,6 @@ export default {
 }
 
 .list-wrapper {
-    width: 180px;
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -151,6 +194,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    width: 50%;
 }
 
 #prjct-name {
@@ -185,7 +229,8 @@ a{
 }
 
 #contain {
-    padding-right: 60px;
+    padding-right: 40px;
+    padding-bottom: 10px;
 }    
 
 .balloon-wrap {
@@ -197,7 +242,8 @@ a{
     max-width: fit-content;
     min-width: 200px;
     top: -150%;
-    right: -120%;
+    right: 0;
+    transform: translateX(100%);
     display: none;
     z-index: 10;
     background: #3F80A9;

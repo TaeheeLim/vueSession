@@ -79,6 +79,8 @@ const routes = [
         } else {
           next('/signin')
         }
+      }).catch(() => {
+        next('/signin')
       })
     }
   },

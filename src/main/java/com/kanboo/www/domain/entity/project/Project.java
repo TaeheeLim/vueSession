@@ -4,10 +4,7 @@ import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.dto.project.CalendarDTO;
 import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -53,18 +50,30 @@ public class Project {
 
     public ProjectDTO entityToDto() {
         List<IssueDTO> issue = new ArrayList<>();
-        if(!issueList.isEmpty()) {
+        if(issueList != null && !issueList.isEmpty()) {
             issueList.sort(Project::compare);
-            for(int i = 0; i < 2; i++) {
-                issue.add(issueList.get(i).entityToDto());
+            int length = issueList.size();
+            if(issueList.size() >= 2) {
+                length = 2;
+            }
+            for(int i = 0; i < length; i++) {
+                IssueDTO issueDTO = issueList.get(i).entityToDto();
+                issueDTO.setProject(ProjectDTO.builder().prjctIdx(prjctIdx).build());
+                issue.add(issueDTO);
             }
         }
 
         List<CalendarDTO> calendar = new ArrayList<>();
-        if(!calendarList.isEmpty()) {
+        if(calendarList != null && !calendarList.isEmpty()) {
             calendarList.sort(Project::compare);
-            for(int i = 0; i < 3; i++) {
-                calendar.add(calendarList.get(i).entityToDto());
+            int length = calendarList.size();
+            if(calendarList.size() >= 3) {
+                length = 3;
+            }
+            for(int i = 0; i < length; i++) {
+                CalendarDTO calendarDTO = calendarList.get(i).entityToDto();
+                calendarDTO.setProject(ProjectDTO.builder().prjctIdx(prjctIdx).build());
+                calendar.add(calendarDTO);
             }
         }
 

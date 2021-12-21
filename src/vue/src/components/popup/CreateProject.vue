@@ -77,7 +77,8 @@ export default {
   },
   methods: {
     ...mapMutations({
-      changeIsModalOpen: 'projectList/changeIsModalOpen'
+      changeIsModalOpen: 'projectList/changeIsModalOpen',
+      addCreatedProject: 'projectList/addCreatedProject'
     }),
     pickDate(data) {
       let today = moment().format("YYYY-MM-DD HH:mm");
@@ -151,15 +152,20 @@ export default {
       params.append("prjctNm", this.inputName)
       params.append("prjctStartDate", this.inputStartDay)
       params.append("prjctEndDate", this.inputEndDay)
+      params.append("token", sessionStorage.getItem("token"))
 
       this.axios
         .post("/pdtail/createProject", params)
         .then((result) => {
           console.log(result);
+          this.changeIsModalOpen()
+          this.addCreatedProject(result.data)
         })
         .catch((err) => {
           console.error(err);
         });
+
+
     },
     close(e) {
       if(e.target.classList[0] === "bg-container") {

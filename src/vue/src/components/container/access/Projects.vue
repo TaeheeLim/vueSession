@@ -26,7 +26,7 @@
                                     <i class="far fa-circle"></i>
                                 </span>
                                 <span class="test-span">
-                                    <router-link to="/pdtail/dashboard">{{ item.prjctNm }}</router-link>
+                                    <a @click="moveToDashBoard(item)">{{ item.prjctNm }}</a>
                                 </span>
                             </div>
                         </li>
@@ -46,7 +46,7 @@
                                         <i class="far fa-circle"></i>
                                     </span>
                                     <span class="test-span">
-                                        <router-link to="/pdtail/dashboard">{{ item.prjctNm }} </router-link>
+                                        <a @click="moveToDashBoard(item)">{{ item.prjctNm }} </a>
                                     </span>
                                 </div>
                             </li>
@@ -93,6 +93,7 @@ export default {
     methods: {
         ...mapMutations({
             pushToProjectList : 'projectList/pushToProjectList',
+            moveToDashBoard: 'projectList/moveToDashBoard'
         }),
 
         getProjectsList(){
@@ -154,7 +155,6 @@ export default {
 }
 
 .project-state {
-    width: 10vw;
     padding-top: 20px;
     padding-left: 30px;
     display: flex;
@@ -208,7 +208,6 @@ export default {
 .list-right-container {
     display: flex;
     flex-direction: column;
-    margin-left: 20px;
     width: 90%;
     height: calc(100vh - 70px);
 }
@@ -218,9 +217,8 @@ export default {
 }
 
 #changes-div {
-    height: 40%;
     font-size: 30px;
     width: 100%;
-    padding-left: 60px;
+    padding-left: 40px;
 }
 </style>

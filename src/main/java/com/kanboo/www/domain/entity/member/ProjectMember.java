@@ -2,7 +2,9 @@ package com.kanboo.www.domain.entity.member;
 
 import com.kanboo.www.domain.entity.member.idclass.ProjectMemberId;
 import com.kanboo.www.domain.entity.project.Project;
+import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
+import com.kanboo.www.dto.project.ProjectDTO;
 import lombok.*;
 
 import javax.persistence.*;

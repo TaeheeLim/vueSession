@@ -23,8 +23,22 @@ const projectList = {
       item.projectMemberDtoList.forEach(i => {
         state.projectList.push(i.project)
       })
-      console.log(state.projectList)
-    }
+    },
+    addCreatedProject(state, item) {
+      state.projectList.push(item)
+    },
+    moveToDashBoard(state, project) {
+      sessionStorage.setItem("_data", project)
+
+    },
+    moveToIssue(state, issue) {
+      sessionStorage.setItem("_data", issue)
+
+    },
+    moveToCalendar(state, calendar) {
+      sessionStorage.setItem("_data", calendar)
+
+    },
   },
 
   actions: {
