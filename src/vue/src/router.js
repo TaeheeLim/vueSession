@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router"
 import axios from 'axios'
+import global from '@/store/modules/common/global'
 
-// import global from './routers/global'
 import Home from './components/container/noAccess/Home.vue'
 import Demo from './components/container/noAccess/Demo.vue'
 
@@ -33,7 +33,21 @@ import Table from './components/component/acess/projectDetail/erdAndView/erd/Tab
 import Setting from './components/container/access/projectDetail/Setting.vue'
 import Admin from './components/container/admin/Admin.vue'
 
-
+const roleCheck = (repData) => {
+  axios({
+    url: repData.url,
+    method: repData.method,
+    data: repData.data
+  }).then(res => {
+    if(res.data) {
+      repData.next()
+    } else {
+      repData.next(repData.falsePath)
+    }
+  }).catch(() => {
+    repData.next(repData.falsePath)
+  })
+}
 
 const routes = [
   {
@@ -66,22 +80,17 @@ const routes = [
     path: '/projects',
     component: Projects,
     beforeEnter: (to, from, next) => {
-      const _token = sessionStorage.getItem("token")
-      const url = '/token/check'
+      const repData = {
+        url : '/token/check',
+        method : 'post',
+        falsePath: '/signin',
+        next: next,
+        data: {
+          token : sessionStorage.getItem("token")
+        }
+      }
 
-      axios.post(url, null,{
-        params: {
-          token: _token
-        }
-      }).then(res => {
-        if(res.data !== "") {
-          next()
-        } else {
-          next('/signin')
-        }
-      }).catch(() => {
-        next('/signin')
-      })
+      roleCheck(repData)
     }
   },
   {
@@ -94,7 +103,21 @@ const routes = [
     children: [
       {
         path: "dashboard",
-        component: DashBoard
+        component: DashBoard,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "scheduler",
@@ -112,7 +135,21 @@ const routes = [
             path: "frontend",
             component: HTML
           }
-        ]
+        ],
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "demand",
@@ -152,6 +189,10 @@ const routes = [
         component: Setting
       },
     ]
+  },
+  {
+    path: "/:PathMatch(.*)*",
+    redirect: "/"
   }
 ]
 

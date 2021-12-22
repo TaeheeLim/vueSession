@@ -106,9 +106,9 @@ export default {
           }
         },
         ...mapMutations({
-          moveToDashBoard: 'projectList/moveToDashBoard',
-          moveToIssue: 'projectList/moveToIssue',
-          moveToCalendar: 'projectList/moveToCalendar'
+          moveToDashBoard: 'global/moveToDashBoard',
+          moveToIssue: 'global/moveToIssue',
+          moveToCalendar: 'global/moveToCalendar'
         })
     },
     

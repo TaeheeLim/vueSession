@@ -201,4 +201,9 @@ public class ProjectServiceImpl implements ProjectService {
         }
         param.put("successYn",successYn);
     }
+
+    @Override
+    public ProjectDTO getDashBoardData(String memTag, Long projectIdx) {
+        return projectRepository.getDashBoard(memTag, projectIdx);
+    }
 }

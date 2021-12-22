@@ -93,7 +93,7 @@ export default {
     methods: {
         ...mapMutations({
             pushToProjectList : 'projectList/pushToProjectList',
-            moveToDashBoard: 'projectList/moveToDashBoard'
+            moveToDashBoard: 'global/moveToDashBoard'
         }),
 
         getProjectsList(){

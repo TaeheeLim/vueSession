@@ -41,7 +41,7 @@ export default {
     methods: {
         ...mapMutations({
             changeIsModalOpen : 'projectList/changeIsModalOpen',
-            moveToDashBoard: 'projectList/moveToDashBoard'
+            moveToDashBoard: 'global/moveToDashBoard'
         }),
     },
 }

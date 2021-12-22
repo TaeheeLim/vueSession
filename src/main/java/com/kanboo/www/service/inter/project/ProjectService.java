@@ -20,4 +20,6 @@ public interface ProjectService {
     Map<String, Object> getAllList(String token);
 
     void saveProject(Map<String, Object> param);
+
+    ProjectDTO getDashBoardData(String memTag, Long projectIdx);
 }

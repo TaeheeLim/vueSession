@@ -1,59 +1,7 @@
 <template>
   <div class="container">
-    <h2>Gantt Chart</h2>
-    <div class="chart-container">
-        <div class="gantt-wrap">
 
-          <ul class="gantt-head">
-            <li class="date-head"></li>
-            <li class="item-head"
-                v-for="item in ganttData.item" 
-                :key="item">
-              {{item.itemTitle}}
-            </li>
-          </ul>
-
-          <ul class="gantt-body">
-            <li class="top-date">
-              <div>
-                <span class="month-item"
-                      v-for="(item, index) in ganttData.monthCnt"
-                      :key="index"
-                      v-bind:style="{width: `${ganttData.dayCnt[index - 1] * 30}px`}">
-                  {{item}}
-                </span>
-              </div>
-            </li>
-            <li class="bottom-date">
-              <div>
-                <div v-for="item in ganttData.dayCnt" 
-                      :key="item">
-                    <span class="day-item" 
-                          v-for="day in item" 
-                          :key="day">
-                      {{day}}
-                    </span>
-                </div>
-              </div>
-            </li>
-            <li class="item-box"
-                v-for="item in ganttData.item" 
-                :key="item">
-              <div>
-                <span class="gantt-item-space"
-                      v-for="i in item.itemSpace" 
-                      :key="i">1</span>
-                <span class="gantt-item"
-                      v-for="i in item.itemLength" 
-                      :key="i"
-                      :style="{backgroundColor: item.itemColor}"></span>
-              </div>
-            </li>
-          </ul>
-
-        </div>
-      </div>
-    </div>
+  </div>
 </template>
 
 <script>

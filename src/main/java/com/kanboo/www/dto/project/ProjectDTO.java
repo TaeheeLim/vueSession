@@ -4,6 +4,8 @@ import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.entity.project.Calendar;
 import com.kanboo.www.domain.entity.project.Issue;
 import com.kanboo.www.domain.entity.project.Project;
+import com.kanboo.www.dto.board.BoardDTO;
+import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,9 +32,14 @@ public class ProjectDTO {
     private String prjctDelAt;
     private String prjctComplAt;
     private String prjctReadMe;
+
     private List<ProjectMemberDTO> projectMembers = new ArrayList<>();
+    private List<MemberDTO> Members = new ArrayList<>();
     private List<IssueDTO> issueList = new ArrayList<>();
     private List<CalendarDTO> calendarList = new ArrayList<>();
+    private GitDTO git;
+    private List<BoardDTO> boardList = new ArrayList<>();
+    private List<GanttDTO> ganttList = new ArrayList<>();
 
     public Project dtoToEntity() {
         return Project.builder()

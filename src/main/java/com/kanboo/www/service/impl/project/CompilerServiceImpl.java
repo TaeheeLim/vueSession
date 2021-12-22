@@ -1,7 +1,9 @@
 package com.kanboo.www.service.impl.project;
 
+import com.kanboo.www.domain.entity.project.Compiler;
 import com.kanboo.www.domain.entity.project.Project;
 import com.kanboo.www.domain.repository.project.CompilerRepository;
+import com.kanboo.www.dto.project.CompilerDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
 import com.kanboo.www.service.inter.project.CompilerContentService;
 import com.kanboo.www.service.inter.project.CompilerService;
@@ -10,7 +12,9 @@ import com.kanboo.www.util.SaveCompileFile;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -60,6 +64,20 @@ public class CompilerServiceImpl implements CompilerService {
         return compilerUtil.terminalCompile(cmdList.get("runJarCmd"));
     }
 
+    @Override
+    public List<CompilerDTO> getList(ProjectDTO projectDTO) {
+        List<Compiler> projectEntity = compilerRepository.findByProjectPrjctIdx(projectDTO.getPrjctIdx());
+        List<CompilerDTO> projectList = new ArrayList<>();
+        projectEntity.forEach(item -> {
+            projectList.add(CompilerDTO.builder()
+                    .comIdx(item.getComIdx())
+                    .comNm(item.getComNm())
+                    .comSe(item.getComSe())
+                    .parentComIdx(item.getParentComIdx())
+                    .build());
+        });
+        return projectList;
+    }
 
 
 }

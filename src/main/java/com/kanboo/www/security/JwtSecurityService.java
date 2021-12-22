@@ -32,14 +32,16 @@ public class JwtSecurityService {
     }
 
     public String getToken(String token) {
-        if(token == null || token.isEmpty()) {
+        Claims claims = null;
+        try {
+            claims = Jwts.parserBuilder()
+                    .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (Exception e) {
             return null;
         }
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(DatatypeConverter.parseBase64Binary(SECRET_KEY))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
         return claims.getSubject();
     }
 }
