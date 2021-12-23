@@ -27,7 +27,7 @@
 <script>
 import Tree from 'vue3-tree'
 import "vue3-tree/dist/style.css";
-import {mapState} from "vuex";
+import {mapState, mapMutations} from "vuex";
 import axios from "axios";
 import arrayToTree from "array-to-tree";
 import {ref} from 'vue'

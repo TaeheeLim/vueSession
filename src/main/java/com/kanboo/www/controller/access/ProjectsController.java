@@ -3,10 +3,15 @@ package com.kanboo.www.controller.access;
 import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.repository.project.CompilerRepository;
 import com.kanboo.www.domain.repository.project.ProjectRepository;
+import com.kanboo.www.dto.board.BoardDTO;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
+import com.kanboo.www.dto.project.CalendarDTO;
+import com.kanboo.www.dto.project.GanttDTO;
+import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
 import com.kanboo.www.security.JwtSecurityService;
-import com.kanboo.www.service.inter.project.ProjectService;
+import com.kanboo.www.service.inter.board.BoardService;
+import com.kanboo.www.service.inter.project.*;
 import com.kanboo.www.util.FileSystemUtil;
 import com.kanboo.www.util.SaveCompileFile;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +32,16 @@ import java.util.Map;
 public class ProjectsController {
 
     private final ProjectService projectService;
+    private final GanttService ganttService;
+    private final BoardService boardService;
+    private final IssueService issueService;
+    private final CalendarService calendarService;
+    private final CompilerService compilerService;
+
     private final Logger logger = LoggerFactory.getLogger(ProjectsController.class);
     private final FileSystemUtil fileSystemUtil;
     private final SaveCompileFile saveCompileFile;
+
     private final JwtSecurityService jwtSecurityService;
 
     @GetMapping("/allList")
@@ -86,6 +98,43 @@ public class ProjectsController {
         // logfile : server.log
         // tail -f server.log | grep createProject12345
         // tail -f server.log | grep -A 10 -B 10 Exception
+    }
+
+    @PostMapping("/saveReadMe")
+    public boolean saveReadMe(ProjectDTO project) {
+        projectService.updateReadMe(project);
+        return true;
+    }
+
+    @GetMapping("/getData")
+    public Map<String, Object> getDashBoardData(
+            @RequestParam Long projectIdx,
+            @RequestParam String startDate,
+            @RequestParam String endDate
+    ) {
+        Map<String, Object> result = new HashMap<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime start = LocalDateTime.parse(startDate, formatter);
+        LocalDateTime end = LocalDateTime.parse(endDate, formatter);
+
+        ProjectDTO project = projectService.getProject(projectIdx);
+        List<GanttDTO> gantt = ganttService.getGantt(projectIdx);
+        List<BoardDTO> projectLastest = boardService.getProjectLastest(projectIdx);
+        List<IssueDTO> lastestIssue = issueService.getLastestIssue(projectIdx);
+        List<CalendarDTO> weekSchedule = calendarService.getThisWeekSchedule(projectIdx, start, end);
+
+        result.put("project", project);
+        result.put("gantt", gantt);
+        result.put("projectLastest", projectLastest);
+        result.put("lastestIssue", lastestIssue);
+        result.put("weekSchedule", weekSchedule);
+
+        return result;
+    }
+
+    @PostMapping("/addDirOrFile")
+    public boolean addDirOrFile(@RequestParam Map<String, Object> map) {
+        return projectService.addDirOrFile(map);
     }
 }
 
