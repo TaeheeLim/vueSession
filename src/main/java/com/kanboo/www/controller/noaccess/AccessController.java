@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +51,30 @@ public class AccessController {
     @PostMapping("/resetPw")
     public boolean resetPwHandler(MemberDTO memberDTO){
         String resetPass = memberService.resetPwHandler(memberDTO);
+        return false;
+    }
+
+    @PostMapping("/userInfo")
+    public MemberDTO getUserInfo(@RequestBody Map<String,String> map) {
+        String memTag = jwtSecurityService.getToken(map.get("token"));
+        if(memTag != null) {
+            return memberService.getUserInfo(memTag);
+        }
+        return null;
+    }
+
+    @PostMapping("/userModify")
+    public Boolean modifyUser(@RequestBody MemberDTO memberDTO) {
+        System.out.println(memberDTO);
+        if(memberDTO == null) {
+            return false;
+        }
+        return memberService.userModify(memberDTO);
+    }
+
+    @PostMapping("/userImg")
+    public Boolean modifyImg(@ModelAttribute MultipartFile file) {
+
         return false;
     }
 }

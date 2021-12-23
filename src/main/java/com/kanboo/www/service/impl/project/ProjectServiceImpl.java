@@ -3,9 +3,11 @@ package com.kanboo.www.service.impl.project;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.entity.member.ProjectMember;
 import com.kanboo.www.domain.entity.project.Compiler;
+import com.kanboo.www.domain.entity.project.CompilerFile;
 import com.kanboo.www.domain.entity.project.Issue;
 import com.kanboo.www.domain.entity.project.Project;
 import com.kanboo.www.domain.repository.member.MemberRepository;
+import com.kanboo.www.domain.repository.project.CompilerContentRepository;
 import com.kanboo.www.domain.repository.project.CompilerRepository;
 import com.kanboo.www.domain.repository.project.ProjectMemberRepository;
 import com.kanboo.www.domain.repository.project.ProjectRepository;
@@ -15,6 +17,7 @@ import com.kanboo.www.dto.member.nativedto.ProjectMemberNative;
 import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
 import com.kanboo.www.security.JwtSecurityService;
+import com.kanboo.www.service.inter.project.CompilerContentService;
 import com.kanboo.www.service.inter.project.ProjectService;
 import com.kanboo.www.util.FileSystemUtil;
 import com.kanboo.www.util.SaveCompileFile;
@@ -40,6 +43,7 @@ public class ProjectServiceImpl implements ProjectService {
     private final JwtSecurityService jwtSecurityService;
     private final ProjectMemberRepository projectMemberRepository;
     private final MemberRepository memberRepository;
+    private final CompilerContentRepository compilerContentRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -144,6 +148,39 @@ public class ProjectServiceImpl implements ProjectService {
         /** 저장 */
         Member member = memberRepository.findByMemTag(tag);
         Project saveProject = projectRepository.save(project.dtoToEntity());
+
+        Compiler compiler = Compiler.builder()
+                .comNm("src")
+                .comSe("d")
+                .project(saveProject)
+                .build();
+        Compiler savedCompiler = compilerRepository.save(compiler);
+        System.out.println(savedCompiler.entityToDto());
+
+        Compiler mainFile = Compiler.builder()
+                .comNm("Main.java")
+                .comSe("f")
+                .project(saveProject)
+                .parentComIdx(savedCompiler.getComIdx())
+                .build();
+        Compiler savedMainFile = compilerRepository.save(mainFile);
+        System.out.println(savedMainFile.entityToDto());
+
+        StringBuilder source = new StringBuilder();
+        source.append("public class Main {\n");
+        source.append("\tpublic void main(String[] args) {\n");
+        source.append("\t\tSystem.out.println(\"Hello World!\")");
+        source.append("\t}");
+        source.append("}");
+
+        CompilerFile mainSource = CompilerFile.builder()
+                .comFileCn(source.toString())
+                .compiler(savedMainFile)
+                .build();
+
+        CompilerFile save1 = compilerContentRepository.save(mainSource);
+        System.out.println(save1.entityToDto());
+
         ProjectMember pm = ProjectMember.builder()
                 .project(saveProject)
                 .member(member)

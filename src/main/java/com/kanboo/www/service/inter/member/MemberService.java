@@ -22,4 +22,7 @@ public interface MemberService {
 
     List<MemberDTO> getAllMember();
 
+    MemberDTO getUserInfo(String memTag);
+
+    Boolean userModify(MemberDTO memberDTO);
 }

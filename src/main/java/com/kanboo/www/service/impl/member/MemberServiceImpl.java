@@ -131,4 +131,35 @@ public class MemberServiceImpl implements MemberService {
         }
         return result;
     }
+
+    @Override
+    public MemberDTO getUserInfo(String memTag) {
+        Member member = memberRepository.findByMemTag(memTag);
+        return MemberDTO.builder()
+                .memId(member.getMemId())
+                .memNick(member.getMemNick())
+                .memTag(member.getMemTag())
+                .memCelNum(member.getMemCelNum())
+                .memImg(member.getMemImg())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public Boolean userModify(MemberDTO memberDTO) {
+        try{
+            memberDTO.setMemPass(CryptoUtil.encryptSha512(memberDTO.getMemPass()));
+        } catch (Exception e) {
+            return false;
+        }
+        Member member = memberRepository.findByMemIdAndMemPass(memberDTO.getMemId(), memberDTO.getMemPass());
+        if(member != null) {
+            member.changeMemPass(memberDTO.getMemPass());
+            member.changeMemCelNum(memberDTO.getMemCelNum());
+            member.changeMemNick(memberDTO.getMemNick());
+            member.changeMemImg(memberDTO.getMemImg());
+            return true;
+        }
+        return false;
+    }
 }

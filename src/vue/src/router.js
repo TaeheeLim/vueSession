@@ -95,7 +95,20 @@ const routes = [
   },
   {
     path: '/admin',
-    component : Admin
+    component : Admin,
+    beforeEnter: (to, from, next) => {
+      const repData = {
+        url : '/token/admin',
+        method : 'post',
+        falsePath: '/signin',
+        next: next,
+        data: {
+          token : sessionStorage.getItem("token")
+        }
+      }
+
+      roleCheck(repData)
+    }
   },
   {
     path: "/pdtail",
@@ -121,7 +134,21 @@ const routes = [
       },
       {
         path: "scheduler",
-        component: Scheduler
+        component: Scheduler,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "compiler",
@@ -153,26 +180,93 @@ const routes = [
       },
       {
         path: "demand",
-        component: Demand
+        component: Demand,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "board",
-        component: Board
+        component: Board,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "gantt",
-        component: Gantt
+        component: Gantt,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "gitissue",
-        component: GitAndIssue
+        component: GitAndIssue,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "kanban",
         component: Kanban,
-        children: [
-          
-        ]
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "erdview",
@@ -182,13 +276,48 @@ const routes = [
             path: "erd",
             component: Table
           }
-        ]
+        ],
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/projectCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
       {
         path: "setting",
-        component: Setting
+        component: Setting,
+        beforeEnter: (to, from, next) => {
+          const repData = {
+            url : '/token/pmCheck',
+            method : 'post',
+            falsePath: '/projects',
+            next: next,
+            data: {
+              projectIdx: global.state.projectIdx,
+              token : sessionStorage.getItem("token")
+            }
+          }
+
+          roleCheck(repData)
+        }
       },
     ]
+  },
+  {
+    path: '/logout',
+    beforeEnter: (to, from, next) => {
+      sessionStorage.removeItem('token')
+      next('/')
+    }
   },
   {
     path: "/:PathMatch(.*)*",

@@ -19,6 +19,10 @@ const projectList = {
       }
     },
     pushToProjectList(state, item) {
+      console.log(item)
+      if(item.projectMemberDtoList.length < 1) {
+        return
+      }
       state.member = item.projectMemberDtoList[0].member
       item.projectMemberDtoList.forEach(i => {
         state.projectList.push(i.project)

@@ -20,6 +20,7 @@ public class CompilerController {
 
     @PostMapping("/getData")
     public List<CompilerDTO> getCompiler(@RequestBody ProjectDTO projectDTO) {
+        System.out.println(projectDTO);
         if(projectDTO.getPrjctIdx() == null) {
             return null;
         }

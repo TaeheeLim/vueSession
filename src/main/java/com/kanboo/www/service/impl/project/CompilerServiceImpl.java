@@ -67,6 +67,9 @@ public class CompilerServiceImpl implements CompilerService {
     @Override
     public List<CompilerDTO> getList(ProjectDTO projectDTO) {
         List<Compiler> projectEntity = compilerRepository.findByProjectPrjctIdx(projectDTO.getPrjctIdx());
+        if(projectEntity.isEmpty()) {
+            return null;
+        }
         List<CompilerDTO> projectList = new ArrayList<>();
         projectEntity.forEach(item -> {
             projectList.add(CompilerDTO.builder()

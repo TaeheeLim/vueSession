@@ -4,13 +4,13 @@
       <h2 class="title">
         <img src="../../../../../assets/documentIcon.png" alt="/">
         <router-link to="/pdtail/compiler/backend">JAVA</router-link>
-        <button class="add-java-btn" type="button">+</button>
+        <button class="add-java-btn" type="button" @click="openAddModal">+</button>
       </h2>
       <div class="directory">
-        <Tree :nodes="dataObj"/>
+        <Tree :nodes='dataObj'/>
       </div>
     </div>
-    
+
     <div class="front-tab">
       <h2 class="title">
         <img src="../../../../../assets/documentIcon.png" alt="/">
@@ -27,18 +27,55 @@
 <script>
 import Tree from 'vue3-tree'
 import "vue3-tree/dist/style.css";
-import compileData from "../../../../../assets/compiler.json"
-import arrayToTree from 'array-to-tree'
+import {mapState} from "vuex";
+import axios from "axios";
+import arrayToTree from "array-to-tree";
+import {ref} from 'vue'
 
 export default {
   name: "sideBar",
   components: {
     Tree
   },
+  computed: {
+    ...mapState({
+      projectIdx: state => state.global.projectIdx,
+    })
+  },
   data() {
     return {
-      dataObj : arrayToTree(compileData, {childrenProperty: 'nodes'}),
+      dataObj: ref([])
     }
+  },
+  methods: {
+    ...mapMutations({
+      openAddModal: 'javaCompile/openAddModal'
+    })
+  },
+  mounted() {
+    axios({
+      url: '/compiler/getData',
+      method: 'post',
+      data: {
+        prjctIdx: this.projectIdx
+      }
+    }).then(res => {
+
+      const arr = []
+      res.data.forEach(node => {
+        const obj = {
+          id: node.comIdx,
+          classification: node.comSe === "d" ? "directory" : "file",
+          label: node.comNm,
+          parent_id: node.parentComIdx
+        }
+        arr.push(obj)
+      })
+
+      arrayToTree(arr, {childrenProperty: 'nodes'}).forEach(item => {
+        this.dataObj.push(item)
+      })
+    })
   },
 }
 </script>

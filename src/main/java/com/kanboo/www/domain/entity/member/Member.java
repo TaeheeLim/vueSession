@@ -49,4 +49,7 @@ public class Member {
     public void changeMemPass(String memPass) {
         this.memPass = memPass;
     }
+    public void changeMemNick(String memNick) { this.memNick = memNick; }
+    public void changeMemCelNum(String memCelNum) { this.memCelNum = memCelNum; }
+    public void changeMemImg(String memImg) { this.memImg = memImg; }
 }

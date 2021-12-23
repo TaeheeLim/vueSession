@@ -419,14 +419,6 @@ export default {
     },
     loginAccess() {
       this.addLine(`(login console) > `, `Loading...`, "com");
-      let loginInfo = {
-        memId: this.inputData[1],
-        memPass: this.inputData[2],
-      };
-
-      loginInfo;
-
-      sessionStorage.setItem("memId", this.inputData[1]);
 
       // 자바 로그인 로직 작성 후 주석 해제
       this.axios

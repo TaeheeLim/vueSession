@@ -89,6 +89,11 @@ export default {
           obj.right = this.list.noAccess.home
           break
         case '/projects':
+          this.list.access.right.push({
+            "name": "userSetting",
+            "path": "#",
+            "type": "img"
+          })
           obj.right = this.list.access.right
           break
       }
