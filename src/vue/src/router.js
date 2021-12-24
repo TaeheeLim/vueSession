@@ -1,6 +1,5 @@
 import { createWebHistory, createRouter } from "vue-router"
 import axios from 'axios'
-import global from '@/store/modules/common/global'
 
 import Home from './components/container/noAccess/Home.vue'
 import Demo from './components/container/noAccess/Demo.vue'
@@ -124,7 +123,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -142,7 +141,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -170,7 +169,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -188,7 +187,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -206,7 +205,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -224,7 +223,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -242,7 +241,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -260,7 +259,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -284,7 +283,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }
@@ -302,7 +301,7 @@ const routes = [
             falsePath: '/projects',
             next: next,
             data: {
-              projectIdx: global.state.projectIdx,
+              projectIdx: sessionStorage.getItem("project"),
               token : sessionStorage.getItem("token")
             }
           }

@@ -7,7 +7,7 @@
         <button class="add-java-btn" type="button" @click="openAddModal">+</button>
       </h2>
       <div class="directory">
-        <Tree :nodes='dataObj'/>
+        <Tree :nodes='dataObj' @nodeExpanded="getFileDetail"/>
       </div>
     </div>
 
@@ -27,10 +27,7 @@
 <script>
 import Tree from 'vue3-tree'
 import "vue3-tree/dist/style.css";
-import {mapState, mapMutations} from "vuex";
-import axios from "axios";
-import arrayToTree from "array-to-tree";
-import {ref} from 'vue'
+import {mapActions, mapMutations, mapState} from "vuex";
 
 export default {
   name: "sideBar",
@@ -39,43 +36,24 @@ export default {
   },
   computed: {
     ...mapState({
-      projectIdx: state => state.global.projectIdx,
+      dataObj: state => state.javaCompile.dataObj
     })
   },
   data() {
     return {
-      dataObj: ref([])
     }
   },
   methods: {
     ...mapMutations({
-      openAddModal: 'javaCompile/openAddModal'
+      openAddModal: 'javaCompile/openAddModal',
+      getJavaSideBar: 'javaCompile/getJavaSideBar',
+    }),
+    ...mapActions({
+      getFileDetail: 'javaCompile/getFileDetail'
     })
   },
   mounted() {
-    axios({
-      url: '/compiler/getData',
-      method: 'post',
-      data: {
-        prjctIdx: this.projectIdx
-      }
-    }).then(res => {
-
-      const arr = []
-      res.data.forEach(node => {
-        const obj = {
-          id: node.comIdx,
-          classification: node.comSe === "d" ? "directory" : "file",
-          label: node.comNm,
-          parent_id: node.parentComIdx
-        }
-        arr.push(obj)
-      })
-
-      arrayToTree(arr, {childrenProperty: 'nodes'}).forEach(item => {
-        this.dataObj.push(item)
-      })
-    })
+    this.getJavaSideBar()
   },
 }
 </script>

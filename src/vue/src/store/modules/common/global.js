@@ -8,15 +8,15 @@ const global = {
   },
   mutations: {
     moveToDashBoard(state, project) {
-      state.projectIdx = project.prjctIdx
+      sessionStorage.setItem("project", project.prjctIdx)
       router.push('/pdtail/dashboard')
     },
     moveToIssue(state, issue) {
-      state.projctIdx = issue.project.prjctIdx
+      sessionStorage.setItem("project", issue.project.prjctIdx)
       router.push('/pdtail/issue')
     },
     moveToCalendar(state, calendar) {
-      state.projctIdx = calendar.project.prjctIdx
+      sessionStorage.setItem("project", calendar.project.prjctIdx)
       router.push('/pdtail/calendar')
     },
   },

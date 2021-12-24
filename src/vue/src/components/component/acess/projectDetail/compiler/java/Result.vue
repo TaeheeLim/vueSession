@@ -1,12 +1,22 @@
 <template>
   <div class="result-container">
-    Result
+    <div class="result" v-text="result" style="color: #fff;"></div>
   </div>
 </template>
 
 <script>
 export default {
-  name: "Result"
+  name: "Result",
+  data() {
+    return {
+      result: ""
+    }
+  },
+  watch: {
+    "$store.state.javaCompile.result"(e) {
+      this.result = e
+    }
+  }
 }
 </script>
 

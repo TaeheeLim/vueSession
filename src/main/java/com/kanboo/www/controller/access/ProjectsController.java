@@ -133,8 +133,9 @@ public class ProjectsController {
     }
 
     @PostMapping("/addDirOrFile")
-    public boolean addDirOrFile(@RequestParam Map<String, Object> map) {
-        return projectService.addDirOrFile(map);
+    public Object addDirOrFile(@RequestParam Map<String, Object> map) {
+        projectService.addDirOrFile(map);
+        return map.get("result");
     }
 }
 

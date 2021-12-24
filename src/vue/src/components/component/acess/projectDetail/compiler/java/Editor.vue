@@ -1,13 +1,13 @@
 <template>
   <div class="editor-container">
     <div class="code-container">
-      <Codemirror v-model:value="code"
+      <Codemirror v-model:value="modifyCode"
                 :options="cmOptions"
                 style="width: 100%"/>
     </div>
     <button class="run-btn"
             type="button"
-            @click="compileCode">run</button>
+            @click="runCompile">run</button>
   </div>
 </template>
 
@@ -16,13 +16,18 @@ import Codemirror from "codemirror-editor-vue3";
 import "codemirror-editor-vue3/dist/style.css"
 import "codemirror/theme/dracula.css"
 import "codemirror/mode/javascript/javascript.js";
+import {mapActions, mapState} from "vuex";
 
 export default {
   name: "Editor",
+  computed: {
+    ...mapState({
+      code: state => state.javaCompile.code
+    })
+  },
   components: { Codemirror },
   data() {
     return {
-      code: ``,
       cmOptions: {
         mode: 'text/javascript',
         theme: 'dracula',
@@ -31,12 +36,22 @@ export default {
         indentUnit: 2,
         foldGutter: true,
         styleActiveLine: true,
-      }
+      },
+      modifyCode: this.code
     }
   },
   methods: {
-    compileCode() {
-      console.log(this.code)
+    ...mapActions({
+      updateCode: 'javaCompile/updateCode',
+      runCompile: 'javaCompile/runCompile'
+    }),
+  },
+  watch: {
+    "$store.state.javaCompile.code"(e) {
+      this.modifyCode = e
+    },
+    modifyCode(e) {
+      this.updateCode(e)
     }
   }
 }

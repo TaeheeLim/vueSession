@@ -15,7 +15,8 @@
         </select>
 
         <select v-model="requestData.path" class="path">
-          <option v-for="item in path" :key="item" :value="item">{{item.name}}</option>
+          <option :value="null">Path</option>
+          <option v-for="item in path" :key="item" :value="item">{{item.label}}</option>
         </select>
 
         <select v-model="requestData.classification" class="classification">

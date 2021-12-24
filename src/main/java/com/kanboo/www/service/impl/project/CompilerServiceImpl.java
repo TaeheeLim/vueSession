@@ -1,7 +1,9 @@
 package com.kanboo.www.service.impl.project;
 
 import com.kanboo.www.domain.entity.project.Compiler;
+import com.kanboo.www.domain.entity.project.CompilerFile;
 import com.kanboo.www.domain.entity.project.Project;
+import com.kanboo.www.domain.repository.project.CompilerContentRepository;
 import com.kanboo.www.domain.repository.project.CompilerRepository;
 import com.kanboo.www.dto.project.CompilerDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
@@ -25,6 +27,7 @@ public class CompilerServiceImpl implements CompilerService {
     private final CompilerUtil compilerUtil;
     private static final String rootPath = "./compileFiles/";
     private final CompilerRepository compilerRepository;
+    private final CompilerContentRepository compilerContentRepository;
 
     @Override
     public Map<String, String> runDemo(String code) {
@@ -80,6 +83,24 @@ public class CompilerServiceImpl implements CompilerService {
                     .build());
         });
         return projectList;
+    }
+
+    @Override
+    public String runMemberProject(ProjectDTO projectDTO) {
+
+        List<CompilerFile> compileFileList = compilerContentRepository.findAllByCompiler_Project_PrjctIdx(projectDTO.getPrjctIdx());
+
+        compileFileList.forEach(item -> {
+            System.out.println("ComFileIdx ==> " + item.getComFileIdx());
+            System.out.println("ComFileCn ==> " + item.getComFileCn());
+            System.out.println("ComSe ==> " + item.getCompiler().getComSe());
+            System.out.println("ComNm ==> " + item.getCompiler().getComNm());
+            System.out.println("ComIdx ==> " + item.getCompiler().getComIdx());
+            System.out.println("ParentComIdx ==> " + item.getCompiler().getParentComIdx());
+            System.out.println("ProjectIdx ==> " + item.getCompiler().getProject().getPrjctIdx());
+            System.out.println("=====================================");
+        });
+        return "꺼져";
     }
 
 

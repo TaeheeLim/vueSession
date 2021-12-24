@@ -13,4 +13,6 @@ public interface CompilerService {
     Map<String, String> runDemo(String code);
 
     List<CompilerDTO> getList(ProjectDTO projectDTO);
+
+    String runMemberProject(ProjectDTO projectDTO);
 }

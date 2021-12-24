@@ -14,6 +14,7 @@ import com.kanboo.www.domain.repository.project.ProjectRepository;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
 import com.kanboo.www.dto.member.ProjectMemberDTOInter;
 import com.kanboo.www.dto.member.nativedto.ProjectMemberNative;
+import com.kanboo.www.dto.project.CompilerDTO;
 import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
 import com.kanboo.www.security.JwtSecurityService;
@@ -72,7 +73,7 @@ public class ProjectServiceImpl implements ProjectService {
     }
 
     @Override
-    public boolean addDirOrFile(Map<String, Object> map) {
+    public void addDirOrFile(Map<String, Object> map) {
 
         String type = map.get("type") + "";
         Long projectIdx = Long.parseLong(map.get("projectIdx") + "");
@@ -82,6 +83,7 @@ public class ProjectServiceImpl implements ProjectService {
         String name = map.get("name") + "";
         String path = map.get("path") + "";
         String classification = map.get("classification") + "";
+        Long comIdx = Long.parseLong(map.get("comIdx") + "");
 
         boolean result = false;
 
@@ -95,29 +97,47 @@ public class ProjectServiceImpl implements ProjectService {
             result = fileSystemUtil.createFileOrDir(rootPath);
         } else {
             Map<String, String> rootPath = new HashMap<>();
-            rootPath.put("filePath", path);
+            String dataPath = compilerRepository.getPath(projectIdx);
+            StringBuilder code = new StringBuilder();
+            code.append("public class " + name + " {\n");
+            code.append("\n");
+            code.append("}");
+            rootPath.put("filePath", dataPath);
             rootPath.put("fileName", name);
-            rootPath.put("fileExtension", classification);
-            rootPath.put("fileDetail", "");
+            rootPath.put("fileExtension", classification.equals("JAVA") ? ".java" : ".html");
+            rootPath.put("fileDetail", code.toString());
             rootPath.put("project", "/member/" + project.getPrjctIdx() + project.getPrjctNm() + "/project");
             rootPath.put("type", "file");
             result = saveCompileFile.saveFile(rootPath);
         }
 
         if(result) {
-            Compiler parentCompiler = compilerRepository.findByProjectPrjctIdxAndComNm(projectIdx, path);
+            Compiler parentCompiler = compilerRepository.findByComIdx(comIdx);
 
             Compiler compiler = Compiler.builder()
                     .project(project)
                     .parentComIdx(parentCompiler.getComIdx())
-                    .comSe(classification.substring(0, 1))
+                    .comSe(type.equals("Directory") ? "d" : "f")
                     .comNm(name)
                     .build();
 
-            result = compilerRepository.save(compiler) != null;
-        }
+            Compiler save = compilerRepository.save(compiler);
 
-        return result;
+            if(compiler.getComSe().equals("f")) {
+                StringBuilder code = new StringBuilder();
+                code.append("public class " + name + " {\n");
+                code.append("\n");
+                code.append("}");
+
+                CompilerFile compilerFile = CompilerFile.builder()
+                                            .comFileCn(code.toString())
+                                            .compiler(save)
+                                            .build();
+                compilerContentRepository.save(compilerFile);
+            }
+
+            map.put("result", save.entityToDto());
+        }
     }
 
     @Override
@@ -169,8 +189,8 @@ public class ProjectServiceImpl implements ProjectService {
         StringBuilder source = new StringBuilder();
         source.append("public class Main {\n");
         source.append("\tpublic void main(String[] args) {\n");
-        source.append("\t\tSystem.out.println(\"Hello World!\")");
-        source.append("\t}");
+        source.append("\t\tSystem.out.println(\"Hello World!\")\n");
+        source.append("\t}\n");
         source.append("}");
 
         CompilerFile mainSource = CompilerFile.builder()

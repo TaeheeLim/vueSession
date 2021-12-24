@@ -15,7 +15,7 @@ public interface ProjectService {
 
     ProjectDTO getProject(Long projectIdx);
 
-    boolean addDirOrFile(Map<String, Object> map);
+    void addDirOrFile(Map<String, Object> map);
 
     Map<String, Object> getAllList(String token);
 
