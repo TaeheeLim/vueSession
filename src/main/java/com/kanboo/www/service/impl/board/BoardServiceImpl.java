@@ -2,8 +2,11 @@ package com.kanboo.www.service.impl.board;
 
 import com.kanboo.www.domain.entity.board.Board;
 import com.kanboo.www.domain.entity.board.Comment;
+import com.kanboo.www.domain.entity.global.CodeDetail;
+import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.repository.board.BoardRepository;
 import com.kanboo.www.domain.repository.board.boardQueryDSL.BoardDSLRepositoryImpl;
+import com.kanboo.www.domain.repository.member.MemberRepository;
 import com.kanboo.www.dto.board.BoardDTO;
 import com.kanboo.www.dto.board.CommentDTO;
 import com.kanboo.www.service.inter.board.BoardService;
@@ -13,31 +16,30 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
-    private static final Logger logger
-            = LoggerFactory.getLogger(BoardDSLRepositoryImpl.class);
+    private final MemberRepository memberRepository;
 
     @Override
-    public List<BoardDTO> getAllList(String selected, String key, int articleOnvView, String codeDetail) {
-        List<Board> allList = boardRepository.getAllList(selected, key, articleOnvView, codeDetail);
-        List<BoardDTO> result = new ArrayList<>();
+    public List<BoardDTO> getAllList(String selected, String key, int articleOnvView, String codeDetail, String memTag) {
 
-        for (Board board : allList) {
-            result.add(board.entityToDto());
+        Member member = memberRepository.findByMemTag(memTag);
+        if (member == null){
+            return null;
         }
-
-        return result;
+        return boardRepository.getAllList(selected, key, articleOnvView, codeDetail, member.getMemId());
     }
 
     @Override
-    public long getArticleNum(String keyword, String selected, String codeDetails){
+    public long getArticleNum(String keyword, String selected, String codeDetails) {
         return boardRepository.getArticleNum(keyword, selected, codeDetails);
     }
 
@@ -46,10 +48,97 @@ public class BoardServiceImpl implements BoardService {
         List<Comment> comments = boardRepository.getComments(boardIdx, commentsOnView);
         List<CommentDTO> list = new ArrayList<>();
 
-        for(Comment comment : comments){
+        for (Comment comment : comments) {
             list.add(comment.entityToDto());
         }
         return list;
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteBoard(long boardIdx) {
+        Board board = boardRepository.findByBoardIdx(boardIdx);
+
+        if (board != null) {
+            board.changeDelAt("Y");
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public BoardDTO insertBoard(BoardDTO boardDTO, long memIdx) {
+        //원래는 이부분에서 token값을 받아서 session에서 조회 한후 dto 꺼내서 memberIdx 꺼냄
+        boardDTO.changeMember(memIdx);
+
+        Member member = memberRepository.findByMemIdx(memIdx);
+        CodeDetail codeDetail = CodeDetail.builder()
+                .codeDetailIdx(boardDTO.getCodeDetail().getCodeDetailIdx())
+                .build();
+
+        Board board = Board.builder()
+                .member(member)
+                .codeDetail(codeDetail)
+                .boardCn(boardDTO.getBoardCn())
+                .boardDate(LocalDateTime.now())
+                .delAt(boardDTO.getDelAt())
+                .fileAt(boardDTO.getFileAt())
+                .totalComments(boardDTO.getTotalComments())
+                .totalLikes(boardDTO.getTotalLikes())
+                .likesList(new ArrayList<>())
+                .build();
+
+        Board savedBoard = boardRepository.save(board);
+        return savedBoard.entityToDto();
+    }
+
+    @Transactional
+    @Override
+    public BoardDTO updateBoard(Map<String, Object> map) {
+        long boardIdx = Long.parseLong(String.valueOf(map.get("boardIdx")));
+        Board board = boardRepository.findByBoardIdx(boardIdx);
+
+        if(board != null){
+            board.changeBoardCn((String)map.get("boardCn"));
+            board.changeFileAt((String)map.get("fileAt"));
+            Board updatedBoard = boardRepository.save(board);
+            return updatedBoard.entityToDto();
+        }
+        return null;
+    }
+
+    @Override
+    public BoardDTO updateLikes(long boardIdx) {
+        Board caughtBoard = boardRepository.findByBoardIdx(boardIdx);
+        if(caughtBoard != null){
+            caughtBoard.increaseLikes();
+            Board save = boardRepository.save(caughtBoard);
+            return save.entityToDto();
+        }
+        return null;
+    }
+
+    @Override
+    public BoardDTO decreaseLikesNum(long boardIdx) {
+        Board board = boardRepository.findByBoardIdx(boardIdx);
+        if(board != null){
+            board.decreaseLikes();
+            Board save = boardRepository.save(board);
+            return save.entityToDto();
+        }
+        return null;
+    }
+
+    @Override
+    public BoardDTO increaseTotalComments(long boardIdx) {
+        Board byBoardIdx = boardRepository.findByBoardIdx(boardIdx);
+        if(byBoardIdx != null){
+            byBoardIdx.increaseTotalComments();
+            Board save = boardRepository.save(byBoardIdx);
+            return save.entityToDto();
+        }
+        return null;
     }
 
     @Override
@@ -61,18 +150,5 @@ public class BoardServiceImpl implements BoardService {
         });
 
         return boardDTOS;
-    }
-
-    @Override
-    @Transactional
-    public boolean deleteBoard(long boardIdx){
-        Board board = boardRepository.findByBoardIdx(boardIdx);
-
-        if(board != null){
-            board.changeDelAt("Y");
-            return true;
-        }
-
-        return false;
     }
 }

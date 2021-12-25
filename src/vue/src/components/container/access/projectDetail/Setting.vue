@@ -1,18 +1,18 @@
 <template>
-<div class="setting-container">
+  <div class="setting-container">
     <Name/>
     <Date/>
-    
+
     <div class="addMember-div" v-if="this.$store.state.setting.clickState == true">
-        <AddMember/>
+      <AddMember/>
     </div>
 
     <Member />
 
     <footer>
-        <Buttons/>
+      <Buttons/>
     </footer>
-</div>  
+  </div>
 
 </template>
 <script>
@@ -24,31 +24,31 @@ import Buttons from '@/components/component/acess/projectDetail/setting/Buttons.
 
 
 export default {
-    components : {
-        Name,
-        Date,
-        AddMember,
-        Member,
-        Buttons,
-    },
+  components : {
+    Name,
+    Date,
+    AddMember,
+    Member,
+    Buttons,
+  },
 }
 
 </script>
 
-<style scoped>  
+<style scoped>
 .setting-container{
-    display: flex; 
-    justify-content: flex-start;
-    align-items: center;
-    flex-direction: column;
-    overflow: scroll;
-    overflow-x: hidden;
-    overflow-y: auto;
-    width : 100vw;
-    height : calc(100vh - 70px);
-    background-color: #16161A;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: column;
+  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
+  width : 100vw;
+  height : 100vh;
+  background-color: #16161A;
 }
 .setting-container::-webkit-scrollbar{
-    display: none;
+  display: none;
 }
 </style>

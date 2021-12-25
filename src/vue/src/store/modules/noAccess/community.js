@@ -11,17 +11,22 @@ const community = {
 
     state: {
         boardList: [],
-        qnaList : [],
         numberOfArticle: 0,
         articlesOnView: 0,
         content: '',
         updateCheck: false,
         selected: 'All',
         key: '',
-        codeDetail : 1,
+        codeDetail : 7,
+        axiosState : false,
+        isOpen : false,
     },
 
     mutations: {
+        changeWriteIsOpen(state){
+            state.isOpen = !state.isOpen
+        },
+
         changeCodeDetail(state, payload){
             state.codeDetail = payload
         },
@@ -32,13 +37,42 @@ const community = {
             payload["commentList"] = []
             payload["commentsOnView"] = 0
             payload.isModify = true
+            payload.insertComment = ''
             state.boardList.push(payload)
+        },
+
+        unshiftToBoardList(state, payload){
+            payload["열렸니"] = false
+            payload["수정했니"] = false
+            payload["commentList"] = []
+            payload["commentsOnView"] = 0
+            payload.isModify = true
+            payload.insertComment = ''
+            state.boardList.unshift(payload)
+            state.articlesOnView++
+        },
+
+        unshiftToCommentList(state, payload){
+            payload
+        },
+
+        // changeIsLike(state, payload){
+        //     payload.isLike = !payload.isLike
+        // },
+
+        deleteBoards(state){
+            state.articlesOnView--
+            console.log('못옴??')
+            console.log(state.articlesOnView)
+            state.numberOfArticle--
+        },
+
+        increaseNumOfArticleAfterInsert(state){
+            state.numberOfArticl++
         },
 
         setNumberOfArticle(state, payload) {
             state.numberOfArticle = payload
-            // console.log('총 게시글 수')
-            // console.log(state.numberOfArticle)
         },
 
         setArticlesOnView(state, payload) {
@@ -51,9 +85,10 @@ const community = {
 
         pushToComment(state, item) {
             if (item._board.commentList.length !== 0 || item._board.totalComments === 0) {
+                console.log('걸리니')
                 return
             }
-
+            console.log('지나가니')
             item._board.commentList.push(...item._comment)
             item._board.commentsOnView = item._comment.length;
         },
@@ -61,19 +96,17 @@ const community = {
         //---------------게시글 관련 ------------------
         changeIsOpen(state, payload) {
             payload.열렸니 = !payload.열렸니
-            state
         },
 
         changeIsUpdate(state, payload) {
             payload.수정했니 = !payload.수정했니
-            state
         },
         //--------------------------------------------
 
         // 해당 게시물 댓글 리스트에 댓글 추가
         addingToCommentList(state, payload) {
             state
-            payload.board.댓글.push(...payload.commentList)
+            payload.board.commentList.push(...payload.commentList)
         },
 
         //----------------댓글 관련!!!-------------------
@@ -109,8 +142,6 @@ const community = {
         getSelectedAndKey(state, payload) {
             state.key = payload.key
             state.selected = payload.selected
-            // console.log(state.key)
-            // console.log(state.selected)
         },
 
         // 카테고리 변경시 데이터 초기화
@@ -121,24 +152,37 @@ const community = {
 
         boardListNullPush(state, item) {
             state.boardList.push(item)
-        }
+        },
 
+        setAxiosState(state, stat) {
+            state.axiosState = stat
+        },
     },
 
     actions: {
-        getBoardList(context) {
+        getBoardList(context, position) {
+            let detail
+            // const _token = sessionStorage.getItem("token")
+            if(position === 'qna') {
+                detail = 8
+            } else if(position === 'free') {
+                detail = 7
+            } else {
+                detail = context.state.codeDetail
+            }
             axios.get('/boardTest', {
                     params: {
                         selected: context.state.selected,
                         key: context.state.key,
                         articleOnvView: context.state.articlesOnView,
-                        codeDetail: context.state.codeDetail,
+                        codeDetail: detail,
+                        token : "#1921"
                     }
                 }
             )
                 .then(e => {
+                    console.log("뀨??????????????????")
                     console.log(e.data)
-
                     if(e.data.length === 0) {
                         const obj = {
                             isNull: true,
@@ -147,7 +191,6 @@ const community = {
                         context.commit('boardListNullPush', obj)
                         return
                     }
-
                     for (let item of e.data) {
                         context.commit('pushToBoardList', item)
                     }
@@ -155,12 +198,20 @@ const community = {
                 })
         },
 
-        getBoardNum(context) {
+        getBoardNum(context, position) {
+            let detail
+            if(position === 'qna') {
+                detail = 8
+            } else if(position === 'free') {
+                detail = 7
+            } else {
+                detail = context.state.codeDetail
+            }
             axios.get('/getArticleNum', {
                     params : {
                         key : context.state.key,
                         selected : context.state.selected,
-                        codeDetails : context.state.codeDetail
+                        codeDetails : detail
                     }
                 }
             )
@@ -172,14 +223,28 @@ const community = {
                 })
         },
 
-        getMoreList(context) {
+        getMoreList(context, position) {
+            let detail
+            if(position === 'qna') {
+                detail = 8
+            } else if(position === 'free') {
+                detail = 7
+            } else {
+                detail = context.state.codeDetail
+            }
+
+            if(context.state.axiosState) {
+                return
+            }
+            context.commit('setAxiosState', true)
             axios.get('/boardTest',
                 {
                     params: {
                         selected: context.state.selected,
                         key: context.state.key,
                         articleOnvView: context.state.articlesOnView,
-                        codeDetail: context.state.codeDetail,
+                        codeDetail: detail,
+                        token : "#1921",
                     }
                 })
                 .then(e => {
@@ -187,6 +252,7 @@ const community = {
                         context.commit('pushToBoardList', item)
                     }
                     context.commit('setArticlesOnView', e.data.length)
+                    context.commit('setAxiosState', false)
                 })
         },
 
@@ -199,6 +265,8 @@ const community = {
                     commentsOnView : item.commentsOnView,
                 }})
                 .then(e => {
+                    console.log('댓글 가져오니 ?')
+                    console.log(e)
                     context.commit('changeIsOpen', item)
 
                     for (let item of e.data) {
@@ -207,7 +275,9 @@ const community = {
                         item.isFinish = false
                         item.isModify = true
                     }
+                    console.log('======댓글가져오고나서 데이터=====')
                     console.log(e.data)
+                    console.log('===========')
                     const obj = {
                         //해당 게시글 object
                         _board: item,
@@ -221,21 +291,25 @@ const community = {
         extraComments(context, item) {
             //엑시오스 호출
             //이 부분에에서 { params : { idx : item.idx, number : this.commentsOnView}}넘겨줌.. 12개
-            axios.get('/BoardComment.json').then(e => {
-                for (let item of e.data) {
-                    item.isOpen = false
-                    item.isUpdate = false
-                    item.isFinish = false
-                    item.isModify = true
-                }
-                item.commentsOnView += e.data.length;
-                const payload = {
-                    board: item,
-                    commentList: e.data
-                }
-                //가져온 데이터 뮤테이션으로 바꿔주기
-                context.commit('addingToCommentList', payload)
-            })
+            axios.get('/BoardComment', { params : {
+                    boardIdx : item.boardIdx,
+                    commentsOnView : item.commentsOnView,
+                }})
+                .then(e => {
+                    for (let item of e.data) {
+                        item.isOpen = false
+                        item.isUpdate = false
+                        item.isFinish = false
+                        item.isModify = true
+                    }
+                    item.commentsOnView += e.data.length;
+                    const payload = {
+                        board: item,
+                        commentList: e.data
+                    }
+                    //가져온 데이터 뮤테이션으로 바꿔주기
+                    context.commit('addingToCommentList', payload)
+                })
         }
     }
 }

@@ -26,6 +26,10 @@ public class MemberDTO {
     private RoleDto role;
     private BanDTO ban;
 
+    public void changeMemberIdx(long memberIdx){
+        this.memIdx = memberIdx;
+    }
+
     public Member dtoToEntity() {
         return Member.builder()
                 .memIdx(memIdx)

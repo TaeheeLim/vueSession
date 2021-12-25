@@ -31,7 +31,6 @@ public class BoardFile {
     public BoardFileDTO entityToDto() {
         return BoardFileDTO.builder()
                 .fileIdx(fileIdx)
-                .board(board.entityToDto())
                 .fileName(fileName)
                 .filePath(filePath)
                 .fileSize(fileSize)

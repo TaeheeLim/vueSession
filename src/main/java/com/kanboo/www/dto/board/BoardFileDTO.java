@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -23,11 +24,11 @@ public class BoardFileDTO {
     private String filePath;
     private String fileSize;
     private String extensionName;
+    private String file;
 
     public BoardFile dtoToEntity() {
         return BoardFile.builder()
                 .fileIdx(fileIdx)
-                .board(board.dtoToEntity())
                 .fileName(fileName)
                 .filePath(filePath)
                 .fileSize(fileSize)

@@ -294,20 +294,20 @@ const routes = [
       {
         path: "setting",
         component: Setting,
-        beforeEnter: (to, from, next) => {
-          const repData = {
-            url : '/token/pmCheck',
-            method : 'post',
-            falsePath: '/projects',
-            next: next,
-            data: {
-              projectIdx: sessionStorage.getItem("project"),
-              token : sessionStorage.getItem("token")
-            }
-          }
-
-          roleCheck(repData)
-        }
+        // beforeEnter: (to, from, next) => {
+        //   const repData = {
+        //     url : '/token/pmCheck',
+        //     method : 'post',
+        //     falsePath: '/projects',
+        //     next: next,
+        //     data: {
+        //       projectIdx: sessionStorage.getItem("project"),
+        //       token : sessionStorage.getItem("token")
+        //     }
+        //   }
+        //
+        //   roleCheck(repData)
+        // }
       },
     ]
   },

@@ -1,5 +1,6 @@
 package com.kanboo.www.dto.board;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.kanboo.www.domain.entity.board.Board;
 import com.kanboo.www.domain.entity.board.BoardReport;
 import com.kanboo.www.domain.entity.board.Comment;
@@ -32,6 +33,14 @@ public class BoardDTO {
     private String fileAt;
     private int totalComments;
     private int totalLikes;
+    private BoardFileDTO boardFileDTO;
+    private boolean isLike;
+
+    public void changeMember(long memberIdx){
+        member = new MemberDTO();
+        member.changeMemberIdx(memberIdx);
+    }
+
 
     public Board dtoToEntity() {
         return Board.builder()
@@ -44,6 +53,7 @@ public class BoardDTO {
                 .fileAt(fileAt)
                 .totalComments(totalComments)
                 .totalLikes(totalLikes)
+                .boardFile(boardFileDTO.dtoToEntity())
                 .build();
     }
 }

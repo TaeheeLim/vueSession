@@ -1,42 +1,42 @@
 <template>
-<div class="head-container">
-  <div class="container">
-    <div class="real-container"> 
-      <div class="left-container">
-        <router-link @click="changeCodeDetail(1);
+  <div class="head-container">
+    <div class="container">
+      <div class="real-container">
+        <div class="left-container">
+          <router-link @click="changeCodeDetail(7);
                             emptyInputBox();
                             step=0;
-                            category='free';
+                            category='7';
                             "
-                     class ="board-direction" to="/community/free">자유게시판</router-link>
-        <router-link @click="changeCodeDetail(33);
+                       class ="board-direction" to="/community/free">자유게시판</router-link>
+          <router-link @click="changeCodeDetail(8);
                             emptyInputBox();
                             step=0;
-                            category='qna';
+                            category='8';
                             "
-                     class ="board-direction" to="/community/qna">문의 게시판</router-link>
-        <button  @click="[click(), step=1, this.changeUpdateCheck()]" class="board-direction" :disabled="blockWrite == true">글 작성</button>
+                       class ="board-direction" to="/community/qna">문의 게시판</router-link>
+          <button  @click="[changeWriteIsOpen(), step=1, this.changeUpdateCheck()]" class="board-direction" :disabled="blockWrite == true">글 작성</button>
+        </div>
+        <div class="input-container">
+          <select v-model="selected" id="select" @change="sendingSelected">
+            <option value="All">All</option>
+            <option value="memNick">Writer</option>
+            <option value="boardCN">Content</option>
+          </select>
+          <input type="text" class="search-input" @keyup.enter="sendingSelected" v-model="key">
+          <img src="@/assets/돋보기2.png" @click="sendingSelected">
+        </div>
       </div>
-      <div class="input-container">
-        <select v-model="selected" id="select" @change="sendingSelected">
-          <option value="All">All</option>
-          <option value="memNick">Writer</option>
-          <option value="boardCN">Content</option>
-        </select>
-        <input type="text" class="search-input" @keyup.enter="sendingSelected" v-model="key">
-        <img src="@/assets/돋보기2.png" @click="sendingSelected">
+      <div class="body-router">
+        <div id="write-div">
+          <Write v-if="this.isOpen"
+                 :step="step"
+                 :category="category"/>
+        </div>
+        <router-view></router-view>
       </div>
-    </div>  
-    <div class="body-router">
-      <div id="write-div">
-        <Write v-if="isOpen" 
-              :step="step" 
-              :category="category"/>
-      </div>
-      <router-view></router-view>
     </div>
   </div>
-</div>  
 </template>
 
 <script>
@@ -49,8 +49,8 @@ export default {
       key: "",
       selected : 'All',
       step : 0,
-      category : "free",
-      isOpen : false,
+      category : "7",
+      // isOpen : false,
     }
   },
 
@@ -64,6 +64,7 @@ export default {
       boardList : state => state.community.boardList,
       isSearch : state => state.community.isSearch,
       selected : state => state.community.selected,
+      isOpen : state => state.community.isOpen,
     })
   },
 
@@ -73,6 +74,7 @@ export default {
       getSelectedAndKey : 'community/getSelectedAndKey',
       changeCodeDetail : 'community/changeCodeDetail',
       resetData: 'community/resetData',
+      changeWriteIsOpen : 'community/changeWriteIsOpen',
     }),
 
     ...mapActions({
@@ -91,9 +93,10 @@ export default {
         "key" : this.key,
         "selected" : this.selected
       }
+      const position = this.$route.fullPath.split('/')[2]
       this.getSelectedAndKey(object)
-      this.getBoardNum()
-      this.getBoardList()
+      this.getBoardNum(position)
+      this.getBoardList(position)
     },
 
     emptyInputBox(){
@@ -106,8 +109,20 @@ export default {
       }
       this.getSelectedAndKey(object)
       this.resetData()
-      this.getBoardNum()
-      this.getBoardList()
+      this.getBoardNum(null)
+
+      this.getBoardList(null)
+    },
+
+    writeAfterReload(){
+      const position = this.$route.fullPath.split('/')[2]
+      if(position === 'qna'){
+        this.category = '8'
+        console.log(this.category)
+      } else if(position === 'free'){
+        this.category = '7'
+        console.log(this.category)
+      }
     },
 
   },
@@ -117,7 +132,13 @@ export default {
     }
   },
   mounted() {
-    this.getBoardList()
+    const position = this.$route.fullPath.split('/')[2]
+    console.log(position)
+    this.getBoardList(position)
+    this.getBoardNum(position)
+
+
+    this.writeAfterReload()
   }
 }
 </script>

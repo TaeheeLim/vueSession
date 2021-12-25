@@ -19,7 +19,7 @@ import javaCompile from '@/store/modules/main/javaCompile.js'
 import kanban from '@/store/modules/main/kanban.js'
 import projectBoard from '@/store/modules/main/projectBoard.js'
 import projectList from '@/store/modules/main/projectList.js'
-import requirements from '@/store/modules/main/requirements.js'
+import demand from '@/store/modules/main/demand.js'
 import scheduler from '@/store/modules/main/scheduler.js'
 import setting from '@/store/modules/main/setting.js'
 import view from '@/store/modules/main/view.js'
@@ -54,7 +54,7 @@ const store = createStore({
     kanban,
     projectBoard,
     projectList,
-    requirements,
+    demand,
     scheduler,
     setting,
     view,

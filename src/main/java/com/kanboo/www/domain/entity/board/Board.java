@@ -3,6 +3,7 @@ package com.kanboo.www.domain.entity.board;
 import com.kanboo.www.domain.entity.global.CodeDetail;
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.dto.board.BoardDTO;
+import com.kanboo.www.dto.board.BoardFileDTO;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,12 +36,52 @@ public class Board {
     private CodeDetail codeDetail;
     private String fileAt;
 
+    @OneToOne(mappedBy = "board")
+    private BoardFile boardFile;
+
+    @OneToMany(mappedBy = "board")
+    List<Likes> likesList = new ArrayList<>();
+
     public void changeDelAt(String delAt) {
         this.delAt = delAt;
     }
 
+    public void changeBoardCn(String boardCn){
+        this.boardCn = boardCn;
+    }
+
+    public void changeFileAt(String fileAt){
+        this.fileAt = fileAt;
+    }
+
+    public void increaseLikes(){
+        this.totalLikes += 1;
+    }
+
+    public void decreaseLikes(){
+        this.totalLikes -= 1;
+    }
+
+    public void increaseTotalComments(){
+        this.totalComments += 1;
+    }
+
+    public void decreaseTotalComments(){
+        this.totalComments -= 1;
+    }
+
     public BoardDTO entityToDto() {
-        BoardDTO build = BoardDTO.builder()
+        BoardFileDTO bfd = null;
+        if("Y".equals(fileAt) && boardFile != null) {
+            bfd = boardFile.entityToDto();
+        }
+
+        boolean isLike = false;
+        if(!likesList.isEmpty()) {
+            isLike = true;
+        }
+
+        return BoardDTO.builder()
                 .boardIdx(boardIdx)
                 .member(member.entityToDto())
                 .boardCn(boardCn)
@@ -50,7 +91,8 @@ public class Board {
                 .fileAt(fileAt)
                 .totalComments(totalComments)
                 .totalLikes(totalLikes)
+                .isLike(isLike)
+                .boardFileDTO(bfd)
                 .build();
-        return build;
     }
 }

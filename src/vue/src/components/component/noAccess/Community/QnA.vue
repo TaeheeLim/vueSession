@@ -1,9 +1,10 @@
 <template>
 <div @scroll="getArticle" class="router-wrapper">
     <div class="router-wrapper2">
-        <div class="board" v-for="(item, index) in this.boardList" :key="index">
+        <div v-for="(item, index) in this.boardList" :key="index">
           <div class="null-content" v-if="item.isNull">{{item.content}}</div>
           <div v-else>
+          <div class="board" v-if="item.delAt === 'N'">
             <div class="name-div">
                 <div>
                     <div>{{item.member.memNick}}</div>
@@ -11,24 +12,9 @@
                 </div>
                 <!-- 이 부분에다가 v-if로 토큰값 비교해서 작성자일 경우 수정,삭제 버튼.. 아닐경우 신고 버튼-->
                 <div class="icon-container" v-if="item.수정했니 === false">
-                    <div class="icon-div">
-                        <i @click="this.changeBoardIsModify(item); 
-                                    this.changeIsUpdate(item);"
-                                    class="fas fa-edit"
-                            v-if="this.updateCheck == false"></i>
-                    </div>
-                    <div class="icon-div">
-                        <i @click="deleteBoard(item)" class="far fa-trash-alt"></i>
-                    </div>
-                    <!-- 밑의 div에다가 update axios를 하는 메소드 이름을 @click에다가 추가-->
-                </div>
-                <div class="report-div">
-                    <span @click="report(item); changeIsReportClick()" v-if="isReportClick === false">
-                        <img class="no-report" src="@/assets/noneReport.png">
-                    </span>
-                    <span @click="cancelReport(item); changeIsReportClick()" v-if="isReportClick === true">
-                        <img class="report" src="@/assets/report.png">
-                    </span>
+                  <div v-if="item.fileAt === 'Y'">
+                    <button @click="downloadFile(item)" id="file-btn">첨부파일: {{ item.boardFileDTO.fileName }}</button>
+                  </div>
                 </div>
                 <div id="finish-div" v-if="item.수정했니 === true"
                                     @click="exportFinish(item); increasingIsExportUpdate()">Finish
@@ -42,14 +28,6 @@
                 <editor :originContent="item" :isExport="isExport" @exportContent="getContent" class="content-div"/>
             </div>
             <div id="btn-div">
-                <div @click="like(item); setLikeFlag()" v-if="!likeToggle">
-                    <i class="far fa-thumbs-up"></i>
-                    <span>{{ item.totalLikes }} 개</span>
-                </div>
-                <div class="clickedThumbs-up" @click="cancelLike(item); setLikeFlag()" v-else>
-                    <i class="far fa-thumbs-up"></i>
-                    <span>{{ item.totalLikes }} 개</span>
-                </div>
                 <div>
                     <button @click="getCommentList(item)" class="comment-btn">댓글 {{ item.totalComments }}개</button>
                 </div>
@@ -64,6 +42,7 @@
         <span id="goback">
             <button id="goback-btn" @click="backToFirst">처음으로</button>
         </span>
+        </div>
     </div>
 </div>
 </template>
@@ -74,7 +53,7 @@ import {  mapActions, mapMutations, mapState } from 'vuex'
 import editor from '../../global/editor.vue'
 
 export default {
-    name : 'Free',
+    name : 'qna',
 
     data(){
         return {
@@ -84,6 +63,7 @@ export default {
             isExport : 0,
             isReportClick : false,
             likeToggle : false,
+            isBoardNull: false
         }
     },
     computed : {
@@ -92,6 +72,7 @@ export default {
             updateCheck : state => state.community.updateCheck,
             numberOfArticle : state => state.community.numberOfArticle,
             articlesOnView : state => state.community.articlesOnView,
+            axiosState: state => state.community.axiosState
         })
     },
 
@@ -106,51 +87,38 @@ export default {
             changeIsUpdate : 'community/changeIsUpdate',
             changeBoardIsModify : 'community/changeBoardIsModify',
             changeUpdateCheck : 'community/changeUpdateCheck',
+            setAxiosState: 'community/setAxiosState',
+            deleteBoards : 'community/deleteBoards'
         }),
 
-        setLikeFlag(){
-            this.likeToggle = !this.likeToggle
-        },
+        downloadFile(item) {
+          const url = '/downloadFile'
+          const boardIdx = item.boardIdx
+          console.log(boardIdx)
+          const memIdx = item.member.memIdx
+          const fileName = item.boardFileDTO.fileName
+          const codeDetail = item.codeDetail.codeDetailIdx
+          console.log(fileName)
+          console.log(memIdx)
 
-        like(item){
-            this.axios.post('url',null, { params : { idx : item.idx }})
-                        .then(e => {
-                            if(e > 0){
-                                if(!this.likeToggle){
-                                    item.좋아요 += 1
-                                }
-                            }
-                        })
-        },
-
-        cancelLike(item){
-            this.axios.post('url',null, { params : { idx : item.idx }})
-                        .then(e =>  {
-                            if(e > 0){
-                                if(!this.likeToggle){
-                                    item.좋아요 -= 1
-                                }
-                            }
-                        })
-        },
-
-        changeIsReportClick() {
-            this.isReportClick = !this.isReportClick
-        },
-        
-        report(item){
-            this.axios.get('url', null, { params : {idx : item.idx}})
-                        .then(e => {
-                            console.log(e)
-                        })
-        },
-        
-        cancelReport(item){
-            
-            this.axios.get('url', null, { params : {idx : item.idx}})
-                        .then(e => {
-                            console.log(e)
-                        })
+          this.axios({
+            url: url,
+            method: 'post',
+            responseType: 'blob',
+            data: {
+              boardIdx: boardIdx,
+              memIdx: memIdx,
+              fileName: fileName,
+              codeDetail: codeDetail
+            }
+          }).then(e => {
+            const url = window.URL.createObjectURL(new Blob([e.data]));
+            const link = document.createElement('a')
+            link.href = url
+            link.setAttribute('download', fileName)
+            document.body.appendChild(link)
+            link.click()
+          })
         },
 
         exportFinish(item) {
@@ -162,40 +130,25 @@ export default {
             this.isExport++
         },
 
-        getArticle(e){  
+        getArticle(e){
             if(this.articlesOnView === this.numberOfArticle) {
                 return
             }
-
-            const fullSroll = e.target.scrollHeight
+            const fullScroll = e.target.scrollHeight
             const nowScroll = e.target.scrollTop
+            const position = this.$route.fullPath.split('/')[2]
 
-            if((fullSroll - nowScroll) < (fullSroll / 1.5) && !this.axiosState) {
-                //원래는 이 부분에서 현재보여지는 게시글의 개수인 articlesOnView 같이 넘김
-                //Controller에서 보여지는 개시글의 개수를 받아서 jpa문법으로 페이징처리를 위함
-                //params : {articleNum : this.articleOnView}
-                this.getMoreList()
+          if(this.articlesOnView <= 4) {
+            this.getMoreList(position)
+          } else {
+            if((fullScroll - nowScroll) < (fullScroll / 1.5) && !this.axiosState) {
+              this.getMoreList(position)
             }
+          }
         },
-        //게시판 삭제
-        deleteBoard(item){
-            this.axios
-                .delete('', null, {params : {
-                                    board : item,
-                                    token : sessionStorage.getItem('token')}})
-                .then(() =>{})
-                .catch(() => {})
-        },
-        //게시판 수정
-        updateBoard(item){
-            this.axios
-                .put('',null, {params : {board : item,
-                                content : this.updateContent,
-                                token : sessionStorage.getItem('token')}})
-                .then(() => {});
-        },
+
         getCommentList(item) {
-            if(item.댓글수 <= 0) {
+            if(item.totalComments <= 0) {
                 return
             }
             this.getComments(item)
@@ -226,10 +179,6 @@ export default {
                     console.log(_files)
                 }
         }
-    },
-
-  beforeMount() {
-        this.getBoardNum()
     },
 
     components : {
@@ -268,7 +217,7 @@ export default {
 }
 
 .content-div {
-    height: 300px;
+    height: fit-content;
     color: white;
     width: 100%;
 }
@@ -331,28 +280,14 @@ export default {
     width: 70px;
 }
 
-#comment-insert-div {
-    display: flex;
-    justify-content: right;
-    margin-top: 10px;
-}
-
 img {
     width: 15px;
     height: 15px;
     cursor: pointer;
 }
 
-.report-div {
-    display: none;
-}
-
 #btn-div{
     font-size: 14px;
-}
-
-#btn-div > div:first-child{
-    padding-right: 30px;
 }
 
 #btn-div > div > i{
@@ -387,5 +322,10 @@ img {
 #goback-btn {
   color: #fff;
   padding: 5px;
+}
+
+.null-content {
+  font-size: 20px;
+  color: #fff;
 }
 </style>

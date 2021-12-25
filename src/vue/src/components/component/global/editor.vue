@@ -3,24 +3,24 @@
     <div class="text-editor-header">
       <button v-for="item in btnList" :key="item"
               type="button"
-              class="btn" 
+              class="btn"
               :data-element="item.ele"
               @click="btnClick(item); getText()">
-                <i :class="item.icon" style="color: #fff;"></i>
-              </button>
+        <i :class="item.icon" style="color: #fff;"></i>
+      </button>
       <div class="file-box">
         <label for="upload-file">
           <i class="fa fa-file-image-o"></i>
         </label>
         <input id="upload-file" type="file" @change="insertImg">
       </div>
-      
+
       <input id="color" type="color" v-model="color">
 
       <input id="multipleFiles" type="file" class="file" @change="uploadFile">
     </div>
-    <div id="content" @keyup="getText" v-if="originContent" contenteditable="true" v-html="originContent.content"></div>
-    <div id="content" @keyup="getText" v-else contenteditable="true"></div>
+    <div class="content" @keyup="getText" v-if="originContent" contenteditable="true" v-html="originContent.boardCn"></div>
+    <div class="content" @keyup="getText" v-else contenteditable="true"></div>
   </div>
 </template>
 
@@ -31,6 +31,7 @@ export default {
   props: {
     isExport: Number,
     originContent: Object,
+    boardIdx : Number,
   },
 
   data() {
@@ -87,7 +88,7 @@ export default {
           return
         }
         const img = `<img style="width: 300px; height: 300px;" src="data:image/*;base64,${item.img}" alt="img"/>`
-        document.querySelector("#content").focus()
+        document.querySelector(".content").focus()
         document.execCommand('insertHTML', false, img)
       }else if(item === 'foreColor') {
         document.execCommand('ForeColor', false, this.color)
@@ -108,7 +109,7 @@ export default {
       this.exportFile = files[0]
     },
     getText() {
-      this.content = document.querySelector('#content').innerHTML
+      this.content = document.querySelector('.content').innerHTML
     },
     // exportContent() {
     //   this.exportC = document.querySelector('#content').innerHTML
@@ -117,7 +118,7 @@ export default {
     //     _file: this.exportFile
     //   }
     //   this.$emit('exportContent', returnData)
-    // 
+    //
     insertImg(e) {
       const files = e.currentTarget.files
       const file = files[0]
@@ -132,7 +133,6 @@ export default {
         ele: "insertImage",
         img: ""
       }
-      this.exportFile = files
       if(files && file) {
         const reader = new FileReader()
         reader.onload = readerEvt => {
@@ -142,19 +142,24 @@ export default {
         }
         reader.readAsBinaryString(file)
       }
+      this.exportFile = ''
+
     }
   },
   watch: {
     color() {
       this.btnClick('foreColor')
     },
+
     isExport() {
-      this.exportC = document.querySelector('#content').innerHTML
+
+      this.exportC = document.querySelector('.content').innerHTML
       const returnData = {
         _data: this.exportC,
-        _file: this.exportFile
+        _file: this.exportFile,
+        _boardIdx : this.boardIdx,
+        originContent: this.originContent
       }
-      console.log(returnData)
       this.$emit('exportContent', returnData)
     },
 
@@ -193,7 +198,7 @@ body {
 }
 .text-editor-header .btn {
   border: none;
-  outline: none;  
+  outline: none;
   background: transparent;
   margin-right: 5px;
   cursor: pointer;
@@ -210,7 +215,7 @@ body {
 [type="color"] {
   border: none;
 }
-#content {
+.content {
   min-height: 200px;
   border: 1px solid #ecf0f1;
   border-top: 0px;
