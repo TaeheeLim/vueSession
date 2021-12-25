@@ -263,4 +263,21 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectDTO getDashBoardData(String memTag, Long projectIdx) {
         return projectRepository.getDashBoard(memTag, projectIdx);
     }
+
+    @Override
+    @Transactional
+    public ProjectDTO updateProjectState(ProjectDTO projectDTO) {
+
+        Project project = projectRepository.findByPrjctIdx(projectDTO.getPrjctIdx());
+
+        project.changePrjctComplAt(projectDTO.getPrjctComplAt());
+        project.changePrjctDelAt(projectDTO.getPrjctDelAt());
+
+        return project.entityToDto();
+    }
+
+    @Override
+    public Long getMaxIndexOfProject(String selected, String key) {
+        return projectRepository.getMaxIndexOfProject(selected,key);
+    }
 }

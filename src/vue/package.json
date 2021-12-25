@@ -32,7 +32,8 @@
     "vue3-tree": "^0.8.0",
     "vue3-treeview": "^0.3.5",
     "vuepress-theme-default-prefers-color-scheme": "^2.0.0",
-    "vuex": "^4.0.2"
+    "vuex": "^4.0.2",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",

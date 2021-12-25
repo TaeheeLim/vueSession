@@ -31,11 +31,35 @@ public class KanbanItem {
 
     private String kbCn;
     private String kbItmNum;
-    private LocalDateTime kbDate;
     private String kbBadge;
     private String kbColor;
+
     private LocalDateTime kbStartDate;
     private LocalDateTime kbEndDate;
+
+    public void changeKbCn(String kbCn) {
+        this.kbCn = kbCn;
+    }
+
+    public void changeKbItmNum(String kbItmNum) {
+        this.kbItmNum = kbItmNum;
+    }
+
+    public void changeKbBadge(String kbBadge) {
+        this.kbBadge = kbBadge;
+    }
+
+    public void changeKbColor(String kbColor) {
+        this.kbColor = kbColor;
+    }
+
+    public void changeKbStartDate(LocalDateTime kbStartDate) {
+        this.kbStartDate = kbStartDate;
+    }
+
+    public void changeKbEndDate(LocalDateTime kbEndDate) {
+        this.kbEndDate = kbEndDate;
+    }
 
     public KanbanItemDTO entityToDto() {
         return KanbanItemDTO.builder()
@@ -44,7 +68,6 @@ public class KanbanItem {
                 .member(member.entityToDto())
                 .kbCn(kbCn)
                 .kbItmNum(kbItmNum)
-                .kbDate(kbDate)
                 .kbBadge(kbBadge)
                 .kbColor(kbColor)
                 .build();

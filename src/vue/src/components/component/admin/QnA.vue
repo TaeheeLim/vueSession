@@ -2,21 +2,39 @@
   <div>
     <div class="header">
       <span class="title">QnA</span>
-      <input class="search" type="text" placeholder="🔎" />
-    </div>
-
-    <div class="body">
-      <div class="card" v-for="(data, index) in qnaData" :key="index">
-        <p class="card-header"> <span class="board-writer">{{ data.memId }}</span>  <span class="board-date">{{ getDate(data.date) }}</span></p>
-        <p class="card-body"> {{ data.content }} </p>
+      <div>
+        <select class="selectBox" @change="setSelect">
+          <option selected value="All">전체</option>
+          <option value="boardCn">내용</option>
+          <option value="memNick">닉네임</option>
+        </select>
         <input
-          type="text"
-          @keyup.enter="addReply(index)"
-          @input="setText"
-          placeholder="댓글을 입력하세요"
+            class="search"
+            type="text"
+            placeholder="🔎"
+            @input="setKey"
+            @keyup.enter="search"
+        />
+      </div>
+    </div>
+    <div class="body" @scroll="getMore">
+      <div class="card" v-for="(data, index) in qnaData" :key="index">
+        <p class="card-header">
+          <span class="board-writer">{{ data.memNick }}</span>
+          <span class="board-date">{{ getDate(data.date) }}</span>
+        </p>
+        <p class="card-body">{{ data.content }}</p>
+        <input
+            type="text"
+            @keyup.enter="addReply(index)"
+            @input="setText"
+            placeholder="댓글을 입력하세요"
         />
         <p class="card-reply" v-for="reply in data.replies" :key="reply">
-          <span class="reply-writer"> {{reply.memId}}  <span class="reply-date">{{getDate(reply.date)}}</span> </span> 
+          <span class="reply-writer">
+            {{ reply.memNick }}
+            <span class="reply-date">{{ getDate(reply.date) }}</span>
+          </span>
           <span class="reply-content"> {{ reply.content }} </span>
         </p>
       </div>
@@ -25,7 +43,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import moment from "moment";
 export default {
   data() {
@@ -36,34 +54,87 @@ export default {
   computed: {
     ...mapState({
       qnaData: (state) => state.adminQnA.qnaData,
+      articleOnView: (state) => state.adminQnA.articleOnView,
+      maxIndex: (state) => state.adminQnA.maxIndex,
+      isAxiosRunning: (state) => state.adminQnA.isAxiosRunning,
     }),
+  },
+  created() {
+    this.setQnaList();
+    this.getMaxBoardIndex();
   },
   methods: {
     ...mapMutations({
       insert: "adminQnA/insert",
+      setAxiosState: "adminQnA/setAxiosState",
+      setSelected: "adminQnA/setSelected",
+      setKeyWord: "adminQnA/setKeyWord",
+      resetData: "adminQnA/resetData",
     }),
-    setText(e){
-      this.inputText = e.target.value 
+    ...mapActions({
+      setQnaList: "adminQnA/setQnaList",
+      getMoreList: "adminQnA/getMoreList",
+      getMaxBoardIndex: "adminQnA/getMaxBoardIndex",
+    }),
+    setText(e) {
+      this.inputText = e.target.value;
     },
     getDate(date) {
       let temp = moment(date, "YYYY-MM-DD HH:mm:ss");
-      return `${temp.format("M")}월 ${temp.format("D")}일 ${temp.format("HH")}:${temp.format("mm")}`;
+      return `${temp.format("MM")}월 ${temp.format("DD")}일 ${temp.format(
+          "HH"
+      )}:${temp.format("mm")}`;
     },
     addReply(index) {
-      
-      let today = moment().format("YYYY-MM-DD HH:mm:ss")
+      let today = moment().format("YYYY-MM-DD HH:mm:ss");
 
       let payload = [];
       let data = {
-        memId: "admin",
+        memNick: "admin",
+        boardIdx: this.qnaData[index].boardIdx,
         content: this.inputText,
-        date: today
+        date: today,
       };
-      payload.push(index,data);
+      payload.push(index, data);
       this.insert(payload);
 
-      this.inputText = ""
-      document.querySelector('.body input').value = ""
+      this.inputText = "";
+      document.querySelectorAll(".body input")[index].value = "";
+    },
+    getMore(e) {
+      console.log(this.maxIndex)
+      console.log(this.articleOnView)
+      if (this.maxIndex == this.articleOnView) {
+        return;
+      }
+
+
+      const scrollHeight = e.target.scrollHeight;
+      const scrollTop = e.target.scrollTop;
+      const clientHeight = e.target.clientHeight;
+
+      if (scrollTop + clientHeight >= scrollHeight - 30) {
+        if (!this.isAxiosRunning) {
+          window.requestAnimationFrame(() => {
+            console.log("getMore");
+            this.getMoreList();
+          });
+          this.setAxiosState();
+        }
+      }
+    },
+    setSelect(e) {
+      this.setSelected(e.target.value);
+      this.search();
+    },
+    setKey(e) {
+      this.setKeyWord(e.target.value);
+    },
+    search() {
+      this.resetData();
+
+      this.setQnaList();
+      this.getMaxBoardIndex();
     },
   },
 };
@@ -88,20 +159,35 @@ export default {
   outline: none;
   border-radius: 6px;
   color: #fff;
+  padding: 6px;
+}
+
+.selectBox {
+  border: none;
+  background: none;
+  color: #fff;
+  outline: none;
+  width: fit-content;
+  text-align: center;
+}
+
+.selectBox option {
+  background: #2c2f3b;
+  color: #fff;
 }
 
 .body {
   width: 90%;
   margin: auto;
-  height: 94%;
+  height: 97%;
   overflow: scroll;
 }
 
-.board-writer{
+.board-writer {
   font-size: 22px;
 }
 
-.board-date{
+.board-date {
   font-size: 12px;
 }
 
@@ -112,9 +198,10 @@ export default {
   padding: 20px;
   color: #fff;
   border-radius: 8px;
+  animation: fade 0.3s linear;
 }
 
-.card-body{
+.card-body {
   font-size: 22px;
 }
 
@@ -146,32 +233,40 @@ export default {
   padding: 14px;
 }
 
-.reply-writer{
+.reply-writer {
   font-size: 18px;
 }
 
-.reply-date{
+.reply-date {
   font-size: 12px;
 }
 
-.reply-content{
+.reply-content {
   font-size: 18px;
   margin-top: 12px;
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 0;
 }
 
-@media (max-width:1268px){
-  .body{
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1268px) {
+  .body {
     overflow: scroll;
     height: 50vh;
   }
 }
 
-@media (max-width:768px){
-
+@media (max-width: 768px) {
   .body {
     overflow: scroll;
     height: 50vh;
@@ -179,45 +274,44 @@ export default {
   }
 }
 
-@media(max-width: 535px){
-  .header{
+@media (max-width: 535px) {
+  .header {
     display: flex;
     flex-direction: column;
   }
 
-  .header .search{
+  .header .search {
     margin-top: 25px;
-    height: 30px; 
+    height: 30px;
     width: 100%;
   }
 
-  .body{
+  .body {
     overflow: scroll;
     height: 50vh;
     width: 100%;
   }
 
-  .card-header{
+  .card-header {
     display: flex;
     flex-direction: column;
   }
 
-  .board-writer{
+  .board-writer {
     font-size: 14px;
     margin-bottom: 10px;
   }
 
-  .board-date{
+  .board-date {
     font-size: 10px;
   }
 
-  .card p{
+  .card p {
     font-size: 12px;
   }
 
-  .card-reply span{
+  .card-reply span {
     font-size: 12px;
   }
-
 }
 </style>

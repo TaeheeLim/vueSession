@@ -226,7 +226,10 @@ const scheduler = {
       ],
       copiedData : [{}],
       data : [],
-      realData :[],
+      secondData :[],
+      filteredData : [],
+      // 원본데이터는  배열1에 저장 렌더는 배열2에 렌더링 filter메소드는 배열 2를 가지고 렌더링,
+      //  전체를 클릭시 배열 1로 다시 배열2에 렌더링 도중에 crud 시 전체로 다시 필터 초기화
       ganttData : [
         {
           // 간트 일정 별 색상을 따로 불러올 때 지정함 0~29% gray, 30%~59% blue, 60%~100% green
@@ -257,7 +260,6 @@ const scheduler = {
       }
     },
     setCallAddFunction(state){
-      // console.log(e)
       state.callAddFunction = !state.callAddFunction
       if(state.callAddFunction) {
         state.isModal = false
@@ -266,24 +268,33 @@ const scheduler = {
     setFilterValue(state, e){
       this.commit('scheduler/copyDataFunction')
       state.filterValue = e
-      const copy = [...state.data]
+      const copy = [...state.secondData]
+
+      if(state.showAllDayEvents === 2){
+        for(let i = 0; i < copy.length; i++){
+          if(copy[i].allDay === true){
+            copy.splice(i, 1)
+          }
+        }
+      }
+
       if(state.filterValue !== 'all'){
         let filtered = copy.filter( (v)=>(v.class === state.filterValue) )
         state.data = filtered
+        state.filteredData = filtered
+      }else if(state.filterValue === 'all'){
+        state.data = state.secondData
       }
     },
-    
     setModalTrue(state){
       state.isModal = true
     },
     setModalFalse(state){
       state.isModal = false
     },
-    
     copyDataFunction(state){
-      state.copiedData = [...state.data]
+      state.copiedData = [...state.secondData]
     },
-
     toggleAllDayContent(state){
       const copy = [...state.data]
       if(!state.isToggle){
@@ -296,7 +307,7 @@ const scheduler = {
         state.data = [...copy]
         state.showAllDayEvents = 2
       }else if(state.isToggle){
-        state.data = [...state.copiedData]
+        state.data = state.filteredData
         state.showAllDayEvents = 0
       }
       state.isToggle = !state.isToggle
@@ -308,6 +319,25 @@ const scheduler = {
     pushData(state, arr){
       state.data.push(arr)
     },
+    setSecondData(state, arr){
+      state.secondData = arr
+    },
+    pushSecondData(state, arr){
+      state.secondData.push(arr)
+    },
+    setDataToSecondData(state){
+      const copy = [...state.secondData]
+
+      if(state.showAllDayEvents === 2){
+        for(let i = 0; i < copy.length; i++){
+          if(copy[i].allDay === true){
+            copy.splice(i, 1)
+          }
+        }
+      }
+      state.data = copy
+    },
+
   },
 }
 

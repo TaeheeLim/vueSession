@@ -81,3 +81,7 @@ button {
     background: #2C2F3B;
     color: #fff;
 }
+
+.vuecal__header .vuecal__flex.vuecal__weekdays-headings {
+	background: rgba(44, 47, 59, 1) !important;
+}

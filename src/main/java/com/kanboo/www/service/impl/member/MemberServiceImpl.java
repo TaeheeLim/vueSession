@@ -117,22 +117,6 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public List<MemberDTO> getAllMember() {
-
-//        List<Member> all = memberRepository.findAll();
-        List<Member> all = memberRepository.findAllMemberBanInfo();
-        List<MemberDTO> result = new ArrayList<>();
-        for (Member m : all) {
-            MemberDTO memberDTO = m.entityToDto();
-            if(m.getBan() != null) {
-                memberDTO.setBan(m.getBan().entityToDto());
-            }
-            result.add(memberDTO);
-        }
-        return result;
-    }
-
-    @Override
     public MemberDTO getUserInfo(String memTag) {
         Member member = memberRepository.findByMemTag(memTag);
         return MemberDTO.builder()
@@ -161,5 +145,25 @@ public class MemberServiceImpl implements MemberService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public List<MemberDTO> getAllMember(String selected, String keyword, int articleOnView) {
+
+        List<Member> all = memberRepository.findAllMemberBanInfo(selected,keyword,articleOnView);
+        List<MemberDTO> result = new ArrayList<>();
+        for (Member m : all) {
+            MemberDTO memberDTO = m.entityToDto();
+            if(m.getBan() != null) {
+                memberDTO.setBan(m.getBan().entityToDto());
+            }
+            result.add(memberDTO);
+        }
+        return result;
+    }
+
+    @Override
+    public Long getMaxIndexOfMember(String selected, String key) {
+        return memberRepository.getMaxIndexOfMember(selected,key);
     }
 }

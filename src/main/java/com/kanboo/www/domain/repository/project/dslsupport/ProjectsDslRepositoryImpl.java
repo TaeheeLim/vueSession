@@ -13,6 +13,7 @@ import com.kanboo.www.dto.board.BoardDTO;
 import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
 import com.kanboo.www.dto.project.*;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 
@@ -184,5 +185,68 @@ public class ProjectsDslRepositoryImpl implements ProjectsDslRepository {
         projectDTO.setGanttList(ganttDTOS);
 
         return projectDTO;
+    }
+
+    @Override
+    public Long getMaxIndexOfProject(String selected, String key) {
+
+        JPAQueryFactory query = new JPAQueryFactory(em);
+        QProject qProject = QProject.project;
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+//        switch (selected) {
+//            case "memNick":
+//                booleanBuilder.and(member.memNick.contains(keyword));
+//                break;
+//            case "memId":
+//                booleanBuilder.and(member.memId.contains(keyword));
+//                break;
+//            case "All":
+//                booleanBuilder.and(member.memNick.contains(keyword))
+//                        .or(member.memNick.contains(keyword));
+//                break;
+//        }
+
+        return query
+                .selectFrom(qProject)
+                .where(
+                        booleanBuilder
+                ).
+                fetchCount();
+
+    }
+
+    @Override
+    public List<Project> findAllProject(String selected, String keyword, int articleOnView) {
+        QProjectMember qProjectMember = QProjectMember.projectMember;
+        QProject qProject = QProject.project;
+
+        JPAQueryFactory query = new JPAQueryFactory(em);
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        switch (selected) {
+            case "prjctNm":
+                booleanBuilder.and(qProject.prjctNm.contains(keyword));
+                break;
+//            case "memId":
+//                booleanBuilder.and(qProject.projectMembers.contains(keyword));
+//                break;
+            case "All":
+                booleanBuilder.and(qProject.prjctNm.contains(keyword));
+//                        .or(member.memNick.contains(keyword));
+                break;
+        }
+
+        return query
+                .select(qProject).from(qProject)
+                .rightJoin(qProject.projectMembers, qProjectMember)
+                .fetchJoin()
+                .innerJoin(qProjectMember)
+                .where(
+                        qProjectMember.prjctMemRole.eq("PM")
+                                .and(booleanBuilder)
+                )
+                .fetch();
     }
 }

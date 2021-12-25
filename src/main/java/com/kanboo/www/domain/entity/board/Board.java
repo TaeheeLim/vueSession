@@ -42,6 +42,9 @@ public class Board {
     @OneToMany(mappedBy = "board")
     List<Likes> likesList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "board")
+    private List<Comment> commentList = new ArrayList<>();
+
     public void changeDelAt(String delAt) {
         this.delAt = delAt;
     }

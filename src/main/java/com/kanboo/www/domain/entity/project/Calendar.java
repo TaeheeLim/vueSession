@@ -59,12 +59,19 @@ public class Calendar {
         this.calTitle = calTitle;
     }
 
+    public void changeDelAt(String calDelAt) {
+        this.calDelAt = calDelAt;
+    }
+
     public CalendarDTO entityToDto() {
         return CalendarDTO.builder()
                 .calIdx(calIdx)
+                .project(project.entityToDto())
+                .member(member.entityToDto())
                 .calStartDate(calStartDate)
                 .calEndDate(calEndDate)
                 .calColor(calColor)
+                .codeDetail(codeDetail.entityToDto())
                 .calCn(calCn)
                 .calTitle(calTitle)
                 .calDelAt(calDelAt)

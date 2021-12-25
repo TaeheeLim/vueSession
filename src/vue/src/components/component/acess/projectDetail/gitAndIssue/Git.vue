@@ -24,7 +24,7 @@ import "vue3-tree/dist/style.css";
 import moment from "moment" // eslint-disable-line no-unused-vars
 
 
-const key = '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';
+const key = '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';
 
 export default {
   components: {
@@ -69,7 +69,7 @@ export default {
               if (i.name === '.DS_Store') {
                 continue
               }
-              
+
               const a = {
                 idx: i.sha,
                 label: i.name,
@@ -87,7 +87,7 @@ export default {
             }
           })
     },
-    
+
     filterErrorFiles(file){
       //비동기라서 작동이 잘안됨
       let flag = false;
@@ -105,12 +105,12 @@ export default {
           Authorization: `token ${key}`
         }
       })
-      .then(res => {
-        this.encodedData = res.data.content
-        this.decodeData()
-        this.setSelectedFileName(res.data.name)
-        this.setSelectedFileSize(res.data.size)
-      })
+          .then(res => {
+            this.encodedData = res.data.content
+            this.decodeData()
+            this.setSelectedFileName(res.data.name)
+            this.setSelectedFileSize(res.data.size)
+          })
     },
     getFileList() {
       this.axios.get('https://api.github.com/repos/Juwon-Yun/kanboo_my_work/contents', {
@@ -123,8 +123,8 @@ export default {
 
               // 403 error 방지
               if(i.name === 'package-lock.json') continue
-              if(i.name === '.DS_Store') continue  
-                
+              if(i.name === '.DS_Store') continue
+
               const array = {
                 idx: i.sha,
                 label: i.name,
@@ -149,12 +149,12 @@ export default {
           prjctIdx : 1,
         }
       })
-      .then( (r)=>{
-        for(let i = 0; i < r.data.length; i++){
-          r.data[i].issueDate = r.data[i].issueDate.replace('T', ' ')
-        }
-        this.setIssueDate(r.data)
-      })
+          .then( (r)=>{
+            for(let i = 0; i < r.data.length; i++){
+              r.data[i].issueDate = r.data[i].issueDate.replace('T', ' ')
+            }
+            this.setIssueDate(r.data)
+          })
     },
 
     decodeData() {

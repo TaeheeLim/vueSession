@@ -1,3 +1,4 @@
+import axios from 'axios'
 const moment = require("moment");
 
 const kanban = {
@@ -18,17 +19,17 @@ const kanban = {
             orientation: "vertical",
           },
           cards: [
-            {
-              content: "프로젝트 리스트 퍼블리싱",
-              id: "0-1",
-              startDate: "2021-12-07 15:00:10",
-              endDate: "2021-12-08 15:30:30",
-              day: "",
-              badgeText: "front-end",
-              badgeColor: "#4caf50",
-              showCardInMenu: false,
-              user_name: "태희",
-            },
+            // {
+            //   content: "프로젝트 리스트 퍼블리싱",
+            //   id: "0-1",
+            //   startDate: "2021-12-07 15:00:10",
+            //   endDate: "2021-12-08 15:30:30",
+            //   day: "",
+            //   badgeText: "front-end",
+            //   badgeColor: "#4caf50",
+            //   showCardInMenu: false,
+            //   user_name: "태희",
+            // },
           ],
         },
         {
@@ -40,17 +41,17 @@ const kanban = {
             orientation: "vertical",
           },
           cards: [
-            {
-              content: "간트차트 퍼블리싱",
-              id: "1-1",
-              startDate: "2021-12-06 15:30:30",
-              endDate: "2021-12-13 15:30:30",
-              day: "",
-              badgeText: "implement",
-              badgeColor: "#4caffd",
-              showCardInMenu: false,
-              user_name: "zerochae",
-            },
+            // {
+            //   content: "간트차트 퍼블리싱",
+            //   id: "1-1",
+            //   startDate: "2021-12-06 15:30:30",
+            //   endDate: "2021-12-13 15:30:30",
+            //   day: "",
+            //   badgeText: "implement",
+            //   badgeColor: "#4caffd",
+            //   showCardInMenu: false,
+            //   user_name: "zerochae",
+            // },
           ],
         },
         {
@@ -62,17 +63,17 @@ const kanban = {
             orientation: "vertical",
           },
           cards: [
-            {
-              content: "컴파일러 기능 구현",
-              id: "2-1",
-              startDate: "2021-12-05 15:30:30",
-              endDate: "2021-12-14 15:30:30",
-              badgeText: "back-end",
-              badgeColor: "#FFC107",
-              day: "",
-              showCardInMenu: false,
-              user_name: "kade",
-            },
+            // {
+            //   content: "컴파일러 기능 구현",
+            //   id: "2-1",
+            //   startDate: "2021-12-05 15:30:30",
+            //   endDate: "2021-12-14 15:30:30",
+            //   badgeText: "back-end",
+            //   badgeColor: "#FFC107",
+            //   day: "",
+            //   showCardInMenu: false,
+            //   user_name: "kade",
+            // },
           ],
         },
         {
@@ -84,17 +85,17 @@ const kanban = {
             orientation: "vertical",
           },
           cards: [
-            {
-              content: "스케줄러 퍼블리싱",
-              id: "3-1",
-              startDate: "2021-12-04 15:30:30",
-              endDate: "2021-12-12 15:30:30",
-              badgeText: "complete",
-              badgeColor: "#FF9800",
-              day: "",
-              showCardInMenu: false,
-              user_name: "주원",
-            },
+            // {
+            //   content: "스케줄러 퍼블리싱",
+            //   id: "3-1",
+            //   startDate: "2021-12-04 15:30:30",
+            //   endDate: "2021-12-12 15:30:30",
+            //   badgeText: "complete",
+            //   badgeColor: "#FF9800",
+            //   day: "",
+            //   showCardInMenu: false,
+            //   user_name: "주원",
+            // },
           ],
         },
         {
@@ -106,17 +107,17 @@ const kanban = {
             orientation: "vertical",
           },
           cards: [
-            {
-              content: "프로젝트 세팅 퍼블리싱",
-              id: "4-1",
-              startDate: "2021-12-07 14:35:43",
-              endDate: "2021-12-12 15:30:30",
-              badgeText: "Emergency",
-              badgeColor: "#F44336",
-              day: "",
-              showCardInMenu: false,
-              user_name: "창균",
-            },
+            // {
+            //   content: "프로젝트 세팅 퍼블리싱",
+            //   id: "4-1",
+            //   startDate: "2021-12-07 14:35:43",
+            //   endDate: "2021-12-12 15:30:30",
+            //   badgeText: "Emergency",
+            //   badgeColor: "#F44336",
+            //   day: "",
+            //   showCardInMenu: false,
+            //   user_name: "창균",
+            // },
           ],
         },
       ],
@@ -139,7 +140,7 @@ const kanban = {
       // }
 
       state.kanban.columns[i].cards[j].showCardInMenu =
-        !state.kanban.columns[i].cards[j].showCardInMenu;
+          !state.kanban.columns[i].cards[j].showCardInMenu;
       state.nowOpen = [i, j];
     },
     showAdd(state, payload) {
@@ -157,16 +158,23 @@ const kanban = {
       let i = payload[0];
       let j = payload[1];
       let copyArr = [...state.kanban.columns[i].cards];
+      let item = copyArr[j]
       copyArr.splice(j, 1);
       state.kanban.columns[i].cards = copyArr;
+      this.dispatch('kanban/deleteKanbanItem', item)
     },
     update(state, payload) {
       let i = payload[0];
       let j = payload[1];
       console.log(i, j);
+      console.log(state.kanban.columns[i]);
       let target = state.kanban.columns[i].cards[j];
       console.log(target);
       state.showAddForm = true;
+      this.dispatch('kanban/updateKanbanItem', {target})
+    },
+    switchCard(){
+
     },
     setDays(state, payload) {
       let day = payload[0];
@@ -197,9 +205,9 @@ const kanban = {
       let registrationTime = startDay.from(today).split(" ");
 
       date +=
-        registrationTime[0] === "a" || registrationTime[0] === "an"
-          ? 1
-          : registrationTime[0];
+          registrationTime[0] === "a" || registrationTime[0] === "an"
+              ? 1
+              : registrationTime[0];
 
       switch (registrationTime[1]) {
         case "few":
@@ -261,12 +269,110 @@ const kanban = {
         user_name: userId,
       });
 
+      // 여기서 INSERT
+      const arr = {
+        content: content,
+        id: `${payload[0]}-${id}`,
+        startDate: today,
+        endDate: endDay,
+        day: `${date} (${d_day})`,
+        badgeText: badge,
+        badgeColor: color,
+        showCardInMenu: false,
+        user_name: userId,
+      }
+
+      this.dispatch('kanban/insertKanbanItem', arr)
+
       state.showAddForm = false;
 
     },
     // updateCard(state, payload) {},
+    pushTokanbanData(state, {arr, index}){
+      state.kanban.columns[index].cards.push(arr)
+    }
   },
-  actions: {},
+  actions: {
+    insertKanbanItem(state, arr){
+      const {content, id, startDate
+        , endDate, badgeText
+        , badgeColor} = arr
+      const url = '/kanban/insert'
+
+      // user_name => memeIdx(등록한사람)
+      axios.post(url, null, {
+        params : {
+          kbItmIdx : '',
+          'kanban.kbIdx' : 1,
+          'member.memIdx' : 3,
+          kbCn : content,
+          kbItmNum : id,
+          kbStartDate : startDate,
+          kbEndDate : endDate._i,
+          kbBadge : badgeText,
+          kbColor : badgeColor,
+        }
+      })
+          .then( e => {
+            console.log(e)
+          })
+          .catch()
+    },
+    getAllKanbanItems(){
+      const url = '/kanban/getAll'
+      axios.get(url, {
+        params : {
+          'kanban.project.prjctIdx' : 1,
+          'member.memIdx' : 3
+        }
+      })
+          .then( e => {
+            for(let i = 0; i < e.data.length; i++){
+              const {data} = e
+              let tempId = data[i].kbItmNum.split('-')
+              const arr = {
+                content : data[i].kbCn,
+                id : data[i].kbItmNum,
+                startDate : data[i].kbStartDate.replace('T', ' '),
+                endDate : data[i].kbEndDate.replace('T', ' '),
+                day : "",
+                badgeText : data[i].kbBadge,
+                badgeColor : data[i].kbColor,
+                showCardInMenu : false,
+                user_name : data[i].member.memNick,
+                idx : data[i].kbItmIdx
+              }
+              let index = tempId[0]
+              this.commit('kanban/pushTokanbanData', {arr, index})
+            }
+          })
+    },
+    deleteKanbanItem(state, item){
+      const url = '/kanban/delete'
+      axios.post(url, null, {
+        params : {
+          kbItmIdx : item.idx
+        }}
+      )
+    },
+    updateKanbanItem(state, {target}){
+      console.log(target)
+      const url = '/kanban/update'
+      axios.post(url, null, {
+        params : {
+          'member.memIdx' : 3,
+          'kanban.project.prjctIdx' : 1,
+          kbItmIdx : target.idx,
+          kbBadge : target.badgeText,
+          kbColor : target.badgeColor,
+          kbItmNum : target.id,
+          kbStartDate : target.startDate,
+          kbEndDate : target.endDate,
+          kbCn : target.content,
+        }
+      })
+    }
+  },
 };
 
 export default kanban;

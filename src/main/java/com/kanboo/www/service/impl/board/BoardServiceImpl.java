@@ -151,4 +151,36 @@ public class BoardServiceImpl implements BoardService {
 
         return boardDTOS;
     }
+
+    @Override
+    public List<BoardDTO> getAllQnaList(String selected, String key ,int articleOnView, String codeDetail) {
+
+        List<Board> all = boardRepository.getAllQnaList(selected,key,articleOnView,codeDetail);
+        List<BoardDTO> result = new ArrayList<>();
+        for(Board b : all){
+            BoardDTO board = BoardDTO.builder()
+                    .boardIdx(b.getBoardIdx())
+                    .member(b.getMember().entityToDto())
+                    .boardCn(b.getBoardCn())
+                    .boardDate(b.getBoardDate())
+                    .delAt(b.getDelAt())
+                    .commentList(new ArrayList<>())
+                    .build();
+
+            List<Comment> commentList = b.getCommentList();
+            if(commentList.size() > 0) {
+                commentList.forEach(item -> {
+                    CommentDTO comment = CommentDTO.builder()
+                            .answerIdx(item.getAnswerIdx())
+                            .answerCn(item.getAnswerCn())
+                            .answerDate(item.getAnswerDate())
+                            .answerDelAt(item.getAnswerDelAt())
+                            .build();
+                    board.getCommentList().add(comment);
+                });
+            }
+            result.add(board);
+        }
+        return result;
+    }
 }

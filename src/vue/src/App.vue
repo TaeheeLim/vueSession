@@ -2,31 +2,31 @@
   <div class="container">
     <nav>
       <Menu/>
-      <Notice />
+<!--      <Notice />-->
       <NoticeList v-if="$store.state.menu.isOpenNotification"/>
       <UserSetting v-if="$store.state.menu.isOpenUserSetting"/>
      </nav>
     <router-view></router-view>
-    <Chat v-if="$store.state.global.chatOn"/>
+<!--    <Chat v-if="$store.state.global.chatOn"/>-->
   </div>
 </template>
 
 <script>
 import '../public/reset.css'
 import Menu from './components/component/global/Menu.vue'
-import Notice from './components/popup/Notice.vue'
+// import Notice from './components/popup/Notice.vue'
 import NoticeList from './components/popup/NoticeList.vue'
 import UserSetting from './components/popup/UserSetting.vue'
-import Chat from './components/popup/Chat.vue'
+// import Chat from './components/popup/Chat.vue'
 
 export default {
   name: 'App',
   components: {
     Menu,
-    Notice,
+    // Notice,
     NoticeList,
     UserSetting,
-    Chat
+    // Chat
   }
 }
 </script>

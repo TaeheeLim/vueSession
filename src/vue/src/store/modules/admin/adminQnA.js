@@ -1,95 +1,151 @@
+import axios from "axios";
+import moment from "moment";
+
 const adminQnA = {
   namespaced: true,
   state: {
-    qnaData:[
-      {
-      qnaId: "1",
-      memId : "zerochae",
-      date: "2021-01-01 22:10",
-      content : "오예 거의 다 함 ㅋㅋㅋ 1",
-      replies: [
-        {
-          memId: "zerochae",
-          content: "복구 완료 1",
-          date: "2021-01-01 22:10",
-        },
-        {
-          memId: "admin",
-          content : "ㄴㄴ 복구중임 1",
-          date: "2021-01-01 22:10",
-        },
-      ]
-    },
-      {
-      qnaId: "2",
-      memId : "taehee",
-      date: "2021-01-02 22:10",
-      content : "오예 거의 다 함 ㅋㅋㅋ 2",
-      replies: [
-        {
-          memId: "zerochae",
-          content: "복구 완료 2",
-          date: "2021-01-01 22:10",
-        },
-        {
-          memId: "admin",
-          content : "ㄴㄴ 복구중임 2",
-          date: "2021-01-01 22:10",
-        },
-      ]
-    },
-      {
-      qnaId: "3",
-      memId : "kade",
-      date: "2021-01-03 22:10",
-      content : "오예 거의 다 함 ㅋㅋㅋ 3",
-      replies: [
-        {
-          memId: "zerochae",
-          content: "복구 완료 3",
-          date: "2021-01-01 22:10",
-        },
-        {
-          memId: "admin",
-          content : "ㄴㄴ 복구중임 3",
-          date: "2021-01-01 22:10",
-        },
-      ]
-    },
-      {
-      qnaId: "4",
-      memId : "juwon",
-      date: "2021-01-04 22:10",
-      content : "오예 거의 다 함 ㅋㅋㅋ 4",
-      replies: [
-        {
-          memId: "zerochae",
-          content: "복구 완료 4",
-          date: "2021-01-01 22:10",
-        },
-        {
-          memId: "admin",
-          content : "ㄴㄴ 복구중임 4",
-          date: "2021-01-01 22:10",
-        },
-      ]
-    },
-
-  ]
-    
+    qnaData: [],
+    isAxiosRunning: false,
+    articleOnView: 0,
+    maxIndex: "",
+    key: "",
+    selected: "All",
   },
   mutations: {
-    insert(state,payload){
+    insert(state, payload) {
+      let index = payload[0];
+      let data = payload[1];
+      let today = moment().format("YYYY-MM-DD HH:mm:ss");
+      let target = state.qnaData[index].replies;
 
-      let index = payload[0]; 
-      let data =  payload[1];
-      
-      state.qnaData[index].replies.push(data)
+      target.push(data);
+
+      let CommentDTO = {
+        "member.memTag": "#eEG8l",
+        // "member.memTag": sessionStorage.getItem('memTag'),
+        "board.boardIdx": data.boardIdx,
+        answerCn: data.content,
+        answerDate: today,
+      };
+
+      axios
+          .post("/admin/insertComment", null, {
+            params: CommentDTO,
+          })
+          .then((result) => {
+            target[target.length - 1] = {
+              commentIdx: result.data.answerIdx,
+              memId: result.data.member.memId,
+              content: result.data.answerCn,
+              date: result.data.answerDate,
+            };
+          });
+    },
+    setQna(state, payload) {
+      state.qnaData.push(payload);
+    },
+    setArticleOnView(state, payload) {
+      state.articleOnView += payload;
+    },
+    setMaxIndex(state, payload) {
+      state.maxIndex = payload;
+    },
+    setAxiosState(state) {
+      state.isAxiosRunning = !state.isAxiosRunning;
+    },
+    setSelected(state,payload){
+      state.selected = payload
+    },
+    setKeyWord(state,payload){
+      state.key = payload;
+    },
+    resetData(state){
+      state.qnaData = [];
+      state.articleOnView = 0;
     },
   },
   actions: {
-    
-  }
-}
+    setQnaList(context) {
+      axios
+          .get("/admin/getQnaBoardList", {
+            params: {
+              selected: "",
+              key: "",
+              articleOnView: context.state.articleOnView,
+              codeDetail: "8",
+            },
+          })
+          .then((result) => {
+            for (let item of result.data) {
+              let data = [];
+              for (let reply of item.commentList) {
+                data.push({
+                  replyIdx: reply.answerIdx,
+                  memNick : "admin",
+                  date : reply.answerDate.replace("T"," "),
+                  content: reply.answerCn
+                });
+              }
 
-export default adminQnA
+              context.commit("setQna", {
+                boardIdx: item.boardIdx,
+                memNick: item.member.memNick,
+                date: item.boardDate,
+                content: item.boardCn,
+                replies: data,
+              });
+            }
+            context.commit("setArticleOnView", result.data.length);
+          });
+    },
+    getMoreList(context) {
+      axios
+          .get("/admin/getQnaBoardList", {
+            params: {
+              selected: context.state.selected,
+              key: context.state.key,
+              articleOnView: context.state.articleOnView,
+              codeDetail: "8",
+            },
+          })
+          .then((result) => {
+            for (let item of result.data) {
+              let data = [];
+              for (let reply of item.commentList) {
+                data.push({
+                  replyIdx: reply.answerIdx,
+                  memNick : "admin",
+                  date : reply.answerDate.replace("T"," "),
+                  content: reply.answerCn
+                });
+              }
+
+              context.commit("setQna", {
+                boardIdx: item.boardIdx,
+                memNick: item.member.memNick,
+                date: item.boardDate,
+                content: item.boardCn,
+                replies: data,
+              });
+            }
+            context.commit("setArticleOnView", result.data.length);
+            context.commit("setAxiosState");
+          });
+    },
+    getMaxBoardIndex(context) {
+      axios
+          .get("/board/getArticleNum", {
+            params: {
+              key: context.state.key,
+              selected: context.state.selected,
+              codeDetails: "8",
+            },
+          })
+          .then((result) => {
+            context.commit("setMaxIndex", result.data);
+          });
+    },
+  },
+};
+
+export default adminQnA;

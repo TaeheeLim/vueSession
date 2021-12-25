@@ -10,4 +10,8 @@ import java.util.List;
 public interface ProjectMemberDslRepository {
 
     List<ProjectMember> getAllList(String memTag);
+
+    List<ProjectMember> findAllByMemIdx(Long MemIdx);
+
+    List<ProjectMember> getAllProjectMemberList(String selected, String key,int articleOnView);
 }

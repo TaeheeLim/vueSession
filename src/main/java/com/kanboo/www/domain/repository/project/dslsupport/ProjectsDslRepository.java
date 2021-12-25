@@ -10,4 +10,7 @@ import java.util.List;
 public interface ProjectsDslRepository {
     List<Project> getIssueAndCalendar(String memTag);
     ProjectDTO getDashBoard(String memTag, Long projectIdx);
+    Long getMaxIndexOfProject(String selected,String key);
+
+    List<Project> findAllProject(String selected, String keyword, int articleOnView);
 }

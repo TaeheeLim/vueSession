@@ -17,4 +17,6 @@ public interface BoardDSLRepository {
     List<Comment> getComments(long boardIdx, int commentsOnView);
 
     List<Board> findByPrjctIdxOnFive(Long projectIdx);
+
+    List<Board> getAllQnaList(String selected, String key ,int articleOnView, String codeDetail);
 }

@@ -4,68 +4,68 @@
       <div class="white-container">
         <div class="color-picker-wrap">
           <input
-            class="create-input"
-            v-model="inputBadge"
-            type="text"
-            placeholder="badge"
-            id="inputBadge"
+              class="create-input"
+              v-model="inputBadge"
+              type="text"
+              placeholder="badge"
+              id="inputBadge"
           />
           <div class="vertical-wrap">
             <label
-              id="pickColor"
-              for="color"
-              :style="{ background: pickColor }"
+                id="pickColor"
+                for="color"
+                :style="{ background: pickColor }"
             ></label>
             <input id="color" type="color" v-model="pickColor" />
             <CalendarIcon
-              id="inputDate"
-              class="icons calendar"
-              @click="showCalendar()"
+                id="inputDate"
+                class="icons calendar"
+                @click="showCalendar()"
             />
           </div>
           <vue-cal
-            locale="ko"
-            class="vuecal--date-picker"
-            xsmall
-            hide-view-selector
-            :time="false"
-            :transitions="false"
-            active-view="month"
-            :disable-views="['years,week,days']"
-            style="width: 210px; height: 230px"
-            @cell-click="pickDate($event)"
-            @dblclick="showCalendar()"
-            v-if="showCal"
+              locale="ko"
+              class="vuecal--date-picker"
+              xsmall
+              hide-view-selector
+              :time="false"
+              :transitions="false"
+              active-view="month"
+              :disable-views="['years,week,days']"
+              style="width: 210px; height: 230px"
+              @cell-click="pickDate($event)"
+              @dblclick="showCalendar()"
+              v-if="showCal"
           >
           </vue-cal>
         </div>
 
         <textarea
-          class="create-input input-content"
-          v-model="inputContent"
-          type="text"
-          placeholder="content"
-          id="inputContent"
+            class="create-input input-content"
+            v-model="inputContent"
+            type="text"
+            placeholder="content"
+            id="inputContent"
         />
         <div class="button-zone">
           <PencilAltIcon
-            @click="addCard(addColumnIndex)"
-            class="icons btn create-btn"
+              @click="addCard(addColumnIndex)"
+              class="icons btn create-btn"
           />
           <ReplyIcon @click="closeAddForm()" class="icons btn return-btn" />
         </div>
       </div>
     </div>
     <Container
-      group-name="cols"
-      tag="div"
-      orientation="horizontal"
-      @drop="onColumnDrop($event)"
+        group-name="cols"
+        tag="div"
+        orientation="horizontal"
+        @drop="onColumnDrop($event)"
     >
       <div
-        class="kanbanContainer"
-        v-for="(column, index) in kanban.columns"
-        :key="index"
+          class="kanbanContainer"
+          v-for="(column, index) in kanban.columns"
+          :key="index"
       >
         <div>
           <div class="kanban-title">
@@ -74,25 +74,25 @@
           </div>
           <Draggable class="kanban-column">
             <Container
-              orientation="vertical"
-              group-name="col-items"
-              :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items'"
-              :get-child-payload="getCardPayload(column.id)"
-              :drop-placeholder="{
+                orientation="vertical"
+                group-name="col-items"
+                :shouldAcceptDrop="(e, payload) => e.groupName === 'col-items'"
+                :get-child-payload="getCardPayload(column.id)"
+                :drop-placeholder="{
                 className: `drop-placeholder`,
                 animationDuration: '300',
                 showOnTop: true,
               }"
-              :dragClass="`cardGhostDrag`"
-              :dropClass="`cardGhostDrop`"
-              @drop="(e) => onCardDrop(column.id, e)"
+                :dragClass="`cardGhostDrag`"
+                :dropClass="`cardGhostDrop`"
+                @drop="(e) => onCardDrop(column.id, e)"
             >
               <KanbanItem
-                v-for="(item, cardIndex) in column.cards"
-                :key="item.id"
-                :columnIndex="index"
-                :cardIndex="cardIndex"
-                :item="item"
+                  v-for="(item, cardIndex) in column.cards"
+                  :key="item.id"
+                  :columnIndex="index"
+                  :cardIndex="cardIndex"
+                  :item="item"
               />
             </Container>
           </Draggable>
@@ -103,7 +103,7 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapMutations, mapState, mapActions } from "vuex";
 import moment from "moment";
 import KanbanItem from "./KanbanItem.vue";
 import VueCal from "vue-cal";
@@ -117,6 +117,8 @@ import {
 } from "@heroicons/vue/outline";
 import { Container, Draggable } from "vue3-smooth-dnd";
 import { applyDrag } from "@/assets/helpers";
+
+
 
 export default {
   components: {
@@ -146,6 +148,9 @@ export default {
       inputDate: "",
     };
   },
+  mounted() {
+    this.getAllKanbanItems()
+  },
   methods: {
     ...mapMutations({
       add: "kanban/add",
@@ -153,7 +158,11 @@ export default {
       closeAdd: "kanban/closeAdd",
       showCalendar: "kanban/showCalendar",
     }),
+    ...mapActions({
+      getAllKanbanItems : 'kanban/getAllKanbanItems',
+    }),
     pickDate(data) {
+      moment.locale('en')
       let today = moment().format("YYYY-MM-DD HH:mm");
       let nowTime = moment().format("HH:mm:ss");
 
@@ -165,11 +174,11 @@ export default {
       selectDate = moment(temp, "YYYY-MM-DD HH:mm:ss");
 
       if (
-        selectDate.from(today).split(" ")[0] !== "in" &&
-        selectDate._i !== todayWithOutTime
+          selectDate.from(today).split(" ")[0] !== "in" &&
+          selectDate._i !== todayWithOutTime
       ) {
         let target = document.querySelector(
-          ".vuecal__cell--selected .vuecal__cell-content"
+            ".vuecal__cell--selected .vuecal__cell-content"
         );
         target.style.background = "red";
         setTimeout(() => {
@@ -190,6 +199,7 @@ export default {
       kanban.columns = applyDrag(kanban.columns, dropResult);
       this.kanban = kanban;
     },
+    // drop헀을떄
     onCardDrop(columnId, dropResult) {
       if (dropResult.removedIndex !== null || dropResult.addedIndex !== null) {
         const kanban = Object.assign({}, this.kanban);
@@ -204,8 +214,8 @@ export default {
     getCardPayload(columnId) {
       return (index) => {
         return this.kanban.columns.filter((p) => p.id === columnId)[0].cards[
-          index
-        ];
+            index
+            ];
       };
     },
     closeAddForm() {
@@ -236,8 +246,9 @@ export default {
         }
       }
 
+
       if (this.inputDate === "") {
-        this.showCal = true;
+        // this.showCalendar();
 
         let inputDate = document.querySelector("svg.icons.calendar");
 
@@ -269,7 +280,8 @@ export default {
 </script>
 <style scoped>
 .main-container {
-  padding-top: 20px;
+  overflow: hidden;
+  height: calc(100% - 70px);
 }
 
 .bg-container {
@@ -349,6 +361,7 @@ export default {
   width: 100vw;
   height: calc(100vh - 70px);
   justify-content: space-around;
+  padding-top: 20px;
 }
 
 .kanbanContainer {
@@ -384,6 +397,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 3px 6px 10px rgba(255, 255, 255, 0.2) inset;
   color: #fff;
 }
 .vertical-wrap {
@@ -452,6 +466,7 @@ export default {
 
 .kanban-title span {
   vertical-align: -webkit-baseline-middle;
+
 }
 
 .kanban-column {
@@ -462,6 +477,7 @@ export default {
   box-sizing: content-box;
   overflow-y: scroll;
   max-height: 830px;
+  box-shadow: 3px 6px 10px rgba(255, 255, 255, 0.2) inset;
 }
 
 .spin {

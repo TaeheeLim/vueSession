@@ -47,12 +47,12 @@ public class CalendarServiceImpl implements CalendarService {
 	public CalendarDTO updateCalendar(CalendarDTO calendarDTO) {
 		// dto에 있는 idx로 entity조회
 		// 반환된 entity에 setter메소드(생성자x)를 통해서 값 업데이트
-			Calendar calendar = calendarRepository.findByCalIdx(calendarDTO.getCalIdx());
-			calendar.changeStartDate(calendarDTO.getCalStartDate());
-			calendar.changeEndDate(calendarDTO.getCalEndDate());
-			if(calendar.getCalTitle().equals(calendarDTO.getCalTitle())){
-				calendar.changeTitle(calendarDTO.getCalTitle());
-			}
+		Calendar calendar = calendarRepository.findByCalIdx(calendarDTO.getCalIdx());
+		calendar.changeStartDate(calendarDTO.getCalStartDate());
+		calendar.changeEndDate(calendarDTO.getCalEndDate());
+		if(calendar.getCalTitle().equals(calendarDTO.getCalTitle())){
+			calendar.changeTitle(calendarDTO.getCalTitle());
+		}
 		return calendar.entityToDto();
 	}
 
@@ -70,6 +70,10 @@ public class CalendarServiceImpl implements CalendarService {
 				.codeDetail(cd)
 				.calCn(calendarDTO.getCalCn())
 				.calTitle(calendarDTO.getCalTitle())
+				.calDelAt(calendarDTO.getCalDelAt())
+				.calIsAllDay(calendarDTO.getCalIsAllDay())
+				.calIsDeletable(calendarDTO.getCalIsDeletable())
+				.calIsResizable(calendarDTO.getCalIsResizable())
 				.build();
 		Calendar calendar = calendarRepository.save(c);
 		return calendar.entityToDto();
@@ -84,4 +88,14 @@ public class CalendarServiceImpl implements CalendarService {
 		});
 		return list;
 	}
+
+	@Override
+	@Transactional
+	public CalendarDTO deleteCalendar(CalendarDTO calendarDTO) {
+		Calendar calendar = calendarRepository.findByCalIdx(calendarDTO.getCalIdx());
+		System.out.println(calendarDTO);
+		calendar.changeDelAt(calendarDTO.getCalDelAt());
+		return calendar.entityToDto();
+	}
+
 }

@@ -39,7 +39,6 @@ public class CalendarDTO {
     private String calIsDeletable;
     private String calIsResizable;
 
-
     public Calendar dtoToEntity() {
         return Calendar.builder()
                 .calIdx(calIdx)

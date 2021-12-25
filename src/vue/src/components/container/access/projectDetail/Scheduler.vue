@@ -85,12 +85,12 @@
         <MonthCalendar/>
         <br>
         <br>
-        <i  style="color: #eee; font-size:50px " @click="this.setModalTrue"
+        <!-- <i  style="color: #eee; font-size:50px " @click="this.setModalTrue"
             class="fab fa-apple"></i>
         <button @click="setValue" style="color : #eee;">모달창</button>
         <br>
         <input type="button" id="changeTheme" value="테마바꾸기">
-        <input type="button" id="changeLang" value="언어바꾸기">
+        <input type="button" id="changeLang" value="언어바꾸기"> -->
       </div>
       <div class="filter">
         <Filter/>
@@ -235,51 +235,76 @@ export default {
       this.deleteflag = ''
       this.resizeflag = ''
       this.clickedValue = '공통'
+      this.startZIndex = 1
+      this.endZIndex = 0
     },
-    async createEventUseModal(){
+    createEventUseModal(){
+      const copy = [...this.$store.state.scheduler.data]
+      const url = '/calendar/insertSchedule'
+      let codeDetailIdx
+      let temp
+      let v_allDay
+      let v_delete
+      let delTemp
+      let v_resize
+      let reTemp
+
       switch (this.clickedValue) {
         case '공통':
           this.clickedValue = 'common'
+          codeDetailIdx = 1
           break;
         case '개인':
           this.clickedValue = 'individual'
+          codeDetailIdx = 2
           break;
         case '공지':
           this.clickedValue = 'notice'
+          codeDetailIdx = 3
           break;
         case '긴급':
           this.clickedValue = 'emergency'
+          codeDetailIdx = 4
           break;
         case '휴가':
           this.clickedValue = 'vacation'
+          codeDetailIdx = 5
           break;
         case '기타':
           this.clickedValue = 'note'
+          codeDetailIdx = 6
           break;
       }
 
       if(this.isAllDay !== true){
-        this.isAllDay = false
-      }
-      
-      if(this.deleteflag === ''){
-        this.deleteflag = true
+        temp = false
+        v_allDay = 'n'
       }else{
-        this.deleteflag = false
+        v_allDay = 'y'
+        temp = true
       }
-      
-      if(this.resizeflag === ''){
-        this.resizeflag = true
+
+      if(this.deleteflag !== ''){
+        v_delete = 'y'
+        delTemp = false
       }else{
-        this.resizeflag = false
+        v_delete = 'n'
+        delTemp = true
+      }
+
+      if(this.resizeflag !== ''){
+        v_resize = 'y'
+        reTemp = false
+      }else{
+        v_resize = 'n'
+        reTemp = true
       }
 
       if(this.startTimePicker === this.endTimePicker || this.startTimePicker > this.endTimePicker){
         this.resetValue()
         return
       }
-      const copy = [...this.$store.state.scheduler.data]
-      const url = '/calendar/insertSchedule'
+
       const arr ={
         id : '',
         start : this.startDate +' '+ this.startTimePicker,
@@ -287,10 +312,10 @@ export default {
         title : this.eventTitle,
         content : this.eventContent,
         class : this.clickedValue,
-        deletable: this.deleteflag,
-        resizable: this.resizeflag,
-        draggable: true,
-        allDay : this.isAllDay,
+        deletable: delTemp,
+        resizable: reTemp,
+        draggable: reTemp,
+        allDay : temp,
 
       }
       this.pushData(arr)
@@ -298,23 +323,30 @@ export default {
       if(copy.length !== this.$store.state.scheduler.data.length){
         this.resetValue()
       }
-      
+
       this.axios.post( url, null, {
         params : {
           calIdx : null,
           'project.prjctIdx' : 1,
-          'member.memIdx' : 1,
+          'member.memIdx' : 3,
           calStartDate : arr.start,
           calEndDate : arr.end,
           calColor : arr.class,
           calCn : arr.content,
           calTitle : arr.title,
           calDelAt : 'n',
+          calIsAllDay : v_allDay,
+          calIsDeletable : v_delete,
+          calIsResizable : v_resize,
+          'codeDetail.codeDetailIdx' : codeDetailIdx,
+          'codeDetail.masterCode.masterCodeIdx' : 'CAL',
         }
       })
-      .then( 
-        this.setModalFalse()
-       )
+          .then( r => {
+            this.setModalFalse()
+            let index = this.$store.state.scheduler.data.length-1
+            this.$store.state.scheduler.data[index].id = r.data.calIdx
+          })
     },
     // modal Functions end
   },

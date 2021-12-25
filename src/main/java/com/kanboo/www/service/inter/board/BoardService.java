@@ -29,4 +29,6 @@ public interface BoardService {
     BoardDTO increaseTotalComments(long boardIdx);
 
     List<BoardDTO> getProjectLastest(Long projectIdx);
+
+    List<BoardDTO> getAllQnaList(String selected, String key ,int articleOnView, String codeDetail);
 }

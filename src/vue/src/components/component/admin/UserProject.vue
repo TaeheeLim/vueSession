@@ -2,19 +2,32 @@
   <div>
     <div class="header">
       <span class="title">User Project</span>
-      <input class="search" type="text" placeholder="🔎" />
+      <div>
+        <select class="selectBox" @change="setSelect">
+          <option selected value="All">전체</option>
+          <option value="prjctNm">프로젝트이름</option>
+          <option value="memNick">팀장닉네임</option>
+        </select>
+        <input
+            class="search"
+            type="text"
+            placeholder="🔎"
+            @input="setKey"
+            @keyup="search"
+        />
+      </div>
     </div>
 
-    <ul class="body">
+    <ul class="body" @scroll="getMore">
       <li v-for="data in projectData" :key="data">
-        <span> {{ data.name }} &nbsp; # {{ data.id }} </span>
+        <span> {{ data.name }} &nbsp; # {{ data.idx }} </span>
         <span> 팀장 : &nbsp; {{ data.memId }} </span>
         <span>
           상태 :
-          <select @change="(e)=>modifyState(e,data.id)">
-            <option :selected="data.isCom!==''" value="진행">진행</option>
-            <option :selected="data.isCom!==''" value="완료">완료</option>
-            <option :selected="data.isDel!==''" value="삭제">삭제</option>
+          <select @change="(e) => modifyState(e, data.idx)" class="selectBox">
+            <option :selected="data.isCom === 'n'" value="진행">진행</option>
+            <option :selected="data.isCom === 'y'" value="완료">완료</option>
+            <option :selected="data.isDel === 'y'" value="삭제">삭제</option>
           </select>
         </span>
         <span> 기간 : &nbsp; {{ data.start }} ~ {{ data.end }} </span>
@@ -24,29 +37,71 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   computed: mapState({
     projectData: (state) => state.userProject.projectData,
+    articleOnView: (state) => state.userProject.articleOnView,
+    maxIndex: (state) => state.userProject.maxIndex,
+    isAxiosRunning: (state) => state.userProject.isAxiosRunning,
   }),
   data() {
     return {
+      selected: "",
+      keyWord: "",
     };
+  },
+  created() {
+    this.setProjectList();
+    this.getMaxProjectIndex();
   },
   methods: {
     ...mapMutations({
       update: "userProject/update",
+      setAxiosState: "userProject/setAxiosState",
+      setSelected: "userProject/setSelected",
+      setKeyWord: "userProject/setKeyWord",
+      resetData: "userProject/resetData",
     }),
-    modifyState(e,id){
-
+    ...mapActions({
+      setProjectList: "userProject/setProjectList",
+      getMaxProjectIndex: "userProject/getMaxProjectIndex",
+      getMoreList: "userProject/getMoreList",
+    }),
+    modifyState(e, idx) {
       let payload = [];
-
-      payload.push(id,e.target.value)
-
+      payload.push(idx, e.target.value);
       this.update(payload);
+    },
+    getMore(e) {
+      if (this.maxIndex == this.articleOnView) {
+        return;
+      }
 
+      const scrollHeight = e.target.scrollHeight;
+      const scrollTop = e.target.scrollTop;
+      const clientHeight = e.target.clientHeight;
 
-    }
+      if (scrollTop + clientHeight >= scrollHeight) {
+        console.log("getMore");
+        this.getMoreList();
+      }
+    },
+    setSelect(e) {
+      this.setSelected(e.target.value);
+      this.search()
+    },
+    setKey(e) {
+      this.setKeyWord(e.target.value);
+    },
+    search() {
+      this.resetData();
+
+      console.log("da")
+
+      this.setProjectList();
+      this.getMaxProjectIndex();
+    },
   },
 };
 </script>
@@ -70,6 +125,7 @@ export default {
   outline: none;
   border-radius: 8px;
   color: #fff;
+  padding: 6px;
 }
 
 .body {
@@ -91,9 +147,10 @@ export default {
   padding: 15px;
   color: #fff;
   border-radius: 6px;
+  animation: fade 0.3s linear;
 }
 
-.body li span select {
+.selectBox {
   border: none;
   background: none;
   color: #fff;
@@ -102,7 +159,7 @@ export default {
   text-align: center;
 }
 
-.body li span select option {
+.selectBox option {
   background: #2c2f3b;
   color: #fff;
 }
@@ -112,12 +169,20 @@ export default {
 }
 
 ::-webkit-scrollbar {
-  width: 0px;
+  width: 0;
 }
 
-@media (max-width:1480px) {
+@keyframes fade {
+  0%{
+    opacity: 0;
+  }
+  100%{
+    opacity: 1;
+  }
+}
 
-  .body li{
+@media (max-width: 1480px) {
+  .body li {
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: 15px;
@@ -126,31 +191,31 @@ export default {
   }
 }
 
-@media (max-width:1268px){
-  .body{
+@media (max-width: 1268px) {
+  .body {
     height: 50vh;
     overflow: scroll;
   }
 }
 
-@media (max-width:768px){
-  .header{
+@media (max-width: 768px) {
+  .header {
     display: flex;
     flex-direction: column;
   }
 
-  .header .search{
+  .header .search {
     margin-top: 25px;
-    height: 30px; 
+    height: 30px;
     width: 50%;
   }
 
-  .body{
+  .body {
     height: 50vh;
     overflow: scroll;
   }
 
-  .body li{
+  .body li {
     display: grid;
     grid-template-columns: 1fr 2fr;
     text-align: center;
@@ -159,28 +224,27 @@ export default {
   }
 }
 
-@media(max-width: 535px){
-  .header .search{
+@media (max-width: 535px) {
+  .header .search {
     margin-top: 25px;
-    height: 30px; 
+    height: 30px;
     width: 100%;
   }
 
-  .body{
+  .body {
     overflow: scroll;
     height: 50vh;
   }
 
-   .body li{
+  .body li {
     display: flex;
     flex-direction: column;
     width: 100%;
     font-size: 12px;
     align-items: flex-start;
-    
   }
 
-  .body li span select{
+  .body li span select {
     font-size: 12px;
   }
 }

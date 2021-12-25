@@ -174,4 +174,38 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
                 .fetch();
     }
 
+    @Override
+    public List<Board> getAllQnaList(String selected, String key, int articleOnView, String codeDetails) {
+        QBoard board = QBoard.board;
+        QComment comment = QComment.comment;
+
+        JPAQueryFactory query = new JPAQueryFactory(em);
+
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        switch (selected) {
+            case "memNick":
+                booleanBuilder.and(board.member.memNick.contains(key));
+                break;
+            case "boardCn":
+                booleanBuilder.and(board.boardCn.contains(key));
+                break;
+            case "All":
+                booleanBuilder.or(board.member.memNick.contains(key)).or(board.boardCn.contains(key));
+                break;
+        }
+
+        return query
+                .selectFrom(board).distinct()
+                .leftJoin(board.commentList, comment)
+                .fetchJoin()
+                .where((board.delAt.eq("N")
+                        .and(board.codeDetail.codeDetailIdx.eq(codeDetails))
+                        .and(booleanBuilder))
+                )
+                .orderBy(board.boardDate.desc())
+                .offset(articleOnView).limit(5)
+                .fetch();
+    }
+
 }

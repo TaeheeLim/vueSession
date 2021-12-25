@@ -49,11 +49,11 @@ const git = {
         },
         setMaxLineNum(state, data){
             state.maxLineNum = data + ' lines  |'
-        }, 
+        },
     },
 
     actions:{
-   
+
     },
 
 }

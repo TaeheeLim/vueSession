@@ -48,6 +48,14 @@ public class Project {
         return o1.getCalIdx() < o2.getCalIdx() ? 1 : -1;
     }
 
+    public void changePrjctDelAt(String prjctDelAt){
+        this.prjctDelAt = prjctDelAt;
+    }
+
+    public void changePrjctComplAt(String prjctComplAt){
+        this.prjctComplAt = prjctComplAt;
+    }
+
     public ProjectDTO entityToDto() {
         List<IssueDTO> issue = new ArrayList<>();
         if(issueList != null && !issueList.isEmpty()) {

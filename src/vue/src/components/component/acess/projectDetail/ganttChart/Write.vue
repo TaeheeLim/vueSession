@@ -3,7 +3,7 @@
     <div class="write-header">
       <span class="write-title">일감 등록</span>
       <span
-        ><button @click="addTask()" class="write-btn btn">작성</button></span
+      ><button @click="addTask()" class="write-btn btn">작성</button></span
       >
     </div>
     <hr class="write-line" />
@@ -11,66 +11,96 @@
     <table class="write-table">
       <tr>
         <th>상태</th>
-        <td><input type="text" :value="inputState" /></td>
+        <td><input type="text" value="신규" readonly /></td>
         <th>진척도</th>
         <td>
-          <input type="text" :value="inputProgress" />
+          <input
+              type="text"
+              v-model="inputProgress"
+              id="progress_w"
+              placeholder="0"
+          />
         </td>
       </tr>
       <tr>
         <th>우선순위</th>
         <td class="select">
-          <span @click="showSelectBox">{{ inputPriority }}</span>
-          <ul
-            @click="selectPriority"
-            class="select-list hide"
-            :class="{ show: isActive }"
-          >
-            <li>낮음</li>
+          <select class="selectBox" v-model="inputPriority">
+            <option>낮음</option>
             <!-- #4caf50 -->
-            <li>보통</li>
+            <option>보통</option>
             <!-- #0091ff -->
-            <li>높음</li>
+            <option>높음</option>
             <!-- #ffbf00-->
-            <li>긴급</li>
+            <option>긴급</option>
             <!--#ff6f00 -->
-            <li>즉시</li>
+            <option>즉시</option>
             <!-- #f44336 -->
-          </ul>
+          </select>
         </td>
-        <th>시작일</th>
-        <td @click="isPick(`start`)">{{ inputStart }}</td>
+        <th id="startTitle_w">시작일</th>
+        <td>
+          <input
+              type="text"
+              v-model="inputStart"
+              @click="isPick(`start`)"
+              id="start_w"
+              placeholder="날짜를 선택하세요"
+          />
+        </td>
       </tr>
       <tr>
         <th>담장자</th>
         <td>{{ userId }}</td>
-        <th>종료일</th>
-        <td @click="isPick(`end`)">{{ inputEnd }}</td>
+        <th id="endTitle_w">종료일</th>
+        <td>
+          <input
+              type="text"
+              v-model="inputEnd"
+              @click="isPick(`end`)"
+              id="end_w"
+              placeholder="날짜를 선택하세요"
+          />
+        </td>
       </tr>
       <tr>
         <th>제목</th>
-      </tr>
-      <tr>
-        <td colspan="4"><input type="text" v-model="inputTitle" /></td>
+        <td colspan="4">
+          <input
+              type="text"
+              v-model="inputTitle"
+              id="title_w"
+              placeholder="일감 제목을 입력해주세요"
+              style="width: fit-content"
+          />
+        </td>
       </tr>
       <tr>
         <th>설명</th>
-      </tr>
-      <tr>
-        <td colspan="4"><input type="text" v-model="inputContent" /></td>
+        <td colspan="4">
+          <span>
+            <input
+                style="width: 230px"
+                type="text"
+                v-model="inputContent"
+                placeholder="일감에 대한 설명을 입력해주세요."
+                id="content_w"
+            />
+          </span>
+        </td>
       </tr>
     </table>
     <vue-cal
-      locale="ko"
-      class="vuecal--date-picker"
-      xsmall
-      hide-view-selector
-      :time="false"
-      :transitions="true"
-      active-view="month"
-      :disable-views="['years', 'year', 'week', 'day']"
-      @cell-click="pickDate($event)"
-      v-if="showCal"
+        locale="ko"
+        class="vuecal--date-picker"
+        xsmall
+        hide-view-selector
+        :time="false"
+        :transitions="true"
+        active-view="month"
+        :disable-views="['years', 'year', 'week', 'day']"
+        @cell-click="pickDate($event)"
+        v-if="showCalWrite"
     >
     </vue-cal>
   </div>
@@ -87,11 +117,9 @@ export default {
   data() {
     return {
       inputPriority: "낮음",
-      inputState: "신규",
+      inputState: "N",
       inputProgress: "",
-      isActive: false,
-      showCal: false,
-      startOrEnd: "",
+      startOrEndInWrite: "",
       inputContent: "",
       inputTitle: "",
       inputStart: "",
@@ -101,30 +129,29 @@ export default {
   components: {
     VueCal,
   },
-  computed: mapState({
-    userId: () => sessionStorage.getItem("memId"),
-  }),
+  computed: {
+    ...mapState({
+      showCalWrite: (state) => state.gantt.showCalWrite,
+    }),
+    userId: () => sessionStorage.getItem("memId") ?? "zerochae",
+  },
   methods: {
     ...mapMutations({
       insert: "gantt/insert",
+      calWriteOpen: "gantt/calWriteOpen",
+      calClose: "gantt/calClose",
     }),
     pickDate(data) {
-      let today = moment().format("YYYY-MM-DD");
-      let nowTime = moment().format("HH:mm:ss");
+      let today = moment().format("YYYY-MM-DD").split(" ")[0];
 
-      let todayWithOutTime = moment().format("YYYY-MM-DD");
-      let selectDate = moment(data.format("YYYY-MM-DD"))._i;
-
-      let temp = `${selectDate} ${nowTime}`;
-
-      selectDate = moment(temp, "YYYY-MM-DD");
+      let selectDate = moment(data.format("YYYY-MM-DD"));
 
       if (
-        selectDate.from(today).split(" ")[0] !== "in" &&
-        selectDate._i !== todayWithOutTime
+          selectDate.from(today).split(" ")[0] !== "in" &&
+          selectDate._i !== today
       ) {
         let target = document.querySelector(
-          ".vuecal__cell--selected .vuecal__cell-content"
+            ".vuecal__cell--selected .vuecal__cell-content"
         );
         target.style.background = "red";
         setTimeout(() => {
@@ -134,9 +161,9 @@ export default {
         return;
       } else {
         selectDate = selectDate._i.split(" ")[0];
-        this.showCal = !this.showCal;
+        this.calClose();
 
-        switch (this.startOrEnd) {
+        switch (this.startOrEndInWrite) {
           case "start":
             this.inputStart = selectDate;
             break;
@@ -144,26 +171,75 @@ export default {
             this.inputEnd = selectDate;
             break;
         }
+        document
+            .querySelector(`#${this.startOrEndInWrite}_w`)
+            .classList.remove("selectDate");
       }
     },
     isPick(position) {
-      this.showCal = true;
+      this.calWriteOpen();
+
+      if (this.startOrEndInWrite != "") {
+        document
+            .querySelector(`#${this.startOrEndInWrite}_w`)
+            .classList.remove("selectDate");
+      }
+      document.querySelector(`#${position}_w`).classList.add("selectDate");
+
       switch (position) {
         case "start":
-          this.startOrEnd = "start";
+          this.startOrEndInWrite = "start";
           break;
         case "end":
-          this.startOrEnd = "end";
+          this.startOrEndInWrite = "end";
           break;
       }
     },
     addTask() {
+      let checkList = [
+        document.querySelector("#start_w"),
+        document.querySelector("#end_w"),
+        document.querySelector("#title_w"),
+        document.querySelector("#content_w"),
+      ];
+
+      for (let item of checkList) {
+        if (item.value === "") {
+          item.style.boxShadow = "0px 0px 40px 40px #dd323e";
+          item.style.transition = "all 0.7s ease-in-out";
+          setTimeout(() => {
+            item.style.boxShadow = "none";
+          }, 1000);
+          clearTimeout();
+          return;
+        }
+      }
+
       let today = moment().format("YYYY-MM-DD").split("-");
 
       let payload = [];
 
       let start = this.inputStart.split("-");
       let end = this.inputEnd.split("-");
+
+      let start_m = moment(start, "YYYY-MM-DD");
+      let end_m = moment(end, "YYYY-MM-DD");
+
+      if (start_m.from(end_m).split(" ")[0] == "in") {
+        let target1 = document.querySelector("#start_w");
+        let target2 = document.querySelector("#end_w");
+
+        target1.style.boxShadow = "0px 0px 40px 40px #dd323e";
+        target2.style.boxShadow = "0px 0px 40px 40px #dd323e";
+        target1.style.transition = "all 0.7s ease-in-out";
+        target2.style.transition = "all 0.7s ease-in-out";
+        setTimeout(() => {
+          target1.style.boxShadow = "none";
+          target2.style.boxShadow = "none";
+        }, 1000);
+        clearTimeout();
+        return;
+      }
 
       payload.push(today[1]);
       payload.push({
@@ -174,7 +250,7 @@ export default {
         end: end[2],
         state: this.inputState,
         priority: this.inputPriority,
-        progress: this.inputProgress,
+        progress: this.inputProgress == "" ? 0 : this.inputProgress,
       });
       payload.push({
         start: {
@@ -186,15 +262,15 @@ export default {
           month: end[1],
         },
       });
-
       this.insert(payload);
-    },
-    selectPriority(e) {
-      this.inputPriority = e.target.innerHTML;
-      this.isActive = false;
-    },
-    showSelectBox() {
-      this.isActive = !this.isActive;
+
+      this.inputTitle = "";
+      this.inputContent = "";
+      this.inputStart = "";
+      this.inputEnd = "";
+      this.inputState = "N";
+      this.inputPriority = "낮음";
+      this.inputProgress = "";
     },
   },
 };
@@ -209,13 +285,14 @@ export default {
   padding: 20px;
   background: #2c2f3b;
   position: relative;
+  box-shadow: 3px 6px 10px rgba(255, 255, 255, 0.2) inset;
 }
 
 .vuecal--date-picker {
   position: absolute;
   top: 5%;
-  right: 10%;
-  box-shadow: 0px 3px 35px rgba(0, 0, 0, 0.5);
+  right: 3%;
+  box-shadow: 0px 3px 35px rgba(0, 0, 0, 0.8);
   border-radius: 15px;
   width: 210px;
   height: 230px;
@@ -251,27 +328,31 @@ export default {
   border-radius: 15px;
   width: 50px;
   padding: 2px;
+  box-shadow: 3px 6px 10px rgba(255, 255, 255, 0.2) inset;
   -webkit-filter: drop-shadow(0px 15px 15px rgba(10, 10, 10, 0.8));
 }
 
 .write-table {
   border: none;
-  width: 90%;
+  width: 100%;
   text-align: left;
-  height: 80%;
-}
-
-.write-table input {
-  width: 110px;
-  background: none;
-  border: none;
-  outline: none;
-  color: #fff;
+  height: 90%;
 }
 
 .write-table th,
 td {
-  width: 30px;
+  width: 50px;
+  filter: drop-shadow(2px 4px 4px rgba(10, 10, 10, 0.8));
+}
+
+.write-table input {
+  margin-top: 4px;
+  background: none;
+  border: none;
+  outline: none;
+  color: #fff;
+  border-radius: 15px;
+  width: fit-content;
 }
 
 .write-des-text {
@@ -291,40 +372,36 @@ td {
   background: #3f80a9;
 }
 
-.select {
-  position: relative;
-  cursor: pointer;
+.selectDate {
+  color: #ff8906 !important;
 }
 
-.select-list {
-  position: absolute;
-  top: 45%;
-  bottom: -55%;
-  transition: all 1s ease-out;
-  background: #2c2f3b;
+.selectDate::placeholder {
+  color: #ff8906;
 }
 
-.select-list :nth-child(1) {
-  color: #4caf50;
-}
-.select-list :nth-child(2) {
-  color: #0091ff;
-}
-.select-list :nth-child(3) {
-  color: #ffbf00;
-}
-.select-list :nth-child(4) {
-  color: #ff6f00;
-}
-.select-list :nth-child(5) {
-  color: #f44336;
+.selectBox {
+  border: none;
+  background: none;
+  color: #fff;
+  width: fit-content;
+  outline: none;
+  text-align: center;
 }
 
-.hide {
-  display: none;
+.selectBox :nth-child(1) {
+  background: #4caf50;
 }
-
-.show {
-  display: block;
+.selectBox :nth-child(2) {
+  background: #0091ff;
+}
+.selectBox :nth-child(3) {
+  background: #ffbf00;
+}
+.selectBox :nth-child(4) {
+  background: #ff6f00;
+}
+.selectBox :nth-child(5) {
+  background: #f44336;
 }
 </style>

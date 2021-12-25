@@ -1,10 +1,24 @@
 <template>
+  <input type="button" @click="noticeSocketTest" value="알람소켓테스트">
+  <button
+      style="
+        position: absolute;
+        top: 30%;
+        right: 50%;
+        background: #eee;
+        width: 100px;
+        height: 50px;
+      "
+      @click="noticeTest"
+  >
+    알람 테스트{{this.$store.state.socket.cnt}}
+  </button>
   <div class="notice-container">
     <div
-      :id="`notice-${index}`"
-      class="notice-box"
-      v-for="(message, index) in messages"
-      :key="index"
+        :id="`notice-${index}`"
+        class="notice-box"
+        v-for="(message, index) in messages"
+        :key="index"
     >
       <p class="notice-text">
         {{ message.user }} {{ message.content }}
@@ -12,14 +26,20 @@
           <i class="fas fa-times"> </i>
         </button>
       </p>
+
       <div class="notice-bar">
-        <div class="notice-bar-fill"></div>
+        <div class="notice-bar-fill" :style="{background : message.color }"></div>
       </div>
+
+
     </div>
   </div>
 </template>
 
 <script>
+
+import {mapMutations} from "vuex";
+
 export default {
   updated() {
     for (let index in this.messages) {
@@ -32,19 +52,41 @@ export default {
   data() {
     return {
       messages: [],
+      alarmColor : '',
     };
   },
   methods: {
+    ...mapMutations({
+      getAlarmColor : 'socket/getAlarmColor',
+      setAlarmColor : 'socket/setAlarmColor',
+    }),
     closeNotice(index) {
+      // console.log(index)
+      // console.log(this.messages)
       document.querySelector(`#notice-${index}`).style.display = "none";
     },
     noticeTest() {
       this.messages.push({
         user: "zerochae",
         content: "님이 로그인하였습니다",
+        color: this.$store.state.socket.alarmColor,
       });
     },
+    noticeSocketTest(){
+      return this.alarmColor = this.$store.state.socket.alarmColor;
+    }
   },
+  created() {
+
+  },
+  watch : {
+    '$store.state.socket.alarmColor'() {
+    },
+    '$store.state.socket.alarmCnt'() {
+      this.noticeTest()
+    },
+  },
+
 };
 </script>
 
@@ -52,7 +94,7 @@ export default {
 .notice-container {
   position: absolute;
   right: 0;
-  top:70px;
+  top:0;
   display: flex;
   flex-direction: column;
   z-index: 10;

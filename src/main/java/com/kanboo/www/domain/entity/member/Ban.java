@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,12 +21,12 @@ public class Ban {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long banIdx;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "mem_idx")
     private Member member;
 
-    private LocalDateTime banStartDate;
-    private LocalDateTime banEndDate;
+    private LocalDate banStartDate;
+    private LocalDate banEndDate;
 
     public BanDTO entityToDto() {
         return BanDTO.builder()
@@ -35,4 +36,7 @@ public class Ban {
                 .banEndDate(banEndDate)
                 .build();
     }
+
+    public void changeBanStartDate(LocalDate banStartDate){this.banStartDate = banStartDate;}
+    public void changeBanEndDate(LocalDate banEndDate){this.banEndDate = banEndDate;}
 }

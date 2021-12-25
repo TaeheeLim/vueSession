@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +20,8 @@ public class ChattingContentDTO {
     private MemberDTO member;
     private ChatDTO chat;
     private String chatCn;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime chatCnDate;
 
     public ChattingContent dtoToEntity() {

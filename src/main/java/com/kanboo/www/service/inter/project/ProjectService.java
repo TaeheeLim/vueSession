@@ -22,4 +22,8 @@ public interface ProjectService {
     void saveProject(Map<String, Object> param);
 
     ProjectDTO getDashBoardData(String memTag, Long projectIdx);
+
+    ProjectDTO updateProjectState(ProjectDTO projectDTO);
+
+    Long getMaxIndexOfProject(String selected, String key);
 }

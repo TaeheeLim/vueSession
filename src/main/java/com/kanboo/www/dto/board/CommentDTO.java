@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -24,6 +25,7 @@ public class CommentDTO {
     private BoardDTO board;
     private MemberDTO member;
     private String answerCn;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime answerDate;
     private String answerDelAt;
 

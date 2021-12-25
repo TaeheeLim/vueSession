@@ -21,12 +21,12 @@ public class Chat {
 
     @Id
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prjct_idx")
+    @JoinColumn(name = "prjctIdx")
     private Project project;
 
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mem_idx")
+    @JoinColumn(name = "memIdx")
     private Member member;
 
     public ChatDTO entityToDto() {

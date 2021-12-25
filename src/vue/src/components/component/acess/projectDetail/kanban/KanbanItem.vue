@@ -11,18 +11,18 @@
               {{ item.badgeText }}
             </span>
             <DotsHorizontalIcon
-              @click="showMenu(columnIndex, cardIndex)"
-              class="icons"
-              style="float: right"
+                @click="showMenu(columnIndex, cardIndex)"
+                class="icons"
+                style="float: right"
             />
           </p>
           <p>{{ item.user_name }}</p>
         </div>
         <transition name="showMenu">
           <div
-            class="card-in-menu"
-            v-if="item.showCardInMenu == true"
-            :id="`cardMenu${columnIndex}${cardIndex}`"
+              class="card-in-menu"
+              v-if="item.showCardInMenu == true"
+              :id="`cardMenu${columnIndex}${cardIndex}`"
           >
             <p @click="updateCard(columnIndex, cardIndex)">
               <PencilIcon class="icons" />
@@ -36,8 +36,8 @@
         <p>{{ item.content }}</p>
         <p class="kanban-timeZone">
           <ClockIcon
-            @load="D_days(item.startDate, item.endDate, columnIndex, cardIndex)"
-            class="icons"
+              @load="D_days(item.startDate, item.endDate, columnIndex, cardIndex)"
+              class="icons"
           />
           {{ item.day }}
         </p>
@@ -115,9 +115,9 @@ export default {
       var registrationTime = startDay.from(today).split(" ");
 
       date +=
-        registrationTime[0] === "a" || registrationTime[0] === "an"
-          ? 1
-          : registrationTime[0];
+          registrationTime[0] === "a" || registrationTime[0] === "an"
+              ? 1
+              : registrationTime[0];
 
       switch (registrationTime[1]) {
         case "few":
@@ -171,6 +171,7 @@ export default {
   border-radius: 20px;
   padding: 15px;
   position: relative;
+  box-shadow: 3px 6px 10px rgba(255, 255, 255, 0.2) inset;
 }
 
 .kanban-card {
@@ -189,7 +190,7 @@ export default {
   border-radius: 10px;
   right: 0;
   top: 35%;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
 }
 
 .icons {

@@ -1,9 +1,9 @@
 <template>
-  <div class="ganttChart-container">
-    <Chart />
-    <div class="gantt-footer">
-      <Detail class="detail" />
-      <Write class="write" />
+  <div className="ganttChart-container">
+    <Chart/>
+    <div className="gantt-footer">
+      <Detail class="detail"/>
+      <Write class="write"/>
     </div>
   </div>
 </template>
@@ -26,6 +26,8 @@ export default {
 .ganttChart-container {
   padding: 20px;
   height: calc(100vh - 70px);
+  overflow: hidden;
+
 }
 
 .gantt-footer {

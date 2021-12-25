@@ -9,5 +9,7 @@ import java.util.List;
 public interface MemberDslRepository {
 	Member findByMemberIdx(Long memberIdx);
 
-	List<Member> findAllMemberBanInfo();
+	List<Member> findAllMemberBanInfo(String selected, String keyword, int articleOnView);
+
+	long getMaxIndexOfMember(String keyword, String selected);
 }

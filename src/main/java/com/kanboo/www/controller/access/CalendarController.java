@@ -26,7 +26,11 @@ public class CalendarController {
 
 	@PostMapping(value = "/insertSchedule")
 	public CalendarDTO insertSchedule(CalendarDTO calendarDTO){
-		System.out.println(calendarDTO);
 		return calendarService.insertCalendar(calendarDTO);
+	}
+
+	@PostMapping(value = "/deleteSchedule")
+	public CalendarDTO deleteSchedule(CalendarDTO calendarDTO){
+		return calendarService.deleteCalendar(calendarDTO);
 	}
 }

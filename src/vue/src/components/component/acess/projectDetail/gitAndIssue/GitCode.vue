@@ -9,11 +9,11 @@
 
 
     <div class="fileContent">
-    <div v-if="this.$store.state.git.selectedFileSize !== ''" >
-      <h1 class="lineNum-fileSize">
-        {{this.$store.state.git.maxLineNum}} {{this.$store.state.git.selectedFileSize}}
-      </h1>
-    </div>
+      <div v-if="this.$store.state.git.selectedFileSize !== ''" >
+        <h1 class="lineNum-fileSize">
+          {{this.$store.state.git.maxLineNum}} {{this.$store.state.git.selectedFileSize}}
+        </h1>
+      </div>
       <prism-editor
           class="my-editor"
           v-model="this.$store.state.git.decodeData"

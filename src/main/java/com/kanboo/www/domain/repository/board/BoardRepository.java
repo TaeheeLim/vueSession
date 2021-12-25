@@ -17,4 +17,6 @@ public interface BoardRepository extends JpaRepository<Board, Long>, BoardDSLRep
     Board findByBoardIdx(long boardIdx);
 
     long deleteByBoardIdx(long boardIdx);
+
+    List<Board> findByCodeDetail_CodeDetailIdx(String codeDetail);
 }

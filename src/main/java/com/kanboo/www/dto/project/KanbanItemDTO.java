@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.JoinColumn;
@@ -25,9 +26,14 @@ public class KanbanItemDTO {
     private MemberDTO member;
     private String kbCn;
     private String kbItmNum;
-    private LocalDateTime kbDate;
+
     private String kbBadge;
     private String kbColor;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime kbStartDate;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime kbEndDate;
 
     public KanbanItem dtoToEntity() {
         return KanbanItem.builder()
@@ -36,7 +42,8 @@ public class KanbanItemDTO {
                 .member(member.dtoToEntity())
                 .kbCn(kbCn)
                 .kbItmNum(kbItmNum)
-                .kbDate(kbDate)
+                .kbStartDate(kbStartDate)
+                .kbEndDate(kbEndDate)
                 .kbBadge(kbBadge)
                 .kbColor(kbColor)
                 .build();

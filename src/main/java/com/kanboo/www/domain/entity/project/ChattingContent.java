@@ -1,6 +1,5 @@
 package com.kanboo.www.domain.entity.project;
 
-import com.kanboo.www.domain.entity.project.idclass.ChatId;
 import com.kanboo.www.dto.project.ChattingContentDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,11 +22,10 @@ public class ChattingContent {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
-            @JoinColumn(name = "project", referencedColumnName = "prjct_idx"),
-            @JoinColumn(name = "member", referencedColumnName = "mem_idx")
+            @JoinColumn(name = "prjctIdx", referencedColumnName = "prjctIdx"),
+            @JoinColumn(name = "memIdx", referencedColumnName = "memIdx")
     })
     private Chat chat;
-
     private String chatCn;
     private LocalDateTime chatCnDate;
 

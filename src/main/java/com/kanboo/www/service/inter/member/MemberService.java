@@ -20,9 +20,11 @@ public interface MemberService {
 
     String resetPwHandler(MemberDTO memberDTO);
 
-    List<MemberDTO> getAllMember();
-
     MemberDTO getUserInfo(String memTag);
 
     Boolean userModify(MemberDTO memberDTO);
+
+    List<MemberDTO> getAllMember(String selected, String keyword, int articleOnView);
+
+    Long getMaxIndexOfMember(String selected, String key);
 }

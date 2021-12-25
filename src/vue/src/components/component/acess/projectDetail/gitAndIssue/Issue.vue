@@ -13,8 +13,8 @@
         File : {{a.issueGitFile}} <br>
         Content : {{a.issueCn}} <br><br>
         {{a.member.memNick}}&nbsp;&nbsp;{{a.issueDate}}&nbsp;&nbsp;{{a.currentTime}}
-        
-        <select class="stateSelect" v-model="a.issueState" @change="updateIssueState" >
+
+        <select class="stateSelect" v-model="a.issueState" @change="updateIssueState">
           <option>버그</option>
           <option>수정중</option>
           <option>완료</option>
@@ -42,7 +42,7 @@ export default {
       getFileList : 'git/getFileList',
     }),
     updateIssueState(e){
-      let selectedIndex = e.target.options.selectedIndex 
+      let selectedIndex = e.target.options.selectedIndex
       switch (selectedIndex) {
         case 0:
           selectedIndex = '버그'
@@ -58,18 +58,18 @@ export default {
 
       this.axios.post( url, null, {
         params : {
-         issueIdx : e.path[1].children[0].innerText,
-         selectedIndex : selectedIndex,
-      }
+          issueIdx : e.path[1].children[0].innerText,
+          selectedIndex : selectedIndex,
+        }
       })
-      .then( (r)=>{
-        console.log(r)
-      })
+          .then( (r)=>{
+            console.log(r)
+          })
     },
     useAxiosGetData(){
       let issueText = document.querySelector('.issueText').value;
       let issueTitle = document.querySelector('.issueTitle').value;
-      
+
       if( issueText === '' || issueText === null) return
       if( issueTitle === '' || issueTitle === null) return
 
@@ -86,13 +86,13 @@ export default {
           issueGitFile : issueTitle,
         }
       })
-      .then( (r)=>{
-        r.data.issueDate = r.data.issueDate.replace('T', ' ')
-        this.$store.state.git.realIssue.unshift(r.data)
-        document.querySelector('.issueText').value = ''
-        }
-      )
-      .catch()
+          .then( (r)=>{
+                r.data.issueDate = r.data.issueDate.replace('T', ' ')
+                this.$store.state.git.realIssue.unshift(r.data)
+                document.querySelector('.issueText').value = ''
+              }
+          )
+          .catch()
     },
   },
 }
@@ -172,15 +172,13 @@ export default {
   height: 28px;
   border-radius: 8px;
   -webkit-appearance:none;
-  -moz-appearance:none; 
-  appearance:none; 
+  -moz-appearance:none;
+  appearance:none;
   text-align: center;
   border: none;
   box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.5);
 }
 .stateSelect:focus {
-  /* border-color: #3F80A9;
-  box-shadow: 3px 3px 0 0 rgba(0, 0, 0, 0.5); */
   outline: none;
 }
 .stateSelect:disabled {
@@ -191,4 +189,5 @@ export default {
   color: #fff;
   padding: 3px 0;
 }
+
 </style>

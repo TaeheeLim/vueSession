@@ -13,4 +13,6 @@ public interface CalendarService {
 	CalendarDTO insertCalendar(CalendarDTO calendarDTO);
 
 	List<CalendarDTO> getThisWeekSchedule(Long projectIdx, LocalDateTime startDate, LocalDateTime endDate);
+
+	CalendarDTO deleteCalendar(CalendarDTO calendarDTO);
 }

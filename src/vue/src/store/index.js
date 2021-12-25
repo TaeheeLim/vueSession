@@ -23,6 +23,7 @@ import demand from '@/store/modules/main/demand.js'
 import scheduler from '@/store/modules/main/scheduler.js'
 import setting from '@/store/modules/main/setting.js'
 import view from '@/store/modules/main/view.js'
+import socket from '@/store/modules/main/socket.js'
 
 import community from '@/store/modules/noAccess/community.js'
 import demo from '@/store/modules/noAccess/demo.js'
@@ -58,6 +59,7 @@ const store = createStore({
     scheduler,
     setting,
     view,
+    socket,
     community,
     demo,
     home,
