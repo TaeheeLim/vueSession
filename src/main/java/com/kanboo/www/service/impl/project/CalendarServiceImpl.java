@@ -9,6 +9,7 @@ import com.kanboo.www.domain.repository.project.CalendarRepository;
 import com.kanboo.www.domain.repository.project.ProjectRepository;
 import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.dto.project.CalendarDTO;
+import com.kanboo.www.dto.project.ProjectDTO;
 import com.kanboo.www.service.inter.project.CalendarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +38,22 @@ public class CalendarServiceImpl implements CalendarService {
 						, map);
 		List<CalendarDTO> dtoList = new ArrayList<>();
 		for (Calendar calendar : calendarList) {
-			dtoList.add( calendar.entityToDto() );
+			CalendarDTO build = CalendarDTO.builder()
+					.calIdx(calendar.getCalIdx())
+					.project(ProjectDTO.builder().prjctIdx(calendarDTO.getProject().getPrjctIdx()).build())
+					.member(calendar.getMember().entityToDto())
+					.codeDetail(calendar.getCodeDetail().entityToDto())
+					.calStartDate(calendar.getCalStartDate())
+					.calEndDate(calendar.getCalEndDate())
+					.calColor(calendar.getCalColor())
+					.calCn(calendar.getCalCn())
+					.calTitle(calendar.getCalTitle())
+					.calDelAt(calendar.getCalDelAt())
+					.calIsAllDay(calendar.getCalIsAllDay())
+					.calIsDeletable(calendar.getCalIsDeletable())
+					.calIsResizable(calendar.getCalIsResizable())
+					.build();
+			dtoList.add( build );
 		}
 		return dtoList;
 	}
@@ -93,9 +109,8 @@ public class CalendarServiceImpl implements CalendarService {
 	@Transactional
 	public CalendarDTO deleteCalendar(CalendarDTO calendarDTO) {
 		Calendar calendar = calendarRepository.findByCalIdx(calendarDTO.getCalIdx());
-		System.out.println(calendarDTO);
 		calendar.changeDelAt(calendarDTO.getCalDelAt());
-		return calendar.entityToDto();
+		return calendarDTO;
 	}
 
 }

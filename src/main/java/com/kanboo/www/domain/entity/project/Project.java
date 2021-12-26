@@ -41,11 +41,11 @@ public class Project {
     private List<Calendar> calendarList = new ArrayList<>();
 
     private static int compare(Issue o1, Issue o2) {
-        return o1.getIssueIdx() < o2.getIssueIdx() ? 1 : -1;
+        return o1.getIssueIdx() <= o2.getIssueIdx() ? 1 : -1;
     }
 
     private static int compare(Calendar o1, Calendar o2) {
-        return o1.getCalIdx() < o2.getCalIdx() ? 1 : -1;
+        return o1.getCalIdx() <= o2.getCalIdx() ? 1 : -1;
     }
 
     public void changePrjctDelAt(String prjctDelAt){
