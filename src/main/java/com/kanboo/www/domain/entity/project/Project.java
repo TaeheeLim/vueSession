@@ -40,14 +40,6 @@ public class Project {
     @OneToMany(mappedBy = "project")
     private List<Calendar> calendarList = new ArrayList<>();
 
-    private static int compare(Issue o1, Issue o2) {
-        return o1.getIssueIdx() <= o2.getIssueIdx() ? 1 : -1;
-    }
-
-    private static int compare(Calendar o1, Calendar o2) {
-        return o1.getCalIdx() <= o2.getCalIdx() ? 1 : -1;
-    }
-
     public void changePrjctDelAt(String prjctDelAt){
         this.prjctDelAt = prjctDelAt;
     }
@@ -57,34 +49,6 @@ public class Project {
     }
 
     public ProjectDTO entityToDto() {
-        List<IssueDTO> issue = new ArrayList<>();
-        if(issueList != null && !issueList.isEmpty()) {
-            issueList.sort(Project::compare);
-            int length = issueList.size();
-            if(issueList.size() >= 2) {
-                length = 2;
-            }
-            for(int i = 0; i < length; i++) {
-                IssueDTO issueDTO = issueList.get(i).entityToDto();
-                issueDTO.setProject(ProjectDTO.builder().prjctIdx(prjctIdx).build());
-                issue.add(issueDTO);
-            }
-        }
-
-        List<CalendarDTO> calendar = new ArrayList<>();
-        if(calendarList != null && !calendarList.isEmpty()) {
-            calendarList.sort(Project::compare);
-            int length = calendarList.size();
-            if(calendarList.size() >= 3) {
-                length = 3;
-            }
-            for(int i = 0; i < length; i++) {
-                CalendarDTO calendarDTO = calendarList.get(i).entityToDto();
-                calendarDTO.setProject(ProjectDTO.builder().prjctIdx(prjctIdx).build());
-                calendar.add(calendarDTO);
-            }
-        }
-
 
         return ProjectDTO.builder()
                 .prjctIdx(prjctIdx)
@@ -95,8 +59,6 @@ public class Project {
                 .prjctDelAt(prjctDelAt)
                 .prjctComplAt(prjctComplAt)
                 .prjctReadMe(prjctReadMe)
-                .issueList(issue)
-                .calendarList(calendar)
                 .build();
     }
 

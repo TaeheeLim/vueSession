@@ -66,7 +66,7 @@
 
 <script>
 import {  mapActions, mapMutations, mapState } from 'vuex'
-import editor from '../../../component/global/editor.vue'
+import editor from '../../../global/editor.vue'
 import ProjectBoardComment from './ProjectBoardComment.vue'
 
 export default {

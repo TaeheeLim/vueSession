@@ -2,6 +2,7 @@ package com.kanboo.www.service.impl.project;
 
 import com.kanboo.www.domain.entity.member.Member;
 import com.kanboo.www.domain.entity.member.ProjectMember;
+import com.kanboo.www.domain.entity.project.Calendar;
 import com.kanboo.www.domain.entity.project.Compiler;
 import com.kanboo.www.domain.entity.project.CompilerFile;
 import com.kanboo.www.domain.entity.project.Issue;
@@ -14,6 +15,7 @@ import com.kanboo.www.domain.repository.project.ProjectRepository;
 import com.kanboo.www.dto.member.ProjectMemberDTO;
 import com.kanboo.www.dto.member.ProjectMemberDTOInter;
 import com.kanboo.www.dto.member.nativedto.ProjectMemberNative;
+import com.kanboo.www.dto.project.CalendarDTO;
 import com.kanboo.www.dto.project.CompilerDTO;
 import com.kanboo.www.dto.project.IssueDTO;
 import com.kanboo.www.dto.project.ProjectDTO;
@@ -64,7 +66,49 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectDTO getProject(Long projectIdx) {
         Project project = projectRepository.findByPrjctIdx(projectIdx);
-        ProjectDTO projectDTO = project.entityToDto();
+
+
+        List<IssueDTO> issue = new ArrayList<>();
+        if(project.getIssueList() != null && !project.getIssueList().isEmpty()) {
+            project.getIssueList().sort(ProjectServiceImpl::compare);
+            int length = project.getIssueList().size();
+            if(project.getIssueList().size() >= 2) {
+                length = 2;
+            }
+            for(int i = 0; i < length; i++) {
+                IssueDTO issueDTO = project.getIssueList().get(i).entityToDto();
+                issueDTO.setProject(ProjectDTO.builder().prjctIdx(projectIdx).build());
+                issue.add(issueDTO);
+            }
+        }
+
+        List<CalendarDTO> calendar = new ArrayList<>();
+        if(project.getCalendarList() != null && !project.getCalendarList().isEmpty()) {
+            project.getCalendarList().sort(ProjectServiceImpl::compare);
+            int length = project.getCalendarList().size();
+            if(project.getCalendarList().size() >= 3) {
+                length = 3;
+            }
+            for(int i = 0; i < length; i++) {
+                CalendarDTO calendarDTO = project.getCalendarList().get(i).entityToDto();
+                calendarDTO.setProject(ProjectDTO.builder().prjctIdx(projectIdx).build());
+                calendar.add(calendarDTO);
+            }
+        }
+
+        ProjectDTO projectDTO = ProjectDTO.builder()
+                .prjctIdx(project.getPrjctIdx())
+                .prjctNm(project.getPrjctNm())
+                .prjctStartDate(project.getPrjctStartDate())
+                .prjctEndDate(project.getPrjctEndDate())
+                .prjctProgress(project.getPrjctProgress())
+                .prjctDelAt(project.getPrjctDelAt())
+                .prjctComplAt(project.getPrjctComplAt())
+                .prjctReadMe(project.getPrjctReadMe())
+                .issueList(issue)
+                .calendarList(calendar)
+                .build();
+
         project.getProjectMembers().forEach(item -> {
             projectDTO.getProjectMembers().add(item.entityToDto());
         });
@@ -280,4 +324,15 @@ public class ProjectServiceImpl implements ProjectService {
     public Long getMaxIndexOfProject(String selected, String key) {
         return projectRepository.getMaxIndexOfProject(selected,key);
     }
+
+
+    // ======================== sort
+    private static int compare(Issue o1, Issue o2) {
+        return o1.getIssueIdx() <= o2.getIssueIdx() ? 1 : -1;
+    }
+
+    private static int compare(com.kanboo.www.domain.entity.project.Calendar o1, Calendar o2) {
+        return o1.getCalIdx() <= o2.getCalIdx() ? 1 : -1;
+    }
+
 }

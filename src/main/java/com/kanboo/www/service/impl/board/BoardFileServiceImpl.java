@@ -111,7 +111,6 @@ public class BoardFileServiceImpl implements BoardFileService {
         File file = new File("");
         String downloadPath = "";
         String absolutePath = file.getAbsolutePath();
-        System.out.println(map.toString());
         String codeDetail = (String) map.get("codeDetail");
         if(codeDetail.equals("7")){
             downloadPath ="/src/main/resources/storage/board/free";
@@ -120,12 +119,7 @@ public class BoardFileServiceImpl implements BoardFileService {
         }
         String finalPath
                 = absolutePath + downloadPath + "/" + (String)map.get("memIdx") + "/" + (String)map.get("boardIdx");
-        System.out.println("=======================");
-        System.out.println(finalPath);
-        System.out.println("=======================");
-        System.out.println(finalPath + "\\" + (String)map.get("fileName"));
-
-        Resource resource = new FileSystemResource(finalPath + "\\" + (String)map.get("fileName"));
+        Resource resource = new FileSystemResource(finalPath + "/" + (String)map.get("fileName"));
 
         if(!resource.exists()){
             return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);

@@ -32,9 +32,9 @@
 </template>
 
 <script>
-import projectBoardTop from '@/components/container/access/projectDetail/projectBoardTop.vue'
+import projectBoardTop from '@/components/component/acess/projectDetail/projectBoard/projectBoardTop.vue'
 import { mapMutations, mapState } from 'vuex';
-import Write from './ProjectBoardWrite.vue';
+import Write from '../../../component/acess/projectDetail/projectBoard/ProjectBoardWrite.vue';
 
 export default {
   name : 'ProjectBoard',

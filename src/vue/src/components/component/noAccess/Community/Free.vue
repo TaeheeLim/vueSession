@@ -8,7 +8,7 @@
             <div class="name-div">
                 <div>
                     <div>{{item.member.memNick}}</div>
-                    <div>{{item.boardDate}}</div>
+                    <div>{{item.boardDate.substring(0, 19).replace("T", " ")}}</div>
                 </div>
                 <!-- 이 부분에다가 v-if로 토큰값 비교해서 작성자일 경우 수정,삭제 버튼.. 아닐경우 신고 버튼-->
                 <div class="icon-container" v-if="item.수정했니 === false">
