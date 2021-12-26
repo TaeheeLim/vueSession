@@ -148,7 +148,6 @@ const demand = {
                     location.reload();
                 })
             }
-
         },
         down(state, event){
             let input = event.target.value;
