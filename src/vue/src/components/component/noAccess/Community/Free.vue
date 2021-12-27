@@ -11,28 +11,30 @@
                     <div>{{item.boardDate.substring(0, 19).replace("T", " ")}}</div>
                 </div>
                 <!-- 이 부분에다가 v-if로 토큰값 비교해서 작성자일 경우 수정,삭제 버튼.. 아닐경우 신고 버튼-->
-                <div class="icon-container" v-if="item.수정했니 === false">
-                    <div v-if="item.fileAt === 'Y'">
-                      <button @click="downloadFile(item)" id="file-btn" v-text="`첨부파일: ${item.boardFileDTO.fileName}`"></button>
-                    </div>
-                    <div class="icon-div">
-                        <i @click="this.changeBoardIsModify(item);
-                                    this.changeIsUpdate(item);"
-                                    class="fas fa-edit"
-                            v-if="this.updateCheck == false"></i>
-                    </div>
-                    <div class="icon-div">
-                        <i @click="confirmDelete(item)" class="far fa-trash-alt"></i>
-                    </div>
-                    <!-- 밑의 div에다가 update axios를 하는 메소드 이름을 @click에다가 추가-->
-                </div>
-                <div class="report-div">
-                    <span @click="report(item); changeIsReportClick()" v-if="isReportClick === false">
-                        <img class="no-report" src="@/assets/noneReport.png">
-                    </span>
-                    <span @click="cancelReport(item); changeIsReportClick()" v-if="isReportClick === true">
-                        <img class="report" src="@/assets/report.png">
-                    </span>
+                <div>
+                  <div class="icon-container" v-if="item.수정했니 === false && item.member.memIdx === signMember.memIdx">
+                      <div v-if="item.fileAt === 'Y'">
+                        <button @click="downloadFile(item)" id="file-btn" v-text="`첨부파일: ${item.boardFileDTO.fileName}`"></button>
+                      </div>
+                      <div class="icon-div">
+                          <i @click="this.changeBoardIsModify(item);
+                                      this.changeIsUpdate(item);"
+                                      class="fas fa-edit"
+                              v-if="this.updateCheck == false"></i>
+                      </div>
+                      <div class="icon-div">
+                          <i @click="confirmDelete(item)" class="far fa-trash-alt"></i>
+                      </div>
+                  </div>
+                  <div class="report-div" v-else-if="item.member.memIdx !== signMember.memIdx">
+                      <span @click="report(item); changeIsReportClick()" v-if="isReportClick === false">
+                          <img class="no-report" src="@/assets/noneReport.png">
+                      </span>
+                      <span @click="cancelReport(item); changeIsReportClick()" v-if="isReportClick === true">
+                          <img class="report" src="@/assets/report.png">
+                      </span>
+                  </div>
+                  <div v-else>adfasdfasd</div>
                 </div>
                 <div id="finish-div" v-if="item.수정했니 === true"
                                     @click='increasingIsExportUpdate()'
@@ -99,7 +101,8 @@ export default {
             updateCheck : state => state.community.updateCheck,
             numberOfArticle : state => state.community.numberOfArticle,
             articlesOnView : state => state.community.articlesOnView,
-            axiosState: state => state.community.axiosState
+            axiosState: state => state.community.axiosState,
+            signMember: state => state.community.signMember
         })
     },
 
@@ -271,7 +274,6 @@ export default {
         },
         
         cancelReport(item){
-            
             this.axios.get('url', null, { params : {idx : item.idx}})
                         .then(e => {
                             console.log(e)
@@ -339,24 +341,33 @@ export default {
         },
 
         insertComment(item){
-          console.log(item)
-          console.log(item.insertComment)
           this.axios.post('/insertComment',  {
                             answerCn : item.insertComment,
                             answerDate : '',
                             answerDelAt : 'N',
                             boardIdx : item.boardIdx,
-                            token : '#1921'
+                            token : sessionStorage.getItem("token")
             }).then(e => {
+                  console.log("========")
+                  console.log(e)
+                  console.log("========")
                     if(item.totalComments === 0){
-                      item.totalComments += 1
+                      console.log('위로오냐')
                       this.addAttributeToComments(e.data)
                       item.insertComment = ''
                     }
-                    if(item.commentsOnView > 0){
+                    if(item.commentsOnView !== 0){
+                      console.log('밑으로오냐')
                       item.totalComments += 1
+                      item.commentsOnView +=1
                       this.addAttributeToComments(e.data)
                       item.commentList.unshift(e.data)
+                      item.insertComment = ''
+                    }
+                    if(item.commentsOnView === 0){
+                      console.log('최하단')
+                      item.totalComments += 1
+                      this.addAttributeToComments(e.data)
                       item.insertComment = ''
                     }
           })
@@ -503,10 +514,6 @@ img {
     width: 15px;
     height: 15px;
     cursor: pointer;
-}
-
-.report-div {
-    display: none;
 }
 
 #btn-div{

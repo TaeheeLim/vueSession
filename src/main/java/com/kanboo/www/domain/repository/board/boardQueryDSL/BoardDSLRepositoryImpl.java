@@ -71,7 +71,7 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
                                 .and(booleanBuilder)
                 )
                 .distinct()
-                .offset(articleOnvView).limit(5)
+                .offset(articleOnvView).limit(10)
                 .orderBy(board.boardIdx.desc())
                 .fetch();
 
@@ -153,7 +153,8 @@ public class BoardDSLRepositoryImpl implements BoardDSLRepository{
                 .fetchJoin()
                 .innerJoin(comment.member, qMember)
                 .fetchJoin()
-                .where(comment.board.boardIdx.eq(boardIdx))
+                .where(comment.board.boardIdx.eq(boardIdx)
+                        .and(comment.answerDelAt.eq("N")))
                 .offset(commentsOnView)
                 .limit(5)
                 .orderBy(comment.answerIdx.desc())

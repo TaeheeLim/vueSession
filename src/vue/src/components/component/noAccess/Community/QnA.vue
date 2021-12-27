@@ -33,7 +33,7 @@
                 </div>
             </div>
             <div class="comment-wrapper">
-                <input class="comment-input" type="text" placeholder="댓글을 입력하세요">
+                <input class="comment-input" v-model="item.insertComment" type="text" placeholder="댓글을 입력하세요">
                 <button id="button-id" class="comment-btn" @click="insertComment(item)">등록</button>
             </div>
             <BoardComment :board="item"/>
@@ -77,94 +77,126 @@ export default {
     },
 
     methods: {
-        ...mapActions({
-            getBoardList : 'community/getBoardList',
-            getBoardNum : 'community/getBoardNum',
-            getMoreList : 'community/getMoreList',
-            getComments : 'community/getComments'
-        }),
-        ...mapMutations({
-            changeIsUpdate : 'community/changeIsUpdate',
-            changeBoardIsModify : 'community/changeBoardIsModify',
-            changeUpdateCheck : 'community/changeUpdateCheck',
-            setAxiosState: 'community/setAxiosState',
-            deleteBoards : 'community/deleteBoards'
-        }),
+      ...mapActions({
+          getBoardList : 'community/getBoardList',
+          getBoardNum : 'community/getBoardNum',
+          getMoreList : 'community/getMoreList',
+          getComments : 'community/getComments'
+      }),
+      ...mapMutations({
+          changeIsUpdate : 'community/changeIsUpdate',
+          changeBoardIsModify : 'community/changeBoardIsModify',
+          changeUpdateCheck : 'community/changeUpdateCheck',
+          setAxiosState: 'community/setAxiosState',
+          deleteBoards : 'community/deleteBoards'
+      }),
 
-        downloadFile(item) {
-          const url = '/downloadFile'
-          const boardIdx = item.boardIdx
-          console.log(boardIdx)
-          const memIdx = item.member.memIdx
-          const fileName = item.boardFileDTO.fileName
-          const codeDetail = item.codeDetail.codeDetailIdx
-          console.log(fileName)
-          console.log(memIdx)
+      downloadFile(item) {
+        const url = '/downloadFile'
+        const boardIdx = item.boardIdx
+        console.log(boardIdx)
+        const memIdx = item.member.memIdx
+        const fileName = item.boardFileDTO.fileName
+        const codeDetail = item.codeDetail.codeDetailIdx
+        console.log(fileName)
+        console.log(memIdx)
 
-          this.axios({
-            url: url,
-            method: 'post',
-            responseType: 'blob',
-            data: {
-              boardIdx: boardIdx,
-              memIdx: memIdx,
-              fileName: fileName,
-              codeDetail: codeDetail
-            }
-          }).then(e => {
-            const url = window.URL.createObjectURL(new Blob([e.data]));
-            const link = document.createElement('a')
-            link.href = url
-            link.setAttribute('download', fileName)
-            document.body.appendChild(link)
-            link.click()
-          })
-        },
-
-        exportFinish(item) {
-            this.changeIsUpdate(item); 
-            this.changeBoardIsModify(item);
-        },
-
-        increasingIsExportUpdate(){
-            this.isExport++
-        },
-
-        getArticle(e){
-            if(this.articlesOnView === this.numberOfArticle) {
-                return
-            }
-            const fullScroll = e.target.scrollHeight
-            const nowScroll = e.target.scrollTop
-            const position = this.$route.fullPath.split('/')[2]
-
-          if(this.articlesOnView <= 4) {
-            this.getMoreList(position)
-          } else {
-            if((fullScroll - nowScroll) < (fullScroll / 1.5) && !this.axiosState) {
-              this.getMoreList(position)
-            }
+        this.axios({
+          url: url,
+          method: 'post',
+          responseType: 'blob',
+          data: {
+            boardIdx: boardIdx,
+            memIdx: memIdx,
+            fileName: fileName,
+            codeDetail: codeDetail
           }
+        }).then(e => {
+          const url = window.URL.createObjectURL(new Blob([e.data]));
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', fileName)
+          document.body.appendChild(link)
+          link.click()
+        })
         },
 
-        getCommentList(item) {
-            if(item.totalComments <= 0) {
-                return
-            }
-            this.getComments(item)
-        },
-        //댓글 등록
-        insertComment(item){
-            const commentContent = document.querySelector('.comment-input')
-            this.axios.post('url', null, { params :
-                                            { idx : item.idx, commentContent : commentContent.value } })
-              .then(() => {
-                  commentContent.value = ''
-              })
-        },
-        backToFirst(){
-          document.querySelector('.router-wrapper').scroll(0,0)
+      exportFinish(item) {
+          this.changeIsUpdate(item);
+          this.changeBoardIsModify(item);
+      },
+
+      increasingIsExportUpdate(){
+          this.isExport++
+      },
+
+      getArticle(e){
+          if(this.articlesOnView === this.numberOfArticle) {
+              return
+          }
+          const fullScroll = e.target.scrollHeight
+          const nowScroll = e.target.scrollTop
+          const position = this.$route.fullPath.split('/')[2]
+
+        if(this.articlesOnView <= 4) {
+          this.getMoreList(position)
+        } else {
+          if((fullScroll - nowScroll) < (fullScroll / 1.5) && !this.axiosState) {
+            this.getMoreList(position)
+          }
         }
+      },
+
+      getCommentList(item) {
+          if(item.totalComments <= 0) {
+              return
+          }
+          this.getComments(item)
+      },
+        //댓글 등록
+      insertComment(item){
+        this.axios.post('/insertComment',  {
+          answerCn : item.insertComment,
+          answerDate : '',
+          answerDelAt : 'N',
+          boardIdx : item.boardIdx,
+          token : sessionStorage.getItem("token")
+        }).then(e => {
+          console.log("========")
+          console.log(e)
+          console.log("========")
+          if(item.totalComments === 0){
+            console.log('위로오냐')
+            this.addAttributeToComments(e.data)
+            item.insertComment = ''
+          }
+          if(item.commentsOnView !== 0){
+            console.log('밑으로오냐')
+            item.totalComments += 1
+            item.commentsOnView +=1
+            this.addAttributeToComments(e.data)
+            item.commentList.unshift(e.data)
+            item.insertComment = ''
+          }
+          if(item.commentsOnView === 0){
+            console.log('최하단')
+            item.totalComments += 1
+            this.addAttributeToComments(e.data)
+            item.insertComment = ''
+          }
+        })
+      },
+
+      addAttributeToComments(e){
+        e.isOpen = false
+        e.isUpdate = false
+        e.isFinish = false
+        e.isModify = true
+      },
+
+      backToFirst(){
+        document.querySelector('.router-wrapper').scroll(0,0)
+      }
 
     },
 

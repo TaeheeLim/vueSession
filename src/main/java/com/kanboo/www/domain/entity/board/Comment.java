@@ -33,6 +33,13 @@ public class Comment {
     private LocalDateTime answerDate;
     private String answerDelAt;
 
+    public void changeCommentCn(String commentCn){
+        this.answerCn = commentCn;
+    }
+    public void changeAnswerDelAt(String answerDelAt){
+        this.answerDelAt = answerDelAt;
+    }
+
     public CommentDTO entityToDto() {
         return CommentDTO.builder()
                 .answerIdx(answerIdx)

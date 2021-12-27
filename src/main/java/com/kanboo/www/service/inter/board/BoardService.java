@@ -5,12 +5,13 @@ import com.kanboo.www.domain.entity.board.Board;
 import com.kanboo.www.domain.entity.board.Comment;
 import com.kanboo.www.dto.board.BoardDTO;
 import com.kanboo.www.dto.board.CommentDTO;
+import com.kanboo.www.dto.member.MemberDTO;
 
 import java.util.List;
 import java.util.Map;
 
 public interface BoardService {
-    List<BoardDTO> getAllList(String selected, String key, int articleOnvView, String codeDetail, String memTag);
+    List<BoardDTO> getAllList(String selected, String key, int articleOnvView, String codeDetail, MemberDTO memberDTO);
 
     long getArticleNum(String keyword, String selected, String codeDetails);
 
@@ -27,6 +28,8 @@ public interface BoardService {
     BoardDTO decreaseLikesNum(long boardIdx);
 
     BoardDTO increaseTotalComments(long boardIdx);
+
+    BoardDTO decreaseTotalComments(long boardIdx);
 
     List<BoardDTO> getProjectLastest(Long projectIdx);
 

@@ -20,6 +20,7 @@ const community = {
         codeDetail : 7,
         axiosState : false,
         isOpen : false,
+        signMember: {},
     },
 
     mutations: {
@@ -62,13 +63,11 @@ const community = {
 
         deleteBoards(state){
             state.articlesOnView--
-            console.log('못옴??')
-            console.log(state.articlesOnView)
             state.numberOfArticle--
         },
 
         increaseNumOfArticleAfterInsert(state){
-            state.numberOfArticl++
+            state.numberOfArticle++
         },
 
         setNumberOfArticle(state, payload) {
@@ -85,10 +84,8 @@ const community = {
 
         pushToComment(state, item) {
             if (item._board.commentList.length !== 0 || item._board.totalComments === 0) {
-                console.log('걸리니')
                 return
             }
-            console.log('지나가니')
             item._board.commentList.push(...item._comment)
             item._board.commentsOnView = item._comment.length;
         },
@@ -105,35 +102,29 @@ const community = {
 
         // 해당 게시물 댓글 리스트에 댓글 추가
         addingToCommentList(state, payload) {
-            state
             payload.board.commentList.push(...payload.commentList)
         },
 
         //----------------댓글 관련!!!-------------------
         changeCommentsIsOpen(state, payload) {
             payload.isOpen = !payload.isOpen
-            state
         },
 
         changeCommentsIsUpdate(state, payload) {
             payload.isUpdate = !payload.isUpdate
-            state
         },
 
         changeIsFinish(state, payload) {
             payload.isFinish = !payload.isFinish
-            state
         },
 
         changeIsModify(state, payload) {
             payload.isModify = !payload.isModify
-            state
         },
 
         //-------------------------------------------
         changeBoardIsModify(state, payload) {
             payload.isModify = !payload.isModify
-            state
         },
         changeUpdateCheck(state) {
             state.updateCheck = !state.updateCheck
@@ -157,6 +148,10 @@ const community = {
         setAxiosState(state, stat) {
             state.axiosState = stat
         },
+
+        setSignMember(state, item) {
+            state.signMember = item
+        }
     },
 
     actions: {
@@ -170,20 +165,27 @@ const community = {
             } else {
                 detail = context.state.codeDetail
             }
+            let token = 'none'
+
+            if(sessionStorage.getItem("token") !== null){
+                token = sessionStorage.getItem("token")
+            }
+
             axios.get('/boardTest', {
                     params: {
                         selected: context.state.selected,
                         key: context.state.key,
                         articleOnvView: context.state.articlesOnView,
                         codeDetail: detail,
-                        token : "#1921"
+                        token : token
                     }
                 }
             )
                 .then(e => {
-                    console.log("뀨??????????????????")
-                    console.log(e.data)
-                    if(e.data.length === 0) {
+                    const member = e.data.member
+                    const boardList = e.data.boardList
+
+                    if(boardList.length === 0) {
                         const obj = {
                             isNull: true,
                             content: '해당하는 게시물이 없습니다.'
@@ -191,10 +193,11 @@ const community = {
                         context.commit('boardListNullPush', obj)
                         return
                     }
-                    for (let item of e.data) {
+                    for (let item of boardList) {
                         context.commit('pushToBoardList', item)
                     }
-                    context.commit('setArticlesOnView', e.data.length)
+                    context.commit('setArticlesOnView', boardList.length)
+                    context.commit("setSignMember", member)
                 })
         },
 
@@ -296,6 +299,8 @@ const community = {
                     commentsOnView : item.commentsOnView,
                 }})
                 .then(e => {
+                    console.log('댓글 더보기')
+                    console.log(e)
                     for (let item of e.data) {
                         item.isOpen = false
                         item.isUpdate = false

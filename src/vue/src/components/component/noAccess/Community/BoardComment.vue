@@ -3,39 +3,41 @@
     <div>
       <ul>
         <li class="comment-li" v-for="(item, index) in board.commentList" :key="index">
-          <div class="content-wrapper">
+          <div v-if="item.answerDelAt === 'N'" class="content-wrapper">
+          <div>
             <div class="info-wrapper">
               <span class="name">{{item.member.memNick}}</span>
-              <span class="date">{{item.answerDate}}</span>
+              <span class="date">{{item.answerDate.substring(0, 19).replace("T", " ")}}</span>
             </div>
-            <textarea @keyup="update" class="text-area" :value="item.answerCn" :readonly="item.isModify"></textarea>
+            <textarea class="text-area" v-model="item.answerCn" :readonly="item.isModify"></textarea>
           </div>
           <div>
-            <i @click="this.changeCommentsIsOpen(item)" v-if="item.isOpen==false" class="fas fa-ellipsis-h"></i>
+            <i @click="this.changeCommentsIsOpen(item)" v-if="item.isOpen === false && board.codeDetail.codeDetailIdx === '7'" class="fas fa-ellipsis-h"></i>
             <!-- 여기서 토큰 값을 비교해서 본인의 게시글일 경우 수정,삭제 아이콘을 보여주고
                   본인의 글이 아니면 신고 버튼을 보여준다. v-if를 통해서
                   <div>
                     <i>신고</i>
                   </div>
             -->
-            <div class="box" v-if="item.isOpen==true && item.isFinish == false">
-              <i @click="toUpdate(item); this.changeIsFinish(item)" class="fas fa-edit"></i>
-              <i @click="deleteComment" class="far fa-trash-alt"></i>
+            <div class="box" v-if="item.isOpen === true && item.isFinish === false">
+              <i @click="this.changeIsModify(item); this.changeIsFinish(item)" class="fas fa-edit"></i>
+
+              <i @click="confirmDeleteComment(item, board)" class="far fa-trash-alt"></i>
               <i @click="this.changeCommentsIsOpen(item)" class="fas fa-long-arrow-alt-left"></i>
             </div>
 
-            <div id="finish-id" v-if="item.isOpen == true && item.isFinish == true" 
+            <div id="finish-id" v-if="item.isOpen === true && item.isFinish === true"
                   @click="toUpdate(item); this.changeIsFinish(item)">Finish</div>
+          </div>
           </div>
         </li>  
       </ul>
       <div id="btn-div">
-        {{board.totalComments}}<br>{{board.commentList.length}}
-        <button v-if="board.totalComments - board.commentList.length !== 0"
+        <button v-if="board.totalComments - board.commentList.length !== 0
+                      && board.totalComments - board.commentList.length > 0"
                 id="more-btn"
                 @click="this.extraComments(board)">더 보기</button>
       </div>
-        {{ board.totalComments - board.commentList.length }}
     </div>
   </div>
 </template>
@@ -46,8 +48,6 @@ export default {
   name: 'BoardComment',
   data() {
     return {
-      numberOfComments : this.board.댓글수,
-      updateContent : '',
     }
   },
 
@@ -72,27 +72,42 @@ export default {
       changeIsFinish : 'community/changeIsFinish',
       changeIsModify : 'community/changeIsModify'
     }),
-    
+
+    confirmDeleteComment(item, board){
+      if(confirm("해당 댓글을 삭제하시겠습니까?")){
+        this.deleteComment(item, board)
+      }
+    },
+
     //댓글 삭제
-    deleteComment(item){
-      this.axios.delete('', null, { params : { idx : item.idx}})
+    deleteComment(item, board){
+      console.log('------------')
+      console.log(board)
+      console.log(item)
+      console.log('------------')
+      this.axios.post('/deleteComment',{
+                          answerIdx : item.answerIdx,
+                          token : sessionStorage.getItem("token")
+                      })
                 .then(e => {
-                    console.log(e)
+                    item.answerDelAt = e.data.answerDelAt
+                    board.commentsOnView -= 1
+                    board.totalComments = e.data.board.totalComments
                   })
     },
-    //댓글 수정 컨트롤러에 보내줌
-    updateComment(item){
-      this.axios.put('',null, { params : {idx : item.idx, content : this.updateContent}}).then(e => {
-        console.log(e)
-      })
-    },
+
     toUpdate(item){
-      this.changeIsModify(item)
+      this.axios.post('/updateComment', {
+            token : sessionStorage.getItem("token"),
+            answerIdx : item.answerIdx,
+            content : item.answerCn
+        }).then(e => {
+          console.log(e)
+          this.changeIsModify(item)
+        })
+
     },
-    //keyup될 때마다 새로쓰는 댓글 내용 지역변수에 저장
-    update(e){
-      this.updateContent = e.target.value
-    },
+
   },
 }
 </script>
@@ -119,8 +134,10 @@ export default {
   padding: 10px;
   font-size: 14px;
   border-radius: 5px;
-  width: 100%;
+  width: 95%;
   height: fit-content;
+  display: flex;
+  justify-content: space-between;
 }
 
 .info-wrapper {
@@ -141,6 +158,7 @@ export default {
   flex-direction: column;
   font-size: 12px;
   gap:8px;
+  height: 20px;
 }
 
 i {

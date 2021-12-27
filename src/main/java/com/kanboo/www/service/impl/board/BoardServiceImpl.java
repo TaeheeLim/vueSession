@@ -9,6 +9,7 @@ import com.kanboo.www.domain.repository.board.boardQueryDSL.BoardDSLRepositoryIm
 import com.kanboo.www.domain.repository.member.MemberRepository;
 import com.kanboo.www.dto.board.BoardDTO;
 import com.kanboo.www.dto.board.CommentDTO;
+import com.kanboo.www.dto.member.MemberDTO;
 import com.kanboo.www.service.inter.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -29,13 +30,8 @@ public class BoardServiceImpl implements BoardService {
     private final MemberRepository memberRepository;
 
     @Override
-    public List<BoardDTO> getAllList(String selected, String key, int articleOnvView, String codeDetail, String memTag) {
-
-        Member member = memberRepository.findByMemTag(memTag);
-        if (member == null){
-            return null;
-        }
-        return boardRepository.getAllList(selected, key, articleOnvView, codeDetail, member.getMemId());
+    public List<BoardDTO> getAllList(String selected, String key, int articleOnvView, String codeDetail, MemberDTO memberDTO) {
+        return boardRepository.getAllList(selected, key, articleOnvView, codeDetail, memberDTO.getMemId());
     }
 
     @Override
@@ -136,6 +132,17 @@ public class BoardServiceImpl implements BoardService {
         if(byBoardIdx != null){
             byBoardIdx.increaseTotalComments();
             Board save = boardRepository.save(byBoardIdx);
+            return save.entityToDto();
+        }
+        return null;
+    }
+
+    @Override
+    public BoardDTO decreaseTotalComments(long boardIdx) {
+        Board board = boardRepository.findByBoardIdx(boardIdx);
+        if(board != null){
+            board.decreaseTotalComments();
+            Board save = boardRepository.save(board);
             return save.entityToDto();
         }
         return null;

@@ -15,7 +15,7 @@
                             category='8';
                             "
                        class ="board-direction" to="/community/qna">문의 게시판</router-link>
-          <button  @click="[changeWriteIsOpen(), step=1, this.changeUpdateCheck()]" class="board-direction" :disabled="blockWrite == true">글 작성</button>
+          <button v-if="getPosition()" @click="[changeWriteIsOpen(), step=1, this.changeUpdateCheck()]" class="board-direction" :disabled="blockWrite == true">글 작성</button>
         </div>
         <div class="input-container">
           <select v-model="selected" id="select" @change="sendingSelected">
@@ -123,6 +123,14 @@ export default {
         this.category = '7'
         console.log(this.category)
       }
+    },
+
+    getPosition(){
+      const token = sessionStorage.getItem("token")
+      if(token === null){
+        return false
+      }
+      return true
     },
 
   },

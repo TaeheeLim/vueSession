@@ -1,6 +1,9 @@
 package com.kanboo.www.controller.global;
 
+import com.kanboo.www.domain.entity.board.Comment;
 import com.kanboo.www.domain.entity.member.Member;
+import com.kanboo.www.domain.repository.board.BoardRepository;
+import com.kanboo.www.domain.repository.board.CommentRepository;
 import com.kanboo.www.domain.repository.board.boardQueryDSL.BoardDSLRepositoryImpl;
 import com.kanboo.www.domain.repository.member.MemberRepository;
 import com.kanboo.www.dto.board.BoardDTO;
@@ -24,8 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,14 +41,25 @@ public class BoardController {
     private final JwtSecurityService jwtSecurityService;
     private final MemberRepository memberRepository;
     private final CommentService commentService;
+    private final CommentRepository commentRepository;
 
     @GetMapping("/boardTest")
-    public List<BoardDTO> testBoard(String selected, String key, int articleOnvView, String codeDetail, String token) {
-//        String memTag = jwtSecurityService.getToken(token);
-//        System.out.println(memTag);
-//
-        List<BoardDTO> allList = boardService.getAllList(selected, key, articleOnvView, codeDetail, token);
-        return allList;
+    public Map<String, Object> testBoard(String selected, String key, int articleOnvView, String codeDetail, String token) {
+        String memTag  = jwtSecurityService.getToken(token);
+        if(memTag == null) {
+            return null;
+        }
+        // 유저 정보 조회
+        MemberDTO memberDTO = memberRepository.findByMemTag(memTag).entityToDto();
+        // 게시판 정보 조회
+        List<BoardDTO> allList = boardService.getAllList(selected, key, articleOnvView, codeDetail, memberDTO);
+
+        // 맵에 정보 담기
+        Map<String, Object> result = new HashMap<>();
+        result.put("member", memberDTO);
+        result.put("boardList", allList);
+
+        return result;
     }
 
     @GetMapping("/getArticleNum")
@@ -145,8 +158,10 @@ public class BoardController {
 
     @PostMapping("/insertComment")
     public CommentDTO insertComment(@RequestBody Map<String, Object> map){
-        Member member = memberRepository.findByMemTag(map.get("token") + "");
-        //answer테이블에 insert  하고 board 테이블에서 total_comments += 1 update
+        String token = jwtSecurityService.getToken(map.get("token") + "");
+
+        Member member = memberRepository.findByMemTag(token);
+
         BoardDTO boardDTO = BoardDTO.builder()
                 .boardIdx(Long.parseLong(String.valueOf(map.get("boardIdx"))))
                 .build();
@@ -165,6 +180,32 @@ public class BoardController {
         BoardDTO returnedBoard = boardService.increaseTotalComments(Long.parseLong(map.get("boardIdx") + ""));
         if(returnedBoard != null){
             return commentService.insertComment(commentDTO);
+        }
+        return null;
+    }
+
+    @PostMapping("/updateComment")
+    public CommentDTO updateComment(@RequestBody Map<String, Object> map){
+        String token = jwtSecurityService.getToken(map.get("token") + "");
+        Member member = memberRepository.findByMemTag(token);
+
+        Long id = Long.parseLong(map.get("answerIdx") + "");
+        Comment comment = commentRepository.findById(id).get();
+
+        if(member.getMemIdx() == comment.getMember().getMemIdx()){
+            return commentService.updateComment(map);
+        }
+        return null;
+    }
+
+    @PostMapping("/deleteComment")
+    public CommentDTO deleteComment(@RequestBody Map<String, Object> map){
+        String token = jwtSecurityService.getToken(map.get("token") + "");
+        Member member = memberRepository.findByMemTag(token);
+        Comment comment = commentRepository.findById(Long.parseLong(map.get("answerIdx") + "")).get();
+
+        if(member.getMemIdx() == comment.getMember().getMemIdx()){
+            return commentService.deleteComment(map);
         }
         return null;
     }
